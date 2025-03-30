@@ -156,16 +156,16 @@ export default function ProjectDetail() {
             <div className="mb-6">
               <Tabs defaultValue="overview">
                 <TabsList className="w-full justify-start border-b border-gray-200 pb-0">
-                  <TabsTrigger value="overview" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-1 py-3 text-sm">
+                  <TabsTrigger value="overview" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
                     Overview
                   </TabsTrigger>
-                  <TabsTrigger value="tokenomics" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-1 py-3 text-sm">
+                  <TabsTrigger value="tokenomics" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
                     Tokenomics
                   </TabsTrigger>
-                  <TabsTrigger value="team" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-1 py-3 text-sm">
+                  <TabsTrigger value="team" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
                     Team
                   </TabsTrigger>
-                  <TabsTrigger value="roadmap" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-1 py-3 text-sm">
+                  <TabsTrigger value="roadmap" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm">
                     Roadmap
                   </TabsTrigger>
                 </TabsList>
