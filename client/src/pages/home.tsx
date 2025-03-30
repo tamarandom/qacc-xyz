@@ -1,26 +1,104 @@
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import ProjectList from "@/components/projects/project-list";
 import ProjectGrid from "@/components/projects/project-grid";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutGrid, List, Sparkles } from "lucide-react";
+import { LayoutGrid, List, Sparkles, Search, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { ProjectCard } from "@/components/projects/project-card";
 import { useLocation } from "wouter";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PROJECT_CATEGORIES } from "@/lib/types";
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [, navigate] = useLocation();
+  const [category, setCategory] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("marketCap");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   
   // Fetch projects data
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
   });
   
-  // Filter new projects (pre-token launch) and regular projects
-  const newProjects = projects.filter(project => project.isNew);
-  const regularProjects = projects.filter(project => !project.isNew);
+  // Filtered projects based on search and category
+  const [filteredNewProjects, setFilteredNewProjects] = useState<Project[]>([]);
+  const [filteredLaunchedProjects, setFilteredLaunchedProjects] = useState<Project[]>([]);
+  
+  // Apply filtering to both new and launched projects
+  useEffect(() => {
+    if (!projects || projects.length === 0) {
+      setFilteredNewProjects([]);
+      setFilteredLaunchedProjects([]);
+      return;
+    }
+    
+    // First filter by category and search (applies to both sections)
+    const filterProjects = (projectList: Project[]) => {
+      let filtered = [...projectList];
+      
+      // Apply category filter
+      if (category !== 'all') {
+        filtered = filtered.filter(project => 
+          project.category.toLowerCase().includes(category.toLowerCase())
+        );
+      }
+      
+      // Apply search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(
+          project => 
+            project.name.toLowerCase().includes(query) || 
+            project.tokenSymbol.toLowerCase().includes(query) ||
+            project.tokenName.toLowerCase().includes(query)
+        );
+      }
+      
+      return filtered;
+    };
+    
+    // Filter new projects
+    const newProjects = projects.filter(project => project.isNew);
+    setFilteredNewProjects(filterProjects(newProjects));
+    
+    // Filter and sort launched projects
+    const launchedProjects = projects.filter(project => !project.isNew);
+    let filteredLaunched = filterProjects(launchedProjects);
+    
+    // Sort launched projects (sorting only applies to launched projects)
+    filteredLaunched = filteredLaunched.sort((a, b) => {
+      let result = 0;
+      
+      switch(sortBy) {
+        case 'name':
+          result = a.name.localeCompare(b.name);
+          break;
+        case 'volume24h':
+          result = b.volume24h - a.volume24h;
+          break;
+        case 'price':
+          result = b.price - a.price;
+          break;
+        default: // marketCap
+          result = b.marketCap - a.marketCap;
+      }
+      
+      return sortDirection === 'asc' ? -result : result;
+    });
+    
+    setFilteredLaunchedProjects(filteredLaunched);
+  }, [searchQuery, category, sortBy, sortDirection, projects]);
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
   
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,8 +111,62 @@ export default function Home() {
         </p>
       </div>
       
+      {/* Filter Controls - Apply to both sections */}
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <div className="flex space-x-2 mb-4 sm:mb-0">
+          <Button
+            variant={category === "all" ? "default" : "outline"}
+            className={category === "all" 
+              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
+              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
+            onClick={() => setCategory("all")}
+          >
+            All Projects
+          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"
+              >
+                <span>{PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}</span>
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              {PROJECT_CATEGORIES.filter(cat => cat.id !== 'all').map((cat) => (
+                <DropdownMenuItem 
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id)}
+                  className={`
+                    font-['IBM_Plex_Mono'] text-sm cursor-pointer
+                    ${category === cat.id ? 'bg-[color:var(--color-peach-100)] text-[color:var(--color-black)]' : ''}
+                  `}
+                >
+                  {cat.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        
+        <div className="relative w-full sm:w-auto">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
+          </div>
+          <Input
+            type="text"
+            placeholder="Search projects or tokens..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[260px]"
+          />
+        </div>
+      </div>
+      
       {/* New Projects Section */}
-      {!isLoading && newProjects.length > 0 && (
+      {!isLoading && filteredNewProjects.length > 0 && (
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="h-5 w-5 text-[color:var(--color-peach)]" />
@@ -43,14 +175,55 @@ export default function Home() {
             </h2>
             <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => navigate(`/projects/${project.id}`)}
-              />
-            ))}
+          <div className={`${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : ""}`}>
+            {viewMode === "grid" ? (
+              filteredNewProjects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onClick={() => navigate(`/projects/${project.id}`)}
+                />
+              ))
+            ) : (
+              <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
+                <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
+                  <thead className="bg-[color:var(--color-light-gray)]">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
+                    {filteredNewProjects.map((project) => (
+                      <tr 
+                        key={project.id} 
+                        className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
+                        onClick={() => navigate(`/projects/${project.id}`)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <ProjectAvatar
+                              name={project.name}
+                              bgColor={project.avatarBg || "#FBBA80"}
+                              textColor={project.avatarColor || "#101010"}
+                              initials={project.avatarText || project.name.substring(0, 2)}
+                              imageUrl={project.imageUrl}
+                              size="sm"
+                            />
+                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -64,7 +237,40 @@ export default function Home() {
           <div className="h-1 w-20 bg-[color:var(--color-peach)] mt-2"></div>
         </div>
         
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          {/* Sort Controls - Only for Launched Projects */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
+            <Select 
+              value={sortBy} 
+              onValueChange={setSortBy}
+            >
+              <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent className="font-['IBM_Plex_Mono']">
+                <SelectItem value="marketCap">Market Cap</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
+                <SelectItem value="volume24h">Volume</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+              className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
+            >
+              {sortDirection === 'asc' ? 
+                <ChevronDown className="h-4 w-4 rotate-180" /> : 
+                <ChevronDown className="h-4 w-4" />
+              }
+            </Button>
+          </div>
+          
+          {/* View Mode Toggle */}
           <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
             <TabsList className="bg-[color:var(--color-light-gray)]">
               <TabsTrigger 
@@ -86,24 +292,103 @@ export default function Home() {
         </div>
       </div>
       
-      <Suspense fallback={
-        <div className="py-10">
-          {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Skeleton className="h-[250px] w-full rounded-lg" />
-              <Skeleton className="h-[250px] w-full rounded-lg" />
-              <Skeleton className="h-[250px] w-full rounded-lg" />
-            </div>
-          ) : (
-            <Skeleton className="h-[400px] w-full" />
+      {/* Launched Projects Grid/List View */}
+      {filteredLaunchedProjects.length > 0 ? (
+        viewMode === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredLaunchedProjects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onClick={() => navigate(`/projects/${project.id}`)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
+            <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
+              <thead className="bg-[color:var(--color-light-gray)]">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Volume (24h)</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
+                {filteredLaunchedProjects.map((project) => (
+                  <tr 
+                    key={project.id} 
+                    className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
+                    onClick={() => navigate(`/projects/${project.id}`)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <ProjectAvatar
+                          name={project.name}
+                          bgColor={project.avatarBg || "#FBBA80"}
+                          textColor={project.avatarColor || "#101010"}
+                          initials={project.avatarText || project.name.substring(0, 2)}
+                          imageUrl={project.imageUrl}
+                          size="sm"
+                        />
+                        <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.marketCap.toLocaleString('en-US')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.volume24h.toLocaleString('en-US')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : (
+        <div className="bg-white rounded-lg border border-[color:var(--color-gray-200)] p-10 text-center">
+          <div className="flex flex-col items-center justify-center">
+            <Search className="h-8 w-8 text-[color:var(--color-black-100)] mb-2" />
+            <p className="text-[color:var(--color-black-100)] font-['IBM_Plex_Mono']">No projects found matching your search</p>
+            {(searchQuery || category !== 'all') && (
+              <Button 
+                variant="link" 
+                onClick={() => {
+                  setSearchQuery("");
+                  setCategory("all");
+                }}
+                className="text-[color:var(--color-peach)] font-['IBM_Plex_Mono'] hover:text-[color:var(--color-peach-300)]"
+              >
+                Clear filters
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* Results count */}
+      {(filteredNewProjects.length > 0 || filteredLaunchedProjects.length > 0) && (
+        <div className="mt-6 text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">
+          Showing <span className="font-medium text-[color:var(--color-black)]">{filteredNewProjects.length + filteredLaunchedProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{projects.length}</span> projects
+          {(searchQuery || category !== 'all') && (
+            <span className="ml-1">
+              {category !== 'all' && (
+                <span className="ml-2 text-[10px] py-0 px-1.5 font-['IBM_Plex_Mono'] bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] rounded-full">
+                  Category: {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name || category}
+                </span>
+              )}
+              {searchQuery && (
+                <span className="ml-2 text-[10px] py-0 px-1.5 font-['IBM_Plex_Mono'] bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] rounded-full">
+                  Search: "{searchQuery}"
+                </span>
+              )}
+            </span>
           )}
         </div>
-      }>
-        {viewMode === "grid" ? 
-          <ProjectGrid filterOutNew={true} /> : 
-          <ProjectList filterOutNew={true} />
-        }
-      </Suspense>
+      )}
     </div>
   );
 }
