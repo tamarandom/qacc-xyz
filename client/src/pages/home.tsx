@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PROJECT_CATEGORIES } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatters";
 import PercentageChange from "@/components/ui/percentage-change";
-import { ProjectAvatar } from "@/components/ui/project-avatar";
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");

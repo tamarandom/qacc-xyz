@@ -12,30 +12,6 @@ interface ProjectAvatarProps {
   className?: string;
 }
 
-// Token icon mapping - if we have a token symbol, we'll use a specific icon
-const TOKEN_ICONS: Record<string, number> = {
-  // First row
-  "USD": 0, // Dollar sign
-  "AXS": 1, // Arrow icon
-  "ALB": 2, // Potion/flask icon
-  "LEAF": 3, // Leaf icon
-  
-  // Second row
-  "CUBE": 4, // Cube/blocks
-  "ORBIT": 5, // Eye icon
-  "TELE": 6, // Telegram-like icon
-  "STAR": 7, // Star icon
-  
-  // Third row
-  "BOLT": 8, // Lightning bolt
-  "GLOBE": 9, // Globe/earth icon
-  "FOX": 10, // Fox icon
-  "COIN": 11 // Circular coin icon
-};
-
-// Default icons to use if no matching token symbol
-const DEFAULT_ICON_INDEXES = [0, 1, 4, 6, 7, 8, 9, 11];
-
 export function ProjectAvatar({ 
   name, 
   bgColor = "bg-primary-100", 
@@ -64,17 +40,6 @@ export function ProjectAvatar({
     setImageLoaded(false);
     setImageFailed(false);
   }, [imageUrl]);
-  
-  // Function to get icon index based on token symbol or name
-  const getIconIndex = (): number => {
-    if (tokenSymbol && TOKEN_ICONS[tokenSymbol.toUpperCase()]) {
-      return TOKEN_ICONS[tokenSymbol.toUpperCase()];
-    }
-    
-    // If no matching token symbol, use a deterministic icon based on the project name
-    const nameHash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return DEFAULT_ICON_INDEXES[nameHash % DEFAULT_ICON_INDEXES.length];
-  };
   
   // Handle background styling
   let bgStyle = {};
@@ -109,7 +74,7 @@ export function ProjectAvatar({
       <div className="absolute top-0 left-0 h-1/3 w-1/3 bg-green-400 opacity-30 rounded-tl-full"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex items-center justify-center h-full w-full">
+      <div className="relative z-10 flex items-center justify-center h-full">
         {imageUrl && !imageFailed ? (
           <img 
             src={imageUrl} 
@@ -119,20 +84,9 @@ export function ProjectAvatar({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img 
-              src="/images/token-icons/token-grid.png"
-              alt={tokenSymbol || name}
-              className="absolute w-[1200%] h-[1200%] max-w-none max-h-none object-cover"
-              style={{ 
-                // Calculate position based on icon index (4 columns x 3 rows)
-                // Each icon is 25% of the width and 33.33% of the height
-                top: `${-100 * (Math.floor(getIconIndex() / 4))}%`, 
-                left: `${-100 * (getIconIndex() % 4)}%`,
-                transform: 'scale(0.083333)' // 1/12 to show just one icon
-              }}
-            />
-          </div>
+          <span className="flex items-center justify-center font-bold font-mono tracking-tight" style={{ lineHeight: 1 }}>
+            {displayText}
+          </span>
         )}
       </div>
     </div>
