@@ -70,7 +70,9 @@ export default function Home() {
     
     // Filter and sort launched projects
     const launchedProjects = projects.filter(project => !project.isNew);
-    let filteredLaunched = filterProjects(launchedProjects);
+    
+    // Limit to 8 projects for the Launched section
+    let filteredLaunched = filterProjects(launchedProjects).slice(0, 8);
     
     // Sort launched projects (sorting only applies to launched projects)
     filteredLaunched = filteredLaunched.sort((a, b) => {
@@ -185,60 +187,6 @@ export default function Home() {
           </Tabs>
         </div>
       </div>
-      
-      {/* Filter Controls - Apply to both sections */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-        <div className="flex space-x-2 mb-4 sm:mb-0">
-          <Button
-            variant={category === "all" ? "default" : "outline"}
-            className={category === "all" 
-              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
-              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
-            onClick={() => setCategory("all")}
-          >
-            All Projects
-          </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"
-              >
-                <span>{PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}</span>
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
-              {PROJECT_CATEGORIES.filter(cat => cat.id !== 'all').map((cat) => (
-                <DropdownMenuItem 
-                  key={cat.id}
-                  onClick={() => setCategory(cat.id)}
-                  className={`
-                    font-['IBM_Plex_Mono'] text-sm cursor-pointer
-                    ${category === cat.id ? 'bg-[color:var(--color-peach-100)] text-[color:var(--color-black)]' : ''}
-                  `}
-                >
-                  {cat.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        
-        <div className="relative w-full sm:w-auto">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
-          </div>
-          <Input
-            type="text"
-            placeholder="Search projects or tokens..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[260px]"
-          />
-        </div>
-      </div>
 
       {/* New Projects Section */}
       {!isLoading && filteredNewProjects.length > 0 && (
@@ -314,11 +262,45 @@ export default function Home() {
       )}
       
       {/* Launched Projects Section */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-          Launched Projects
-        </h2>
-        <div className="h-1 w-20 bg-[color:var(--color-peach)] mt-2"></div>
+      <div className="mb-6 flex justify-between items-end">
+        <div>
+          <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+            Launched Projects
+          </h2>
+          <div className="h-1 w-20 bg-[color:var(--color-peach)] mt-2"></div>
+        </div>
+        
+        {/* Sort Controls - Move beside the Launched Projects header */}
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
+          <Select 
+            value={sortBy} 
+            onValueChange={setSortBy}
+          >
+            <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="font-['IBM_Plex_Mono']">
+              <SelectItem value="marketCap">Market Cap</SelectItem>
+              <SelectItem value="price">Price</SelectItem>
+              <SelectItem value="volume24h">Volume</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+            className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+            title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
+          >
+            {sortDirection === 'asc' ? 
+              <ChevronDown className="h-4 w-4 rotate-180" /> : 
+              <ChevronDown className="h-4 w-4" />
+            }
+          </Button>
+        </div>
       </div>
       
       {/* Launched Projects Grid/List View */}
