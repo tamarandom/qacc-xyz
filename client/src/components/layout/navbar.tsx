@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { BellIcon } from "lucide-react";
+import qaccLogo from "../../assets/qacc-logo.jpg";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -13,7 +14,7 @@ export default function Navbar() {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
                 <img 
-                  src="/images/qacc-logo.jpg" 
+                  src={qaccLogo} 
                   alt="Quadratic Accelerator Logo" 
                   className="h-8"
                 />
