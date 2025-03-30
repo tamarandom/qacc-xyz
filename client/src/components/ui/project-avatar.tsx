@@ -6,6 +6,7 @@ interface ProjectAvatarProps {
   textColor?: string;
   initials?: string;
   size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
 export function ProjectAvatar({ 
@@ -13,7 +14,8 @@ export function ProjectAvatar({
   bgColor = "bg-primary-100", 
   textColor = "text-primary-700",
   initials,
-  size = "md"
+  size = "md",
+  className
 }: ProjectAvatarProps) {
   const displayInitials = initials || name.substring(0, 2).toUpperCase();
   
@@ -28,7 +30,8 @@ export function ProjectAvatar({
       "rounded-full flex items-center justify-center flex-shrink-0",
       bgColor,
       textColor,
-      sizeClasses[size]
+      sizeClasses[size],
+      className
     )}>
       <span>{displayInitials}</span>
     </div>

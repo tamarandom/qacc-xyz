@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
+import PortfolioPage from "@/pages/portfolio";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
       <Route path="/user-score" component={UserScorePage} />
+      <Route path="/portfolio" component={PortfolioPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

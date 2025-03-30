@@ -62,7 +62,7 @@ export default function PointsPage() {
   });
   
   // Find current user in leaderboard
-  const currentUser = users?.find(user => user.id === currentUserId);
+  const currentUser = Array.isArray(users) ? users.find(user => user.id === currentUserId) : null;
 
   return (
     <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
@@ -129,7 +129,7 @@ export default function PointsPage() {
             </div>
           ) : (
             <div className="space-y-2">
-              {users?.slice(0, 10).map((user) => {
+              {Array.isArray(users) ? users.slice(0, 10).map((user) => {
                 const isCurrentUser = user.id === currentUserId;
                 return (
                   <div 
@@ -179,7 +179,7 @@ export default function PointsPage() {
                     </div>
                   </div>
                 );
-              })}
+              }) : <p className="p-4 text-center text-[color:var(--color-gray)]">No users found</p>}
             </div>
           )}
         </div>
