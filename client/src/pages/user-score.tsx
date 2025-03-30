@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Share2Icon, GlobeIcon, Lock, Thermometer, Zap } from "lucide-react";
-import { type User } from "@shared/schema";
+import { Share2Icon, Award, Target, Check } from "lucide-react";
+import { type User, type PointTransaction } from "@shared/schema";
 import { formatNumber } from "@/lib/formatters";
 
 // Define achievement types
@@ -19,81 +17,48 @@ interface Achievement {
 
 export default function UserScorePage() {
   // In a real app, this would be fetched from authentication state
-  const username = "Tam";
-  const userId = 3;
+  const username = "cryptowhale";
+  const userId = 1;
 
-  // Mock stats - in a real app, this would come from the API
+  // User stats - in a real app, these would be calculated from actual transaction data
   const userStats = {
-    score: 783,
-    title: "BALANCED INFLUENCER",
-    dev: 680,
-    degen: 600,
-    clout: 710,
-    kycFollowers: 202,
-    totalFollowers: 1540,
-    projectsFollowers: 46
+    projectsFunded: 5,
+    participatedRounds: 3,
+    tokensByProject: [
+      { name: "SAFE", amount: 40 },
+      { name: "LSWP", amount: 80 },
+      { name: "NEXUS", amount: 0 }
+    ],
+    totalPoints: 12450
   };
 
-  // Mock achievements - in a real app these would come from the API
+  // Achievement definitions
   const achievements: Achievement[] = [
     {
-      id: "polyglot",
-      name: "Polyglot",
-      description: "Used 5 or more different blockchains",
-      icon: <GlobeIcon className="h-8 w-8 text-gray-300" />,
+      id: "multiSeason",
+      name: "Multi-Seasons",
+      description: "Supporting projects across multiple seasons",
+      icon: <Award className="h-8 w-8 text-[color:var(--color-peach)]" />,
       acquired: true
     },
     {
-      id: "gnosis",
-      name: "Gnosis User",
-      description: "Made over 100 transactions on Gnosis Chain",
-      icon: <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM11 16H13V18H11V16ZM11 6H13V14H11V6Z" 
-          fill="#52C41A"/>
-      </svg>,
+      id: "multiProject",
+      name: "Multi-Projects",
+      description: "Supported multiple projects in one round!",
+      icon: <Target className="h-8 w-8 text-[color:var(--color-peach)]" />,
       acquired: true
     },
     {
-      id: "lawful",
-      name: "Lawful Good",
-      description: "Donated to Gitcoin grants",
-      icon: <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L4 5V11.09C4 16.14 7.41 20.85 12 22C16.59 20.85 20 16.14 20 11.09V5L12 2ZM18 11.09C18 15.09 15.45 18.79 12 19.92C8.55 18.79 6 15.1 6 11.09V6.39L12 4.14L18 6.39V11.09Z" 
-          fill="#5E35B1"/>
-      </svg>,
-      acquired: true
-    },
-    {
-      id: "safeSigner",
-      name: "Safe Signer",
-      description: "Signer on a Safe multisig",
-      icon: <Lock className="h-8 w-8 text-green-500" />,
-      acquired: true
-    },
-    {
-      id: "ens",
-      name: "ENS Elector",
-      description: "Participated in ENS governance",
-      icon: <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2L4 7V17L12 22L20 17V7L12 2ZM12 4.22L18 8.2V15.8L12 19.78L6 15.8V8.2L12 4.22Z" 
-          fill="#627EEA"/>
-      </svg>,
-      acquired: true
-    },
-    {
-      id: "optimism",
-      name: "Optimism Tinkerer",
-      description: "Interacted with over 100 smart contracts on Optimism",
-      icon: <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" 
-          fill="#FF4C3B"/>
-      </svg>,
-      acquired: true
+      id: "claimed",
+      name: "Claimed!",
+      description: "Only for users who have claimed their tokens",
+      icon: <Check className="h-8 w-8 text-[color:var(--color-peach)]" />,
+      acquired: false
     }
   ];
 
-  // User position in leaderboard
-  const { data: userPosition, isLoading } = useQuery({
+  // User data and transactions from the API
+  const { data: userData, isLoading: userLoading } = useQuery({
     queryKey: ['/api/leaderboard'],
     queryFn: async () => {
       const res = await fetch('/api/leaderboard');
@@ -101,115 +66,152 @@ export default function UserScorePage() {
         throw new Error('Failed to fetch leaderboard');
       }
       const data = await res.json() as User[];
-      const position = data.findIndex(user => user.id === userId);
-      return position >= 0 ? position + 1 : null;
+      const user = data.find(u => u.id === userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
     }
   });
 
+  // User transactions from the API
+  const { data: transactions, isLoading: transactionsLoading } = useQuery({
+    queryKey: ['/api/users', userId, 'transactions'],
+    queryFn: async () => {
+      const res = await fetch(`/api/users/${userId}/transactions`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      return await res.json() as PointTransaction[];
+    }
+  });
+
+  const isLoading = userLoading || transactionsLoading;
+
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6 bg-black text-white">
+    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
       <div className="max-w-4xl mx-auto space-y-10">
         <div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">Legion Score</h1>
-          <p className="text-gray-400">Your investor score helps you get the opportunities that you deserve on LEGION.</p>
+          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your q/acc Points</h1>
         </div>
 
-        {/* User score card */}
-        <div className="bg-[#0A0A0A] rounded-xl overflow-hidden">
-          <div className="p-6 text-center">
-            <h2 className="text-xl uppercase font-bold mb-4">{username}</h2>
-            
-            <div className="flex flex-col md:flex-row items-center justify-center bg-[#0F0F3D] rounded-xl p-6 mb-4">
-              <div className="w-32 h-32 bg-gray-800 rounded-md overflow-hidden mb-4 md:mb-0 md:mr-8">
-                {/* Pixelated avatar */}
-                <div className="w-full h-full bg-gradient-to-b from-green-500 to-blue-700"></div>
-              </div>
+        {isLoading ? (
+          <div className="animate-pulse bg-white rounded-lg p-10 flex justify-center items-center">
+            <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">Loading user data...</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-lg overflow-hidden border border-[color:var(--color-peach-100)]">
+            <div className="p-6">
+              <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-[color:var(--color-black)]">{userData?.username || username}</h2>
               
-              <div className="text-center md:text-left">
-                <div className="text-8xl font-bold">{userStats.score}</div>
-                <div className="text-xl uppercase tracking-wide">{userStats.title}</div>
+              <div className="flex flex-col md:flex-row items-center md:items-start rounded-lg p-6 mb-4 bg-[color:var(--color-light-gray)]">
+                {userData?.avatarUrl ? (
+                  <img 
+                    src={userData.avatarUrl} 
+                    alt={userData.username} 
+                    className="w-32 h-32 rounded-md object-cover border-2 border-[color:var(--color-peach)] mb-4 md:mb-0 md:mr-8"
+                  />
+                ) : (
+                  <div className="w-32 h-32 bg-[color:var(--color-peach)] rounded-md mb-4 md:mb-0 md:mr-8 flex items-center justify-center">
+                    <span className="text-4xl font-bold text-white">{(userData?.username || username).charAt(0)}</span>
+                  </div>
+                )}
                 
-                <Button variant="outline" size="sm" className="mt-4 text-red-500 border-red-500 hover:bg-red-950">
-                  <Share2Icon className="h-4 w-4 mr-2" />
-                  Share legion score card
-                </Button>
+                <div className="text-center md:text-left">
+                  <div className="text-8xl font-['Tusker_Grotesk'] font-bold text-[color:var(--color-black)]">
+                    {formatNumber(userData?.points || userStats.totalPoints)}
+                  </div>
+                  <div className="text-xl font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mt-2">POINTS</div>
+                  
+                  <Button variant="outline" size="sm" className="mt-4 border-[color:var(--color-peach)] text-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-100)]">
+                    <Share2Icon className="h-4 w-4 mr-2" />
+                    Share your score
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Stats section */}
-          <div className="p-6">
-            <h3 className="text-xl uppercase font-bold mb-6">STATS</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Triangle chart */}
-              <div className="relative h-64 bg-gray-900 rounded-lg">
-                <div className="absolute top-0 right-0 p-4 text-right">
-                  <div className="flex items-center justify-end text-green-500 mb-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                    <span>DEV</span>
-                    <span className="ml-2">{userStats.dev}</span>
-                  </div>
-                  <div className="flex items-center justify-end text-yellow-500 mb-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                    <span>DEGEN</span>
-                    <span className="ml-2">{userStats.degen}</span>
-                  </div>
-                  <div className="flex items-center justify-end text-blue-500">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                    <span>CLOUT</span>
-                    <span className="ml-2">{userStats.clout}</span>
-                  </div>
-                </div>
-                
-                {/* The triangle visualization would be a complex SVG in a real implementation */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  <svg width="200" height="200" viewBox="0 0 200 200">
-                    <polygon points="100,10 10,180 190,180" fill="none" stroke="#333" strokeWidth="2" />
-                    <polygon points="100,60 60,140 140,140" fill="#2563EB" fillOpacity="0.5" />
-                  </svg>
-                </div>
-              </div>
+            {/* Stats section */}
+            <div className="p-6 border-t border-[color:var(--color-peach-100)]">
+              <h3 className="text-xl font-['Tusker_Grotesk'] font-bold mb-6 text-[color:var(--color-black)]">STATS</h3>
               
-              {/* Stats boxes */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-blue-900 bg-opacity-30 rounded-lg p-4 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold">{formatNumber(userStats.kycFollowers)}</span>
-                  <span className="text-xs text-center mt-1">KYC followers</span>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-[color:var(--color-light-gray)] rounded-lg p-4">
+                  <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">PROJECTS FUNDED</h4>
+                  <div className="text-3xl font-bold text-[color:var(--color-black)]">
+                    {transactions ? new Set(transactions.map(t => t.projectId)).size : userStats.projectsFunded}
+                  </div>
                 </div>
-                <div className="bg-blue-900 bg-opacity-30 rounded-lg p-4 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold">{formatNumber(userStats.totalFollowers)}</span>
-                  <span className="text-xs text-center mt-1">Total followers</span>
+                
+                <div className="bg-[color:var(--color-light-gray)] rounded-lg p-4">
+                  <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">ROUNDS PARTICIPATED</h4>
+                  <div className="text-3xl font-bold text-[color:var(--color-black)]">
+                    {userStats.participatedRounds}
+                  </div>
                 </div>
-                <div className="bg-blue-900 bg-opacity-30 rounded-lg p-4 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold">{formatNumber(userStats.projectsFollowers)}</span>
-                  <span className="text-xs text-center mt-1">Projects followers</span>
+                
+                <div className="bg-[color:var(--color-light-gray)] rounded-lg p-4">
+                  <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">TOKENS PER PROJECT</h4>
+                  {transactions ? (
+                    <div className="space-y-2">
+                      {transactions.map((transaction, index) => (
+                        <div key={index} className="flex justify-between items-center">
+                          <span className="font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                            {transaction.description.replace("Purchased ", "").replace(" tokens", "")}
+                          </span>
+                          <span className="font-bold text-[color:var(--color-black)]">
+                            {transaction.tokenAmount}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {userStats.tokensByProject.map((project, index) => (
+                        <div key={index} className="flex justify-between items-center">
+                          <span className="font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          <span className="font-bold text-[color:var(--color-black)]">{project.amount}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Achievements section */}
-          <div className="p-6">
-            <h3 className="text-xl uppercase font-bold mb-6">LEGION ACHIEVEMENTS</h3>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {achievements.map(achievement => (
-                <div key={achievement.id} className="bg-gray-900 rounded-lg p-4 flex flex-col">
-                  <div className="flex items-start mb-2">
-                    <div className="mr-3">
-                      {achievement.icon}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-white">{achievement.name}</h4>
-                      <p className="text-xs text-gray-400">{achievement.description}</p>
+            {/* Achievements section */}
+            <div className="p-6 border-t border-[color:var(--color-peach-100)]">
+              <h3 className="text-xl font-['Tusker_Grotesk'] font-bold mb-6 text-[color:var(--color-black)]">q/acc ACHIEVEMENTS</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {achievements.map(achievement => (
+                  <div 
+                    key={achievement.id} 
+                    className={`rounded-lg p-4 flex flex-col border ${
+                      achievement.acquired 
+                        ? "border-[color:var(--color-peach)] bg-[color:var(--color-peach-100)]" 
+                        : "border-[color:var(--color-gray)] bg-[color:var(--color-light-gray)] opacity-50"
+                    }`}
+                  >
+                    <div className="flex items-start">
+                      <div className="mr-3">
+                        {achievement.icon}
+                      </div>
+                      <div>
+                        <h4 className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                          {achievement.name}
+                        </h4>
+                        <p className="text-xs font-['IBM_Plex_Mono'] text-[color:var(--color-gray)]">
+                          {achievement.description}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
