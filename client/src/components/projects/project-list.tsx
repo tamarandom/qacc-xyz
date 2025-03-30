@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, Search, Filter } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, Filter, ArrowDownAZ, ArrowUpAZ, ArrowDownZA, ArrowUpZA } from "lucide-react";
 import { 
   Table, 
   TableBody, 
@@ -38,6 +38,7 @@ export default function ProjectList() {
   const [_, navigate] = useLocation();
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("marketCap");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   
@@ -75,20 +76,25 @@ export default function ProjectList() {
     
     // Sort projects
     filtered = [...filtered].sort((a, b) => {
+      let result = 0;
+      
       if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
+        result = a.name.localeCompare(b.name);
       } else if (sortBy === 'volume24h') {
-        return b.volume24h - a.volume24h;
+        result = b.volume24h - a.volume24h;
       } else if (sortBy === 'price') {
-        return b.price - a.price;
+        result = b.price - a.price;
       } else {
         // Default: marketCap
-        return b.marketCap - a.marketCap;
+        result = b.marketCap - a.marketCap;
       }
+      
+      // Apply sort direction
+      return sortDirection === 'asc' ? -result : result;
     });
     
     setFilteredProjects(filtered);
-  }, [searchQuery, category, sortBy, projects]);
+  }, [searchQuery, category, sortBy, sortDirection, projects]);
   
   if (isLoading) {
     return (
@@ -185,6 +191,20 @@ export default function ProjectList() {
                 <SelectItem value="name">Name</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+              className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
+            >
+              {sortDirection === 'asc' ? (
+                sortBy === 'name' ? <ArrowUpAZ className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />
+              ) : (
+                sortBy === 'name' ? <ArrowDownAZ className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </div>
       </div>
