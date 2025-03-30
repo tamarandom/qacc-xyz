@@ -231,11 +231,15 @@ export default function Home() {
                         <div className="flex items-center">
                           <ProjectAvatar
                             name={project.name}
+                            tokenSymbol={project.tokenSymbol}
                             bgColor="#FBBA80"
                             textColor="#101010"
                             size="sm"
                           />
-                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          <div className="ml-3">
+                            <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                            <span className="ml-2 inline-flex px-2 py-0.5 text-xs rounded-full bg-black text-white font-['IBM_Plex_Mono'] uppercase">New</span>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
@@ -327,6 +331,7 @@ export default function Home() {
                       <div className="flex items-center">
                         <ProjectAvatar
                           name={project.name}
+                          tokenSymbol={project.tokenSymbol}
                           bgColor="#FBBA80"
                           textColor="#101010"
                           size="sm"
