@@ -27,7 +27,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                 bgColor={project.avatarBg || "#FBBA80"}
                 textColor={project.avatarColor || "#101010"}
                 initials={project.avatarText || project.name.substring(0, 2)}
-                imageUrl={project.imageUrl || undefined}
+                imageUrl={project.imageUrl}
                 size="md"
               />
               {project.isFeatured && (
