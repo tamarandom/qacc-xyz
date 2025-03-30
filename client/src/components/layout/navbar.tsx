@@ -13,9 +13,9 @@ export default function Navbar() {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
                 <img 
-                  src="/images/qacc-logo.webp" 
+                  src="/images/qacc-logo.jpg" 
                   alt="Quadratic Accelerator Logo" 
-                  className="h-8"
+                  className="h-9"
                 />
               </Link>
             </div>
