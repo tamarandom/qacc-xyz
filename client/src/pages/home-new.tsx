@@ -396,7 +396,7 @@ export default function Home() {
       {/* Results count */}
       {(filteredNewProjects.length > 0 || filteredLaunchedProjects.length > 0) && (
         <div className="mt-6 text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">
-          Showing <span className="font-medium text-[color:var(--color-black)]">{filteredNewProjects.length + filteredLaunchedProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{projects.length}</span> projects
+          Showing <span className="font-medium text-[color:var(--color-black)]">{filteredNewProjects.length + filteredLaunchedProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{filteredNewProjects.length + filteredLaunchedProjects.length}</span> projects
           {(searchQuery || category !== 'all') && (
             <span className="ml-1">
               {category !== 'all' && (
