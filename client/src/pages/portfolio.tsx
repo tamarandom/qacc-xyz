@@ -4,10 +4,12 @@ import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Briefcase, Calendar, Coins, ArrowUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Briefcase, Calendar, Coins, ArrowUpRight, Check, LockOpen } from "lucide-react";
 import { type Project, type User, type PointTransaction } from "@shared/schema";
 import { formatNumber, formatCurrency } from "@/lib/formatters";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
+import { useToast } from "@/hooks/use-toast";
 
 // Token unlock structure
 interface TokenUnlock {
@@ -15,6 +17,8 @@ interface TokenUnlock {
   amount: number;
   cliffDate: Date;
   endDate: Date;
+  claimed: boolean;
+  claimable: boolean;
 }
 
 export default function PortfolioPage() {
@@ -47,6 +51,10 @@ export default function PortfolioPage() {
   
   const isLoading = userLoading || projectsLoading;
   
+  // For token claiming
+  const { toast } = useToast();
+  const [claimedTokens, setClaimedTokens] = useState<{[key: number]: boolean}>({});
+  
   // Mock token unlock data - in a real app this would come from the API
   const tokenUnlocks: TokenUnlock[] = [
     {
@@ -54,12 +62,24 @@ export default function PortfolioPage() {
       amount: 40,
       cliffDate: new Date(2025, 5, 15), // June 15, 2025
       endDate: new Date(2026, 5, 15), // June 15, 2026
+      claimed: claimedTokens[1] || false,
+      claimable: new Date() >= new Date(2025, 5, 15) // Check if current date is after cliff date
     },
     {
       projectId: 2,
       amount: 80,
       cliffDate: new Date(2025, 8, 1), // September 1, 2025
       endDate: new Date(2026, 8, 1), // September 1, 2026
+      claimed: claimedTokens[2] || false,
+      claimable: new Date() >= new Date(2025, 8, 1) // Check if current date is after cliff date
+    },
+    {
+      projectId: 3,
+      amount: 120,
+      cliffDate: new Date(2023, 2, 15), // March 15, 2023 (already passed)
+      endDate: new Date(2024, 2, 15), // March 15, 2024
+      claimed: claimedTokens[3] || false,
+      claimable: true // This one is claimable
     }
   ];
   
@@ -81,6 +101,48 @@ export default function PortfolioPage() {
   }, 0) || 0;
   
   const projectsCount = new Set(portfolioItems?.map(item => item.transaction.projectId)).size || 0;
+  
+  // Handle claiming tokens for a specific project
+  const handleClaimTokens = (projectId: number) => {
+    if (!tokenUnlocks.find(t => t.projectId === projectId)?.claimable) return;
+    
+    // In a real app, this would be an API call
+    setClaimedTokens(prev => ({
+      ...prev,
+      [projectId]: true
+    }));
+    
+    const project = projects?.find(p => p.id === projectId);
+    toast({
+      title: "Tokens Claimed!",
+      description: `Successfully claimed tokens for ${project?.name || `Project #${projectId}`}`,
+    });
+  };
+  
+  // Handle claiming all available tokens
+  const handleClaimAllTokens = () => {
+    const claimableProjectIds = tokenUnlocks
+      .filter(t => t.claimable && !t.claimed)
+      .map(t => t.projectId);
+      
+    if (claimableProjectIds.length === 0) return;
+    
+    // In a real app, this would be an API call
+    const newClaimedTokens = { ...claimedTokens };
+    claimableProjectIds.forEach(id => {
+      newClaimedTokens[id] = true;
+    });
+    
+    setClaimedTokens(newClaimedTokens);
+    
+    toast({
+      title: "All Tokens Claimed!",
+      description: `Successfully claimed tokens for ${claimableProjectIds.length} projects`,
+    });
+  };
+  
+  // Check if there are any tokens available to claim
+  const hasClaimableTokens = tokenUnlocks.some(t => t.claimable && !t.claimed);
   
   // Format dates helper
   const formatDate = (date: Date) => {
@@ -125,7 +187,19 @@ export default function PortfolioPage() {
         
         {/* Projects List */}
         <div>
-          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-[color:var(--color-black)]">Your Holdings</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold text-[color:var(--color-black)]">Your Holdings</h2>
+            
+            <Button 
+              onClick={handleClaimAllTokens}
+              disabled={!hasClaimableTokens || isLoading}
+              className={`font-['IBM_Plex_Mono'] text-sm font-medium ${!hasClaimableTokens ? 'opacity-50 cursor-not-allowed' : ''}`}
+              variant="default"
+            >
+              <LockOpen className="mr-2 h-4 w-4" />
+              Claim All Tokens
+            </Button>
+          </div>
           
           {isLoading ? (
             <div className="space-y-4">
@@ -236,6 +310,42 @@ export default function PortfolioPage() {
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Claim Token Button */}
+                  {item.unlock && (
+                    <div className="mt-4 pt-4 border-t border-[color:var(--color-light-gray)]">
+                      <div className="flex justify-end">
+                        {item.unlock.claimed ? (
+                          <Button 
+                            disabled
+                            variant="outline"
+                            className="font-['IBM_Plex_Mono'] text-sm opacity-50"
+                          >
+                            <Check className="mr-2 h-4 w-4" />
+                            Tokens Claimed
+                          </Button>
+                        ) : item.unlock.claimable ? (
+                          <Button 
+                            onClick={() => handleClaimTokens(item.transaction.projectId)}
+                            variant="default"
+                            className="font-['IBM_Plex_Mono'] text-sm"
+                          >
+                            <LockOpen className="mr-2 h-4 w-4" />
+                            Claim Tokens
+                          </Button>
+                        ) : (
+                          <Button 
+                            disabled
+                            variant="outline"
+                            className="font-['IBM_Plex_Mono'] text-sm opacity-50"
+                          >
+                            <Calendar className="mr-2 h-4 w-4" />
+                            Not Claimable Yet
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
