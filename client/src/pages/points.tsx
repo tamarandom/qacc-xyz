@@ -14,20 +14,26 @@ import { formatNumber } from "@/lib/formatters";
 const RankBadge = ({ rank }: { rank: number }) => {
   if (rank === 1) {
     return (
-      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] rounded-full">
-        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">1</span>
+      <div className="flex justify-center items-center w-11 h-11 border-2 border-[color:var(--color-black)] rounded-full">
+        <div className="flex justify-center items-center w-9 h-9 bg-[color:var(--color-peach)] rounded-full">
+          <span className="text-2xl font-bold font-['Tusker_Grotesk'] text-white">1</span>
+        </div>
       </div>
     );
   } else if (rank === 2) {
     return (
-      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] bg-opacity-80 rounded-full">
-        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">2</span>
+      <div className="flex justify-center items-center w-11 h-11 border-2 border-[color:var(--color-black)] rounded-full">
+        <div className="flex justify-center items-center w-9 h-9 bg-[color:var(--color-peach)] rounded-full">
+          <span className="text-2xl font-bold font-['Tusker_Grotesk'] text-white">2</span>
+        </div>
       </div>
     );
   } else if (rank === 3) {
     return (
-      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] bg-opacity-60 rounded-full">
-        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">3</span>
+      <div className="flex justify-center items-center w-11 h-11 border-2 border-[color:var(--color-black)] rounded-full">
+        <div className="flex justify-center items-center w-9 h-9 bg-[color:var(--color-peach)] rounded-full">
+          <span className="text-2xl font-bold font-['Tusker_Grotesk'] text-white">3</span>
+        </div>
       </div>
     );
   }
@@ -76,9 +82,17 @@ export default function PointsPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <span className="text-2xl font-bold text-[color:var(--color-black)]">{currentUser.rank}</span>
-                  <div className="h-10 w-10 bg-[color:var(--color-peach)] rounded-md mr-2 flex items-center justify-center">
-                    <span className="text-white font-bold">{currentUser.username.charAt(0)}</span>
-                  </div>
+                  {currentUser.avatarUrl ? (
+                    <img 
+                      src={currentUser.avatarUrl} 
+                      alt={currentUser.username} 
+                      className="h-10 w-10 rounded-md object-cover border border-[color:var(--color-peach)] mr-2"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 bg-[color:var(--color-peach)] rounded-md mr-2 flex items-center justify-center">
+                      <span className="text-white font-bold">{currentUser.username.charAt(0)}</span>
+                    </div>
+                  )}
                   <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</span>
                 </div>
                 <span className="font-bold text-xl text-[color:var(--color-black)]">{formatNumber(currentUser.points)}</span>
@@ -140,9 +154,17 @@ export default function PointsPage() {
                       
                       <div className="flex items-center z-10">
                         <Link href="/user-score" className="flex items-center space-x-3">
-                          <div className="h-10 w-10 rounded-md bg-[color:var(--color-peach)] flex items-center justify-center">
-                            <span className="font-bold text-lg text-white">{user.username.charAt(0)}</span>
-                          </div>
+                          {user.avatarUrl ? (
+                            <img 
+                              src={user.avatarUrl} 
+                              alt={user.username} 
+                              className="h-10 w-10 rounded-md object-cover border border-[color:var(--color-peach)]"
+                            />
+                          ) : (
+                            <div className="h-10 w-10 rounded-md bg-[color:var(--color-peach)] flex items-center justify-center">
+                              <span className="font-bold text-lg text-white">{user.username.charAt(0)}</span>
+                            </div>
+                          )}
                           <div>
                             <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{user.username}</div>
                             <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">

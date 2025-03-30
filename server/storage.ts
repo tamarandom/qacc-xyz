@@ -416,70 +416,70 @@ export class MemStorage implements IStorage {
     this.createUser({
       username: "cryptowhale",
       email: "whale@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=cryptowhale",
       points: 12450,
     });
     
     this.createUser({
       username: "hodler123",
       email: "hodl@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=hodler123",
       points: 8920,
     });
     
     this.createUser({
       username: "satoshifan",
       email: "satoshi@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=satoshifan",
       points: 7340,
     });
     
     this.createUser({
       username: "tokenmasterx",
       email: "tokenmaster@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=tokenmasterx",
       points: 5100,
     });
     
     this.createUser({
       username: "defi_guru",
       email: "defiguru@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=defi_guru",
       points: 4320,
     });
     
     this.createUser({
       username: "blockchain_dev",
       email: "blockdev@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=blockchain_dev",
       points: 3840,
     });
     
     this.createUser({
       username: "ethinvestor",
       email: "eth@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=ethinvestor",
       points: 2950,
     });
     
     this.createUser({
       username: "nftcollector",
       email: "nft@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=nftcollector",
       points: 1750,
     });
     
     this.createUser({
       username: "web3builder",
       email: "web3@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=web3builder",
       points: 1320,
     });
     
     this.createUser({
       username: "metaversefan",
       email: "meta@example.com",
-      avatarUrl: null,
+      avatarUrl: "https://i.pravatar.cc/150?u=metaversefan",
       points: 980,
     });
     
