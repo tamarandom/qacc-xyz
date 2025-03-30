@@ -12,12 +12,11 @@ export default function Navbar() {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
-                <span className="font-['Tusker_Grotesk'] uppercase text-[color:var(--color-black)] text-2xl font-bold tracking-wider mr-1">
-                  Quadratic
-                </span>
-                <span className="font-['Tusker_Grotesk'] uppercase text-[color:var(--color-peach)] text-2xl font-bold tracking-wider">
-                  Accelerator
-                </span>
+                <img 
+                  src="/images/Logo-horisontal-dark.webp" 
+                  alt="Quadratic Accelerator Logo" 
+                  className="h-8"
+                />
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
