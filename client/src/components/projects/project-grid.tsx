@@ -31,49 +31,51 @@ export default function ProjectGrid() {
     queryKey: ['/api/projects'],
   });
   
-  // Filter projects based on search query and category
+  // Filter and sort projects
   useEffect(() => {
     if (!projects || projects.length === 0) {
       setFilteredProjects([]);
       return;
     }
     
-    // First, filter by category
-    let filtered = projects;
+    // Make a copy of the projects array to avoid mutating the original
+    let filtered = [...projects];
+    
+    // Filter by category
     if (category !== 'all') {
-      filtered = filtered.filter(project => {
-        // Check if project category contains the selected category ID
-        return project.category.toLowerCase().includes(category.toLowerCase());
-      });
+      filtered = filtered.filter(project => 
+        project.category.toLowerCase().includes(category.toLowerCase())
+      );
     }
     
-    // Then filter by search query
+    // Filter by search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        project => 
-          project.name.toLowerCase().includes(query) || 
-          project.tokenSymbol.toLowerCase().includes(query) ||
-          project.tokenName.toLowerCase().includes(query)
+      filtered = filtered.filter(project => 
+        project.name.toLowerCase().includes(query) || 
+        project.tokenSymbol.toLowerCase().includes(query) ||
+        project.tokenName.toLowerCase().includes(query)
       );
     }
     
     // Sort projects
-    filtered = [...filtered].sort((a, b) => {
+    filtered = filtered.sort((a, b) => {
       let result = 0;
       
-      if (sortBy === 'name') {
-        result = a.name.localeCompare(b.name);
-      } else if (sortBy === 'volume24h') {
-        result = b.volume24h - a.volume24h;
-      } else if (sortBy === 'price') {
-        result = b.price - a.price;
-      } else {
-        // Default: marketCap
-        result = b.marketCap - a.marketCap;
+      switch(sortBy) {
+        case 'name':
+          result = a.name.localeCompare(b.name);
+          break;
+        case 'volume24h':
+          result = b.volume24h - a.volume24h;
+          break;
+        case 'price':
+          result = b.price - a.price;
+          break;
+        default: // marketCap
+          result = b.marketCap - a.marketCap;
       }
       
-      // Apply sort direction
       return sortDirection === 'asc' ? -result : result;
     });
     
