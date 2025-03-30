@@ -235,9 +235,9 @@ export default function Home() {
                               tokenSymbol={project.tokenSymbol}
                               bgColor="#FBBA80"
                               textColor="#101010" 
-                              size="sm"
+                              size="md"
                             />
-                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
+                            <div className="absolute -top-2 -left-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
                               New
                             </div>
                           </div>
@@ -245,7 +245,7 @@ export default function Home() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">DEX listing after this round</td>
                     </tr>
                   ))}
                 </tbody>
@@ -337,10 +337,10 @@ export default function Home() {
                             tokenSymbol={project.tokenSymbol}
                             bgColor="#FBBA80"
                             textColor="#101010"
-                            size="sm"
+                            size="md"
                           />
                           {project.isNew && (
-                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
+                            <div className="absolute -top-2 -left-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
                               New
                             </div>
                           )}
