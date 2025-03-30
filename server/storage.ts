@@ -255,11 +255,11 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/safestake",
       twitterUrl: "https://twitter.com/SafeStake",
       discordUrl: "https://discord.gg/safestake",
-      avatarBg: "bg-primary-100",
+      avatarBg: "#FBBA80",
       avatarText: "SS",
-      avatarColor: "text-primary-700",
+      avatarColor: "#101010",
       isFeatured: true,
-      imageUrl: "/project-logos/safestake.svg"
+      imageUrl: "/project-logos/safe-stake.svg"
     });
 
     // Project 2: LiquidSwap
@@ -285,11 +285,11 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/liquidswap",
       twitterUrl: "https://twitter.com/LiquidSwap",
       discordUrl: "https://discord.gg/liquidswap",
-      avatarBg: "bg-secondary-100",
+      avatarBg: "#FBBA80",
       avatarText: "LS",
-      avatarColor: "text-secondary-700",
+      avatarColor: "#101010",
       isFeatured: true,
-      imageUrl: "/project-logos/liquidswap.svg"
+      imageUrl: "/project-logos/liquid-swap.svg"
     });
 
     // Project 3: NexusFi
@@ -315,11 +315,11 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/nexusfi",
       twitterUrl: "https://twitter.com/NexusFi",
       discordUrl: "https://discord.gg/nexusfi",
-      avatarBg: "bg-indigo-100",
+      avatarBg: "#FBBA80",
       avatarText: "NF",
-      avatarColor: "text-indigo-700",
+      avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/nexusfi.svg"
+      imageUrl: "/project-logos/nexus-finance.svg"
     });
 
     // Project 4: DecentLend
@@ -345,11 +345,11 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/decentlend",
       twitterUrl: "https://twitter.com/DecentLend",
       discordUrl: "https://discord.gg/decentlend",
-      avatarBg: "bg-amber-100",
+      avatarBg: "#FBBA80",
       avatarText: "DL",
-      avatarColor: "text-amber-700",
+      avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/decentlend.svg"
+      imageUrl: "/project-logos/decent-lend.svg"
     });
 
     // Project 5: QuantumYield
@@ -375,11 +375,11 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/quantumyield",
       twitterUrl: "https://twitter.com/QuantumYield",
       discordUrl: "https://discord.gg/quantumyield",
-      avatarBg: "bg-purple-100",
+      avatarBg: "#FBBA80",
       avatarText: "QY",
-      avatarColor: "text-purple-700",
+      avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/quantum-yield.svg"
+      imageUrl: "/project-logos/quantum-dao.svg"
     });
     
     // Project 6: ChainGuard
@@ -405,9 +405,9 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/chainguard",
       twitterUrl: "https://twitter.com/ChainGuard",
       discordUrl: "https://discord.gg/chainguard",
-      avatarBg: "bg-red-100",
+      avatarBg: "#FBBA80",
       avatarText: "CG",
-      avatarColor: "text-red-700",
+      avatarColor: "#101010",
       isFeatured: false,
       isNew: true,
       imageUrl: "/project-logos/chain-guard.svg"
@@ -436,9 +436,9 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/metaversedao",
       twitterUrl: "https://twitter.com/MetaverseDAO",
       discordUrl: "https://discord.gg/metaversedao",
-      avatarBg: "bg-blue-100",
-      avatarText: "MD",
-      avatarColor: "text-blue-700",
+      avatarBg: "#FBBA80",
+      avatarText: "M",
+      avatarColor: "#101010",
       isFeatured: false,
       isNew: true,
       imageUrl: "/project-logos/metaverse-dao.svg"

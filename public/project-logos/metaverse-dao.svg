@@ -1,10 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <circle cx="50" cy="50" r="45" fill="#3b82f6" />
-  <path d="M30 30 L50 20 L70 30 L70 70 L50 80 L30 70 Z" stroke="white" stroke-width="3" fill="none" />
-  <path d="M30 30 L50 40 L70 30 M50 40 L50 80" stroke="white" stroke-width="3" />
-  <circle cx="50" cy="40" r="5" fill="white" />
-  <circle cx="30" cy="30" r="3" fill="white" />
-  <circle cx="70" cy="30" r="3" fill="white" />
-  <circle cx="70" cy="70" r="3" fill="white" />
-  <circle cx="30" cy="70" r="3" fill="white" />
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="40" rx="20" fill="#FBBA80"/>
+  <rect x="12" y="12" width="16" height="16" fill="#101010"/>
+  <rect x="14" y="14" width="5" height="5" fill="#FBBA80"/>
+  <rect x="21" y="14" width="5" height="5" fill="#FBBA80"/>
+  <rect x="14" y="21" width="5" height="5" fill="#FBBA80"/>
+  <rect x="21" y="21" width="5" height="5" fill="#FBBA80"/>
+  <path d="M10 20L14 16L10 12L6 16L10 20Z" fill="#101010"/>
+  <path d="M30 20L26 16L30 12L34 16L30 20Z" fill="#101010"/>
+  <path d="M10 30L14 26L10 22L6 26L10 30Z" fill="#101010"/>
+  <path d="M30 30L26 26L30 22L34 26L30 30Z" fill="#101010"/>
 </svg>
