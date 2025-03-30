@@ -96,13 +96,13 @@ export default function PortfolioPage() {
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your Portfolio</h1>
-          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Track your investments and token unlocks</p>
+          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Track your holdings and token unlocks</p>
         </div>
         
         {/* Portfolio Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
-            <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">TOTAL INVESTED</h3>
+            <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">TOTAL SPENT</h3>
             <div className="text-3xl font-bold text-[color:var(--color-black)]">
               {isLoading ? <Skeleton className="h-8 w-24" /> : formatCurrency(totalUsdSpent)}
             </div>
@@ -125,7 +125,7 @@ export default function PortfolioPage() {
         
         {/* Projects List */}
         <div>
-          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-[color:var(--color-black)]">Your Investments</h2>
+          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-[color:var(--color-black)]">Your Holdings</h2>
           
           {isLoading ? (
             <div className="space-y-4">
@@ -147,7 +147,7 @@ export default function PortfolioPage() {
           ) : portfolioItems?.length === 0 ? (
             <div className="bg-white rounded-lg p-6 border border-[color:var(--color-peach-100)] text-center">
               <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">
-                You haven't invested in any projects yet. Explore projects to get started!
+                You don't have any holdings yet. Explore projects to get started!
               </p>
               <Link href="/" className="inline-block mt-4 text-[color:var(--color-peach)] hover:underline font-['IBM_Plex_Mono'] font-medium">
                 Browse Projects
@@ -199,7 +199,7 @@ export default function PortfolioPage() {
                     <div>
                       <div className="flex items-center text-[color:var(--color-gray)] mb-1">
                         <Briefcase size={16} className="mr-2" />
-                        <span className="text-xs font-['IBM_Plex_Mono']">INVESTED</span>
+                        <span className="text-xs font-['IBM_Plex_Mono']">SPENT</span>
                       </div>
                       <p className="font-bold text-lg text-[color:var(--color-black)]">
                         {formatCurrency(item.transaction.amount)}
