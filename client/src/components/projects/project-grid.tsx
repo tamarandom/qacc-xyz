@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, Search, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProjectBadge } from "@/components/ui/project-badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProjectCard } from "@/components/projects/project-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -26,7 +26,6 @@ export default function ProjectGrid() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-  const [viewType, setViewType] = useState<"grid" | "list">("grid");
   
   const { data: projects = [], isLoading } = useQuery<Project[]>({
     queryKey: ['/api/projects'],
@@ -239,20 +238,20 @@ export default function ProjectGrid() {
           {(searchQuery || category !== 'all') && (
             <span className="ml-1">
               {category !== 'all' && (
-                <Badge 
+                <ProjectBadge 
                   variant="outline"
-                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono'] border-[color:var(--color-peach)] text-[color:var(--color-black)]"
+                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono']"
                 >
                   {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name || category}
-                </Badge>
+                </ProjectBadge>
               )}
               {searchQuery && (
-                <Badge 
+                <ProjectBadge 
                   variant="outline"
-                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono'] border-[color:var(--color-peach)] text-[color:var(--color-black)]"
+                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono']"
                 >
                   "{searchQuery}"
-                </Badge>
+                </ProjectBadge>
               )}
             </span>
           )}
