@@ -34,7 +34,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { type Project } from "@shared/schema";
 import { PROJECT_CATEGORIES } from "@/lib/types";
 
-export default function ProjectList() {
+interface ProjectListProps {
+  filterOutNew?: boolean;
+}
+
+export default function ProjectList({ filterOutNew = false }: ProjectListProps = {}) {
   const [_, navigate] = useLocation();
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("marketCap");
@@ -55,6 +59,12 @@ export default function ProjectList() {
     
     // First, filter by category
     let filtered = projects;
+    
+    // Filter out new projects if requested
+    if (filterOutNew) {
+      filtered = filtered.filter(project => !project.isNew);
+    }
+    
     if (category !== 'all') {
       filtered = filtered.filter(project => {
         // Check if project category contains the selected category ID
@@ -94,7 +104,7 @@ export default function ProjectList() {
     });
     
     setFilteredProjects(filtered);
-  }, [searchQuery, category, sortBy, sortDirection, projects]);
+  }, [searchQuery, category, sortBy, sortDirection, projects, filterOutNew]);
   
   if (isLoading) {
     return (
@@ -238,6 +248,7 @@ export default function ProjectList() {
                         bgColor={project.avatarBg || "#FBBA80"}
                         textColor={project.avatarColor || "#101010"}
                         initials={project.avatarText || project.name.substring(0, 2)}
+                        imageUrl={project.imageUrl || undefined}
                       />
                       <div className="ml-4">
                         <div className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{project.name}</div>

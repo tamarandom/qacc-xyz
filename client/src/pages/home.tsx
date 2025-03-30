@@ -3,10 +3,24 @@ import ProjectList from "@/components/projects/project-list";
 import ProjectGrid from "@/components/projects/project-grid";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, Sparkles } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Project } from "@shared/schema";
+import { ProjectCard } from "@/components/projects/project-card";
+import { useLocation } from "wouter";
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [, navigate] = useLocation();
+  
+  // Fetch projects data
+  const { data: projects = [], isLoading } = useQuery<Project[]>({
+    queryKey: ['/api/projects'],
+  });
+  
+  // Filter new projects (pre-token launch) and regular projects
+  const newProjects = projects.filter(project => project.isNew);
+  const regularProjects = projects.filter(project => !project.isNew);
   
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,6 +33,29 @@ export default function Home() {
         </p>
       </div>
       
+      {/* New Projects Section */}
+      {!isLoading && newProjects.length > 0 && (
+        <div className="mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-5 w-5 text-[color:var(--color-peach)]" />
+            <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+              New Projects
+            </h2>
+            <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {newProjects.map((project) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onClick={() => navigate(`/projects/${project.id}`)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {/* Active Projects Section */}
       <div className="mb-8 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
@@ -62,7 +99,10 @@ export default function Home() {
           )}
         </div>
       }>
-        {viewMode === "grid" ? <ProjectGrid /> : <ProjectList />}
+        {viewMode === "grid" ? 
+          <ProjectGrid filterOutNew={true} /> : 
+          <ProjectList filterOutNew={true} />
+        }
       </Suspense>
     </div>
   );

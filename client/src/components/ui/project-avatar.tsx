@@ -5,7 +5,7 @@ interface ProjectAvatarProps {
   bgColor?: string;
   textColor?: string;
   initials?: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 }

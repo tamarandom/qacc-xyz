@@ -258,7 +258,8 @@ export class MemStorage implements IStorage {
       avatarBg: "bg-primary-100",
       avatarText: "SS",
       avatarColor: "text-primary-700",
-      isFeatured: true
+      isFeatured: true,
+      imageUrl: "/project-logos/safestake.svg"
     });
 
     // Project 2: LiquidSwap
@@ -287,7 +288,8 @@ export class MemStorage implements IStorage {
       avatarBg: "bg-secondary-100",
       avatarText: "LS",
       avatarColor: "text-secondary-700",
-      isFeatured: true
+      isFeatured: true,
+      imageUrl: "/project-logos/liquidswap.svg"
     });
 
     // Project 3: NexusFi
@@ -316,7 +318,8 @@ export class MemStorage implements IStorage {
       avatarBg: "bg-indigo-100",
       avatarText: "NF",
       avatarColor: "text-indigo-700",
-      isFeatured: false
+      isFeatured: false,
+      imageUrl: "/project-logos/nexusfi.svg"
     });
 
     // Project 4: DecentLend
@@ -345,7 +348,8 @@ export class MemStorage implements IStorage {
       avatarBg: "bg-amber-100",
       avatarText: "DL",
       avatarColor: "text-amber-700",
-      isFeatured: false
+      isFeatured: false,
+      imageUrl: "/project-logos/decentlend.svg"
     });
 
     // Project 5: QuantumYield

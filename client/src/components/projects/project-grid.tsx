@@ -19,7 +19,11 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 
-export default function ProjectGrid() {
+interface ProjectGridProps {
+  filterOutNew?: boolean;
+}
+
+export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps = {}) {
   const [_, navigate] = useLocation();
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("marketCap");
@@ -40,6 +44,11 @@ export default function ProjectGrid() {
     
     // Make a copy of the projects array to avoid mutating the original
     let filtered = [...projects];
+    
+    // Filter out new projects if requested
+    if (filterOutNew) {
+      filtered = filtered.filter(project => !project.isNew);
+    }
     
     // Filter by category
     if (category !== 'all') {
@@ -80,7 +89,7 @@ export default function ProjectGrid() {
     });
     
     setFilteredProjects(filtered);
-  }, [searchQuery, category, sortBy, sortDirection, projects]);
+  }, [searchQuery, category, sortBy, sortDirection, projects, filterOutNew]);
   
   // Handle project click
   const handleProjectClick = (id: number) => {
