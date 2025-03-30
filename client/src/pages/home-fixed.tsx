@@ -111,6 +111,62 @@ export default function Home() {
         </p>
       </div>
       
+      {/* View Mode Controls - Apply to all projects */}
+      <div className="mb-6 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
+            <TabsList className="bg-[color:var(--color-light-gray)]">
+              <TabsTrigger 
+                value="grid"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+              >
+                <LayoutGrid className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="list"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+              >
+                <List className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {/* Sort Controls */}
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
+          <Select 
+            value={sortBy} 
+            onValueChange={setSortBy}
+          >
+            <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent className="font-['IBM_Plex_Mono']">
+              <SelectItem value="marketCap">Market Cap</SelectItem>
+              <SelectItem value="price">Price</SelectItem>
+              <SelectItem value="volume24h">Volume</SelectItem>
+              <SelectItem value="name">Name</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button 
+            variant="outline" 
+            size="icon"
+            onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+            className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+            title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
+          >
+            {sortDirection === 'asc' ? 
+              <ChevronDown className="h-4 w-4 rotate-180" /> : 
+              <ChevronDown className="h-4 w-4" />
+            }
+          </Button>
+        </div>
+      </div>
+      
       {/* Filter Controls - Apply to both sections */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <div className="flex space-x-2 mb-4 sm:mb-0">
@@ -164,7 +220,7 @@ export default function Home() {
           />
         </div>
       </div>
-      
+
       {/* New Projects Section */}
       {!isLoading && filteredNewProjects.length > 0 && (
         <div className="mb-10">
@@ -175,175 +231,66 @@ export default function Home() {
             </h2>
             <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
           </div>
-          <div className={`${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : ""}`}>
-            {viewMode === "grid" ? (
-              filteredNewProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onClick={() => navigate(`/projects/${project.id}`)}
-                />
-              ))
-            ) : (
-              <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
-                <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
-                  <thead className="bg-[color:var(--color-light-gray)]">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
-                    {filteredNewProjects.map((project) => (
-                      <tr 
-                        key={project.id} 
-                        className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
-                        onClick={() => navigate(`/projects/${project.id}`)}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <ProjectAvatar
-                              name={project.name}
-                              bgColor={project.avatarBg || "#FBBA80"}
-                              textColor={project.avatarColor || "#101010"}
-                              initials={project.avatarText || project.name.substring(0, 2)}
-                              imageUrl={project.imageUrl}
-                              size="sm"
-                            />
-                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {/* View and Sort Controls - Apply to all projects */}
-      <div className="mb-8 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
-            <TabsList className="bg-[color:var(--color-light-gray)]">
-              <TabsTrigger 
-                value="grid"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
-              >
-                <LayoutGrid className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="list"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
-              >
-                <List className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        
-        {/* Sort Controls - Only for Launched Projects */}
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
-          <Select 
-            value={sortBy} 
-            onValueChange={setSortBy}
-          >
-            <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="font-['IBM_Plex_Mono']">
-              <SelectItem value="marketCap">Market Cap</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
-              <SelectItem value="volume24h">Volume</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-            </SelectContent>
-          </Select>
           
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-            className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
-            title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
-          >
-            {sortDirection === 'asc' ? 
-              <ChevronDown className="h-4 w-4 rotate-180" /> : 
-              <ChevronDown className="h-4 w-4" />
-            }
-          </Button>
-        </div>
-      </div>
-      
-      {/* New Projects Section */}
-      {!isLoading && filteredNewProjects.length > 0 && (
-        <div className="mb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-[color:var(--color-peach)]" />
-            <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-              New Projects
-            </h2>
-            <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
-          </div>
-          <div className={`${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : ""}`}>
-            {viewMode === "grid" ? (
-              filteredNewProjects.map((project) => (
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredNewProjects.map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
                   onClick={() => navigate(`/projects/${project.id}`)}
                 />
-              ))
-            ) : (
-              <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
-                <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
-                  <thead className="bg-[color:var(--color-light-gray)]">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
-                    {filteredNewProjects.map((project) => (
-                      <tr 
-                        key={project.id} 
-                        className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
-                        onClick={() => navigate(`/projects/${project.id}`)}
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <ProjectAvatar
-                              name={project.name}
-                              bgColor={project.avatarBg || "#FBBA80"}
-                              textColor={project.avatarColor || "#101010"}
-                              initials={project.avatarText || project.name.substring(0, 2)}
-                              imageUrl={project.imageUrl}
-                              size="sm"
-                            />
-                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
+              <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
+                <thead className="bg-[color:var(--color-light-gray)]">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
+                  {filteredNewProjects.map((project) => (
+                    <tr 
+                      key={project.id} 
+                      className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
+                      onClick={() => navigate(`/projects/${project.id}`)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div 
+                            className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden h-8 w-8 text-xs"
+                            style={{ 
+                              backgroundColor: project.avatarBg || "#FBBA80", 
+                              color: project.avatarColor || "#101010" 
+                            }}
+                          >
+                            {project.imageUrl ? (
+                              <img 
+                                src={project.imageUrl} 
+                                alt={`${project.name} logo`} 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span>{project.avatarText || project.name.substring(0, 2).toUpperCase()}</span>
+                            )}
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
+                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
       
@@ -376,6 +323,7 @@ export default function Home() {
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">24h Change</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Volume (24h)</th>
                 </tr>
@@ -390,21 +338,33 @@ export default function Home() {
                     <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <ProjectAvatar
-                          name={project.name}
-                          bgColor={project.avatarBg || "#FBBA80"}
-                          textColor={project.avatarColor || "#101010"}
-                          initials={project.avatarText || project.name.substring(0, 2)}
-                          imageUrl={project.imageUrl}
-                          size="sm"
-                        />
+                        <div 
+                          className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden h-8 w-8 text-xs"
+                          style={{ 
+                            backgroundColor: project.avatarBg || "#FBBA80", 
+                            color: project.avatarColor || "#101010" 
+                          }}
+                        >
+                          {project.imageUrl ? (
+                            <img 
+                              src={project.imageUrl} 
+                              alt={`${project.name} logo`} 
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span>{project.avatarText || project.name.substring(0, 2).toUpperCase()}</span>
+                          )}
+                        </div>
                         <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.marketCap.toLocaleString('en-US')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.volume24h.toLocaleString('en-US')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.price)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <PercentageChange value={project.change24h} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h)}</td>
                   </tr>
                 ))}
               </tbody>
