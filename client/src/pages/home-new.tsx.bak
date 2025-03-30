@@ -237,7 +237,7 @@ export default function Home() {
                               textColor="#101010" 
                               size="sm"
                             />
-                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[8px] px-1.5 py-0.5 rounded-full uppercase font-bold">
+                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
                               New
                             </div>
                           </div>
@@ -340,7 +340,7 @@ export default function Home() {
                             size="sm"
                           />
                           {project.isNew && (
-                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[8px] px-1.5 py-0.5 rounded-full uppercase font-bold">
+                            <div className="absolute -top-1 -left-1 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
                               New
                             </div>
                           )}
