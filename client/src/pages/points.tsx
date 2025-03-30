@@ -14,20 +14,20 @@ import { formatNumber } from "@/lib/formatters";
 const RankBadge = ({ rank }: { rank: number }) => {
   if (rank === 1) {
     return (
-      <div className="flex justify-center items-center w-10 h-10">
-        <Trophy className="w-7 h-7 text-[color:var(--color-peach)]" />
+      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] rounded-full">
+        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">1</span>
       </div>
     );
   } else if (rank === 2) {
     return (
-      <div className="flex justify-center items-center w-10 h-10">
-        <Medal className="w-7 h-7 text-[color:var(--color-peach)]" />
+      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] bg-opacity-80 rounded-full">
+        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">2</span>
       </div>
     );
   } else if (rank === 3) {
     return (
-      <div className="flex justify-center items-center w-10 h-10">
-        <Award className="w-7 h-7 text-[color:var(--color-peach)]" />
+      <div className="flex justify-center items-center w-10 h-10 bg-[color:var(--color-peach-100)] bg-opacity-60 rounded-full">
+        <span className="text-xl font-bold font-['Tusker_Grotesk'] text-[color:var(--color-peach)]">3</span>
       </div>
     );
   }
@@ -62,7 +62,7 @@ export default function PointsPage() {
     <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Score Leaderboard</h1>
+          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
           <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
         </div>
 
