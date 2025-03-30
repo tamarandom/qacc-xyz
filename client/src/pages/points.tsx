@@ -80,7 +80,7 @@ export default function PointsPage() {
           {currentUser ? (
             <div className="rounded-lg p-3 border border-[color:var(--color-peach-100)] bg-white">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
+                <Link href="/user-score" className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
                   <span className="text-2xl font-bold text-[color:var(--color-black)]">{currentUser.rank}</span>
                   {currentUser.avatarUrl ? (
                     <img 
@@ -93,8 +93,13 @@ export default function PointsPage() {
                       <span className="text-white font-bold">{currentUser.username.charAt(0)}</span>
                     </div>
                   )}
-                  <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</span>
-                </div>
+                  <div>
+                    <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</div>
+                    <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
+                      You
+                    </div>
+                  </div>
+                </Link>
                 <span className="font-bold text-xl text-[color:var(--color-black)]">{formatNumber(currentUser.points)}</span>
               </div>
             </div>
