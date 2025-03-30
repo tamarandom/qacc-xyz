@@ -55,11 +55,11 @@ export default function Home() {
         </div>
       )}
       
-      {/* Active Projects Section */}
+      {/* Launched Projects Section */}
       <div className="mb-8 flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-            Active Projects
+            Launched Projects
           </h2>
           <div className="h-1 w-20 bg-[color:var(--color-peach)] mt-2"></div>
         </div>

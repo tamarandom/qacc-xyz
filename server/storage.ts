@@ -443,6 +443,192 @@ export class MemStorage implements IStorage {
       isNew: true,
       imageUrl: "/project-logos/metaverse-dao.svg"
     });
+    
+    // Project 8: ZK Vault
+    const zkVault = this.createProject({
+      name: "ZK Vault",
+      description: "ZK Vault provides a secure, private way to store and manage crypto assets using zero-knowledge cryptography. Our advanced privacy solutions ensure users can protect their financial information while maintaining full ownership of their assets. ZK Vault combines security, compliance, and convenience for both individual and institutional users.",
+      tokenSymbol: "ZKV",
+      tokenName: "ZK Vault Token",
+      price: 0,
+      marketCap: 0,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 250000000,
+      circulatingSupply: 0,
+      category: "Privacy",
+      shortDescription: "Zero-Knowledge Privacy for Digital Assets",
+      blockchain: "Ethereum",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000...0000",
+      rank: 8,
+      websiteUrl: "https://zkvault.io",
+      whitePaperUrl: "https://zkvault.io/whitepaper.pdf",
+      githubUrl: "https://github.com/zkvault",
+      twitterUrl: "https://twitter.com/ZKVault",
+      discordUrl: "https://discord.gg/zkvault",
+      avatarBg: "#FBBA80",
+      avatarText: "ZK",
+      avatarColor: "#101010",
+      isFeatured: false,
+      isNew: true,
+      imageUrl: "/project-logos/zk-vault.svg"
+    });
+    
+    // Project 9: Cosmos Bridge
+    const cosmosBridge = this.createProject({
+      name: "Cosmos Bridge",
+      description: "Cosmos Bridge enables seamless cross-chain interoperability between Cosmos and EVM-compatible blockchains. Our protocol allows for secure asset transfers, cross-chain smart contract execution, and unified liquidity across multiple blockchain ecosystems, solving the fragmentation problem in the crypto ecosystem.",
+      tokenSymbol: "CBRIDGE",
+      tokenName: "Cosmos Bridge Token",
+      price: 0,
+      marketCap: 0,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 200000000,
+      circulatingSupply: 0,
+      category: "Infrastructure",
+      shortDescription: "Connecting Cosmos to Ethereum and Beyond",
+      blockchain: "Cosmos, Ethereum",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000...0000",
+      rank: 9,
+      websiteUrl: "https://cosmosbridge.network",
+      whitePaperUrl: "https://cosmosbridge.network/whitepaper.pdf",
+      githubUrl: "https://github.com/cosmosbridge",
+      twitterUrl: "https://twitter.com/CosmosBridge",
+      discordUrl: "https://discord.gg/cosmosbridge",
+      avatarBg: "#FBBA80",
+      avatarText: "CB",
+      avatarColor: "#101010",
+      isFeatured: true,
+      isNew: true,
+      imageUrl: "/project-logos/cosmos-bridge.svg"
+    });
+    
+    // Project 10: DeFi Pulse
+    const defiPulse = this.createProject({
+      name: "DeFi Pulse",
+      description: "DeFi Pulse offers real-time analytics and tracking of all major decentralized finance protocols. Our platform provides comprehensive data visualizations, risk assessments, and yield comparisons to help users make informed decisions. We've expanded to include tools for portfolio management and automated yield optimization.",
+      tokenSymbol: "PULSE",
+      tokenName: "DeFi Pulse Token",
+      price: 4.25,
+      marketCap: 85000000,
+      volume24h: 5600000,
+      change24h: 7.8,
+      totalSupply: 100000000,
+      circulatingSupply: 20000000,
+      category: "Analytics",
+      shortDescription: "DeFi Analytics and Yield Optimization Platform",
+      blockchain: "Ethereum",
+      tokenStandard: "ERC-20",
+      contractAddress: "0xABCD...1234",
+      rank: 10,
+      websiteUrl: "https://defipulse.io",
+      whitePaperUrl: "https://defipulse.io/whitepaper.pdf",
+      githubUrl: "https://github.com/defipulse",
+      twitterUrl: "https://twitter.com/DeFiPulse",
+      discordUrl: "https://discord.gg/defipulse",
+      avatarBg: "#FBBA80",
+      avatarText: "DP",
+      avatarColor: "#101010",
+      isFeatured: true,
+      isNew: false,
+      imageUrl: "/project-logos/defi-pulse.svg"
+    });
+    
+    // Project 11: NFT Marketplace
+    const nftMarketplace = this.createProject({
+      name: "NFT Marketplace",
+      description: "NFT Marketplace provides a cutting-edge platform for creating, buying, and selling digital collectibles, art, and virtual real estate. Our protocol features zero gas fees, cross-chain compatibility, and advanced royalty management for creators, making it the most artist-friendly marketplace in the Web3 space.",
+      tokenSymbol: "NFTM",
+      tokenName: "NFT Marketplace Token",
+      price: 2.87,
+      marketCap: 57400000,
+      volume24h: 3100000,
+      change24h: -2.3,
+      totalSupply: 150000000,
+      circulatingSupply: 20000000,
+      category: "NFT",
+      shortDescription: "Cross-Chain Digital Collectibles Marketplace",
+      blockchain: "Ethereum, Solana, Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0xEFGH...5678",
+      rank: 11,
+      websiteUrl: "https://nftmarketplace.io",
+      whitePaperUrl: "https://nftmarketplace.io/whitepaper.pdf",
+      githubUrl: "https://github.com/nftmarketplace",
+      twitterUrl: "https://twitter.com/NFTMarketplace",
+      discordUrl: "https://discord.gg/nftmarketplace",
+      avatarBg: "#FBBA80",
+      avatarText: "NM",
+      avatarColor: "#101010",
+      isFeatured: false,
+      isNew: false,
+      imageUrl: "/project-logos/nft-marketplace.svg"
+    });
+    
+    // Project 12: Web3 Social
+    const web3Social = this.createProject({
+      name: "Web3 Social",
+      description: "Web3 Social is building a decentralized social media protocol that gives users complete ownership of their data and content. Our platform combines familiar social features with blockchain-powered innovations like token-gated communities, creator monetization tools, and decentralized content moderation systems.",
+      tokenSymbol: "W3S",
+      tokenName: "Web3 Social Token",
+      price: 5.12,
+      marketCap: 102400000,
+      volume24h: 8200000,
+      change24h: 12.5,
+      totalSupply: 200000000,
+      circulatingSupply: 20000000,
+      category: "Social",
+      shortDescription: "Decentralized Social Media Protocol",
+      blockchain: "Solana",
+      tokenStandard: "SPL",
+      contractAddress: "IJKL...9012",
+      rank: 12,
+      websiteUrl: "https://web3social.io",
+      whitePaperUrl: "https://web3social.io/whitepaper.pdf",
+      githubUrl: "https://github.com/web3social",
+      twitterUrl: "https://twitter.com/Web3Social",
+      discordUrl: "https://discord.gg/web3social",
+      avatarBg: "#FBBA80",
+      avatarText: "W3",
+      avatarColor: "#101010",
+      isFeatured: false,
+      isNew: false,
+      imageUrl: "/project-logos/web3-social.svg"
+    });
+    
+    // Project 13: Oracle Finance
+    const oracleFinance = this.createProject({
+      name: "Oracle Finance",
+      description: "Oracle Finance creates a secure and decentralized oracle network for DeFi and smart contract applications. Our protocol aggregates data from multiple sources, applies robust verification mechanisms, and delivers reliable real-world data to blockchain applications with unparalleled accuracy and speed.",
+      tokenSymbol: "ORCL",
+      tokenName: "Oracle Finance Token",
+      price: 9.76,
+      marketCap: 195200000,
+      volume24h: 12500000,
+      change24h: -1.8,
+      totalSupply: 100000000,
+      circulatingSupply: 20000000,
+      category: "Oracle",
+      shortDescription: "Decentralized Data Oracle Network",
+      blockchain: "Ethereum, Polygon, Avalanche",
+      tokenStandard: "ERC-20",
+      contractAddress: "0xMNOP...3456",
+      rank: 13,
+      websiteUrl: "https://oraclefinance.io",
+      whitePaperUrl: "https://oraclefinance.io/whitepaper.pdf",
+      githubUrl: "https://github.com/oraclefinance",
+      twitterUrl: "https://twitter.com/OracleFinance",
+      discordUrl: "https://discord.gg/oraclefinance",
+      avatarBg: "#FBBA80",
+      avatarText: "OF",
+      avatarColor: "#101010",
+      isFeatured: true,
+      isNew: false,
+      imageUrl: "/project-logos/oracle-finance.svg"
+    });
 
     // Add features for SafeStake
     this.addProjectFeature({ projectId: 1, feature: "Distributed validator technology for enhanced security" });
@@ -506,6 +692,84 @@ export class MemStorage implements IStorage {
     this.addProjectTechnicalDetail({ projectId: 7, label: "Connected Platforms", value: "3" });
     this.addProjectTechnicalDetail({ projectId: 7, label: "Active Creators", value: "120+" });
     this.addProjectTechnicalDetail({ projectId: 7, label: "Governance Proposals", value: "18" });
+    
+    // Add features for ZK Vault
+    this.addProjectFeature({ projectId: 8, feature: "Zero-knowledge proof technology for privacy" });
+    this.addProjectFeature({ projectId: 8, feature: "Private transactions with public verifiability" });
+    this.addProjectFeature({ projectId: 8, feature: "Multi-signature wallet security" });
+    this.addProjectFeature({ projectId: 8, feature: "Self-custody with institutional-grade security" });
+    this.addProjectFeature({ projectId: 8, feature: "Fully compliant with regulatory frameworks" });
+    
+    // Add technical details for ZK Vault
+    this.addProjectTechnicalDetail({ projectId: 8, label: "Privacy Level", value: "Tier-1" });
+    this.addProjectTechnicalDetail({ projectId: 8, label: "Throughput", value: "5,000 TPS" });
+    this.addProjectTechnicalDetail({ projectId: 8, label: "Security Audits", value: "3" });
+    this.addProjectTechnicalDetail({ projectId: 8, label: "Encryption Standard", value: "Military Grade" });
+    
+    // Add features for Cosmos Bridge
+    this.addProjectFeature({ projectId: 9, feature: "Seamless cross-chain asset transfers" });
+    this.addProjectFeature({ projectId: 9, feature: "IBC-compatible protocol architecture" });
+    this.addProjectFeature({ projectId: 9, feature: "Universal liquidity across connected chains" });
+    this.addProjectFeature({ projectId: 9, feature: "Low-latency finality across blockchains" });
+    this.addProjectFeature({ projectId: 9, feature: "Composable smart contract interoperability" });
+    
+    // Add technical details for Cosmos Bridge
+    this.addProjectTechnicalDetail({ projectId: 9, label: "Connected Chains", value: "11" });
+    this.addProjectTechnicalDetail({ projectId: 9, label: "Bridge Security", value: "Multi-party computation" });
+    this.addProjectTechnicalDetail({ projectId: 9, label: "Confirmation Time", value: "<30 seconds" });
+    this.addProjectTechnicalDetail({ projectId: 9, label: "Max Transaction Size", value: "Unlimited" });
+    
+    // Add features for DeFi Pulse
+    this.addProjectFeature({ projectId: 10, feature: "Real-time analytics dashboard for all major DeFi protocols" });
+    this.addProjectFeature({ projectId: 10, feature: "Comprehensive yield comparison tools" });
+    this.addProjectFeature({ projectId: 10, feature: "Risk assessment scoring for protocols" });
+    this.addProjectFeature({ projectId: 10, feature: "Automated portfolio rebalancing" });
+    this.addProjectFeature({ projectId: 10, feature: "Gas fee optimization algorithms" });
+    
+    // Add technical details for DeFi Pulse
+    this.addProjectTechnicalDetail({ projectId: 10, label: "Tracked Protocols", value: "87" });
+    this.addProjectTechnicalDetail({ projectId: 10, label: "Data Refresh Rate", value: "5 minutes" });
+    this.addProjectTechnicalDetail({ projectId: 10, label: "API Endpoints", value: "42" });
+    this.addProjectTechnicalDetail({ projectId: 10, label: "Daily Active Users", value: "25,000+" });
+    
+    // Add features for NFT Marketplace
+    this.addProjectFeature({ projectId: 11, feature: "Zero gas fees for minting and trading" });
+    this.addProjectFeature({ projectId: 11, feature: "Cross-chain NFT compatibility" });
+    this.addProjectFeature({ projectId: 11, feature: "Flexible royalty management for creators" });
+    this.addProjectFeature({ projectId: 11, feature: "Verified artist credentials system" });
+    this.addProjectFeature({ projectId: 11, feature: "Integrated NFT lending market" });
+    
+    // Add technical details for NFT Marketplace
+    this.addProjectTechnicalDetail({ projectId: 11, label: "Total NFTs", value: "3.2 million" });
+    this.addProjectTechnicalDetail({ projectId: 11, label: "Monthly Volume", value: "$14.5M" });
+    this.addProjectTechnicalDetail({ projectId: 11, label: "Verified Artists", value: "2,400+" });
+    this.addProjectTechnicalDetail({ projectId: 11, label: "Average Royalty", value: "7.5%" });
+    
+    // Add features for Web3 Social
+    this.addProjectFeature({ projectId: 12, feature: "Decentralized content ownership and monetization" });
+    this.addProjectFeature({ projectId: 12, feature: "Token-gated communities and content" });
+    this.addProjectFeature({ projectId: 12, feature: "User-controlled data sharing and privacy settings" });
+    this.addProjectFeature({ projectId: 12, feature: "Built-in creator tipping and subscription models" });
+    this.addProjectFeature({ projectId: 12, feature: "Content moderation through community governance" });
+    
+    // Add technical details for Web3 Social
+    this.addProjectTechnicalDetail({ projectId: 12, label: "Daily Active Users", value: "175,000" });
+    this.addProjectTechnicalDetail({ projectId: 12, label: "Content Creators", value: "18,500" });
+    this.addProjectTechnicalDetail({ projectId: 12, label: "Communities", value: "2,800" });
+    this.addProjectTechnicalDetail({ projectId: 12, label: "Storage Protocol", value: "IPFS/Arweave" });
+    
+    // Add features for Oracle Finance
+    this.addProjectFeature({ projectId: 13, feature: "Multi-source data aggregation for enhanced reliability" });
+    this.addProjectFeature({ projectId: 13, feature: "Verifiable random function for tamper-proof randomness" });
+    this.addProjectFeature({ projectId: 13, feature: "Weather, sports, and financial data feeds" });
+    this.addProjectFeature({ projectId: 13, feature: "Autonomous smart contract triggering" });
+    this.addProjectFeature({ projectId: 13, feature: "Decentralized node operator network" });
+    
+    // Add technical details for Oracle Finance
+    this.addProjectTechnicalDetail({ projectId: 13, label: "Node Operators", value: "350+" });
+    this.addProjectTechnicalDetail({ projectId: 13, label: "Data Sources", value: "85" });
+    this.addProjectTechnicalDetail({ projectId: 13, label: "Accuracy", value: "99.99%" });
+    this.addProjectTechnicalDetail({ projectId: 13, label: "Response Time", value: "<200ms" });
     
     // Create sample users
     this.createUser({
