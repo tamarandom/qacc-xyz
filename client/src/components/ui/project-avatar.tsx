@@ -1,19 +1,13 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-// List of emojis that can be used for projects
-const PROJECT_EMOJIS = [
-  '🚀', '🔐', '🌐', '💰', '🔄', '📊', '🏦', '⚡', 
-  '🔗', '📱', '💸', '🌍', '💼', '🛡️', '💹', '🤖',
-  '💻', '🧩', '🔍', '💡', '🛒', '📈', '🔑', '📝'
-];
-
 interface ProjectAvatarProps {
   name: string;
   bgColor?: string;
   textColor?: string;
   initials?: string;
   imageUrl?: string | null;
+  tokenSymbol?: string;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
@@ -24,27 +18,21 @@ export function ProjectAvatar({
   textColor = "text-primary-700",
   initials,
   imageUrl,
+  tokenSymbol,
   size = "md",
   className
 }: ProjectAvatarProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
-  const [emoji, setEmoji] = useState('🚀'); // Default emoji
   
-  // Generate a deterministic emoji based on the project name
-  useEffect(() => {
-    // Sum the char codes to get a number from the name
-    const nameSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
-    // Use the sum to pick an emoji from the list
-    const emojiIndex = nameSum % PROJECT_EMOJIS.length;
-    setEmoji(PROJECT_EMOJIS[emojiIndex]);
-  }, [name]);
+  // Display token symbol if provided, otherwise first letter of project name
+  const displayText = tokenSymbol || name.charAt(0).toUpperCase();
   
-  // Size classes for emojis need larger text sizes
+  // Size classes for token symbols
   const sizeClasses = {
-    sm: "h-8 w-8 text-base",
-    md: "h-10 w-10 text-lg",
-    lg: "h-16 w-16 text-2xl"
+    sm: "h-8 w-8 text-xs",
+    md: "h-10 w-10 text-sm",
+    lg: "h-16 w-16 text-base"
   };
   
   // Reset image states when the imageUrl changes
@@ -96,8 +84,8 @@ export function ProjectAvatar({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <span className="flex items-center justify-center" style={{ lineHeight: 1 }}>
-            {emoji}
+          <span className="flex items-center justify-center font-bold font-mono tracking-tight" style={{ lineHeight: 1 }}>
+            {displayText}
           </span>
         )}
       </div>
