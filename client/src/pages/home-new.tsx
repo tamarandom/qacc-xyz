@@ -5,6 +5,7 @@ import { LayoutGrid, List, Sparkles, Search, ChevronDown } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Project } from "@shared/schema";
 import { ProjectCard } from "@/components/projects/project-card";
+import { ProjectAvatar } from "@/components/ui/project-avatar";
 import { useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -228,31 +229,12 @@ export default function Home() {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div 
-                            className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden h-8 w-8 text-xs relative"
-                            style={{ 
-                              color: project.avatarColor || "#101010" 
-                            }}
-                          >
-                            {/* Background with fixed coloring */}
-                            <div className="absolute inset-0 rounded-full" style={{ backgroundColor: project.avatarBg || "#FBBA80" }}></div>
-
-                            {/* Transparent green overlapping area at top left */}
-                            <div className="absolute top-0 left-0 h-1/3 w-1/3 bg-green-400 opacity-30 rounded-tl-full"></div>
-
-                            {/* Content */}
-                            <div className="relative z-10">
-                              {project.imageUrl ? (
-                                <img 
-                                  src={project.imageUrl} 
-                                  alt={`${project.name} logo`} 
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <span className="font-mono font-bold">{project.avatarText || project.name.substring(0, 2).toUpperCase()}</span>
-                              )}
-                            </div>
-                          </div>
+                          <ProjectAvatar
+                            name={project.name}
+                            bgColor="#FBBA80"
+                            textColor="#101010"
+                            size="sm"
+                          />
                           <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                         </div>
                       </td>
@@ -343,31 +325,12 @@ export default function Home() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div 
-                          className="rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden h-8 w-8 text-xs relative"
-                          style={{ 
-                            color: project.avatarColor || "#101010" 
-                          }}
-                        >
-                          {/* Background with fixed coloring */}
-                          <div className="absolute inset-0 rounded-full" style={{ backgroundColor: project.avatarBg || "#FBBA80" }}></div>
-
-                          {/* Transparent green overlapping area at top left */}
-                          <div className="absolute top-0 left-0 h-1/3 w-1/3 bg-green-400 opacity-30 rounded-tl-full"></div>
-
-                          {/* Content */}
-                          <div className="relative z-10">
-                            {project.imageUrl ? (
-                              <img 
-                                src={project.imageUrl} 
-                                alt={`${project.name} logo`} 
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <span className="font-mono font-bold">{project.avatarText || project.name.substring(0, 2).toUpperCase()}</span>
-                            )}
-                          </div>
-                        </div>
+                        <ProjectAvatar
+                          name={project.name}
+                          bgColor="#FBBA80"
+                          textColor="#101010"
+                          size="sm"
+                        />
                         <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                       </div>
                     </td>

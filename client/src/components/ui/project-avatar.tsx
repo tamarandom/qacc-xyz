@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
+// List of emojis that can be used for projects
+const PROJECT_EMOJIS = [
+  '🚀', '🔐', '🌐', '💰', '🔄', '📊', '🏦', '⚡', 
+  '🔗', '📱', '💸', '🌍', '💼', '🛡️', '💹', '🤖',
+  '💻', '🧩', '🔍', '💡', '🛒', '📈', '🔑', '📝'
+];
+
 interface ProjectAvatarProps {
   name: string;
   bgColor?: string;
@@ -22,12 +29,22 @@ export function ProjectAvatar({
 }: ProjectAvatarProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
-  const displayInitials = initials || name.substring(0, 2).toUpperCase();
+  const [emoji, setEmoji] = useState('🚀'); // Default emoji
   
+  // Generate a deterministic emoji based on the project name
+  useEffect(() => {
+    // Sum the char codes to get a number from the name
+    const nameSum = name.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    // Use the sum to pick an emoji from the list
+    const emojiIndex = nameSum % PROJECT_EMOJIS.length;
+    setEmoji(PROJECT_EMOJIS[emojiIndex]);
+  }, [name]);
+  
+  // Size classes for emojis need larger text sizes
   const sizeClasses = {
-    sm: "h-8 w-8 text-xs",
-    md: "h-10 w-10 text-sm",
-    lg: "h-16 w-16 text-xl font-bold"
+    sm: "h-8 w-8 text-base",
+    md: "h-10 w-10 text-lg",
+    lg: "h-16 w-16 text-2xl"
   };
   
   // Reset image states when the imageUrl changes
@@ -69,7 +86,7 @@ export function ProjectAvatar({
       <div className="absolute top-0 left-0 h-1/3 w-1/3 bg-green-400 opacity-30 rounded-tl-full"></div>
 
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex items-center justify-center h-full">
         {imageUrl && !imageFailed ? (
           <img 
             src={imageUrl} 
@@ -79,8 +96,8 @@ export function ProjectAvatar({
             onError={() => setImageFailed(true)}
           />
         ) : (
-          <span className="font-mono font-bold">
-            {displayInitials}
+          <span className="flex items-center justify-center" style={{ lineHeight: 1 }}>
+            {emoji}
           </span>
         )}
       </div>
