@@ -5,6 +5,7 @@ interface ProjectAvatarProps {
   bgColor?: string;
   textColor?: string;
   initials?: string;
+  imageUrl?: string;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
@@ -14,6 +15,7 @@ export function ProjectAvatar({
   bgColor = "bg-primary-100", 
   textColor = "text-primary-700",
   initials,
+  imageUrl,
   size = "md",
   className
 }: ProjectAvatarProps) {
@@ -27,13 +29,21 @@ export function ProjectAvatar({
   
   return (
     <div className={cn(
-      "rounded-full flex items-center justify-center flex-shrink-0",
-      bgColor,
-      textColor,
+      "rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden",
+      !imageUrl && bgColor,
+      !imageUrl && textColor,
       sizeClasses[size],
       className
     )}>
-      <span>{displayInitials}</span>
+      {imageUrl ? (
+        <img 
+          src={imageUrl} 
+          alt={`${name} logo`} 
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span>{displayInitials}</span>
+      )}
     </div>
   );
 }

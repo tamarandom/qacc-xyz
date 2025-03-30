@@ -92,7 +92,9 @@ export class MemStorage implements IStorage {
       ...insertProject, 
       id, 
       avatarText: insertProject.avatarText || "",
-      isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false
+      isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false,
+      isNew: insertProject.isNew !== undefined ? insertProject.isNew : false,
+      imageUrl: insertProject.imageUrl || null
     };
     this.projects.set(id, project);
     return project;
@@ -372,7 +374,70 @@ export class MemStorage implements IStorage {
       avatarBg: "bg-purple-100",
       avatarText: "QY",
       avatarColor: "text-purple-700",
-      isFeatured: false
+      isFeatured: false,
+      imageUrl: "/project-logos/quantum-yield.svg"
+    });
+    
+    // Project 6: ChainGuard
+    const chainGuard = this.createProject({
+      name: "ChainGuard",
+      description: "ChainGuard is a next-generation security protocol that provides real-time monitoring and protection for blockchain assets and smart contracts. Our platform uses AI-powered anomaly detection to identify and prevent security breaches before they can impact your assets.",
+      tokenSymbol: "GUARD",
+      tokenName: "ChainGuard Token",
+      price: 0,
+      marketCap: 0,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 100000000,
+      circulatingSupply: 0,
+      category: "Security",
+      shortDescription: "AI-Powered Blockchain Security Protocol",
+      blockchain: "Ethereum, Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000...0000",
+      rank: 6,
+      websiteUrl: "https://chainguard.io",
+      whitePaperUrl: "https://chainguard.io/whitepaper.pdf",
+      githubUrl: "https://github.com/chainguard",
+      twitterUrl: "https://twitter.com/ChainGuard",
+      discordUrl: "https://discord.gg/chainguard",
+      avatarBg: "bg-red-100",
+      avatarText: "CG",
+      avatarColor: "text-red-700",
+      isFeatured: false,
+      isNew: true,
+      imageUrl: "/project-logos/chain-guard.svg"
+    });
+    
+    // Project 7: MetaverseDAO
+    const metaverseDAO = this.createProject({
+      name: "MetaverseDAO",
+      description: "MetaverseDAO is a community-driven platform for building, governing, and monetizing virtual worlds. Our protocol enables creators to develop interoperable assets and experiences across different metaverse platforms while offering governance rights to token holders.",
+      tokenSymbol: "MVDAO",
+      tokenName: "Metaverse DAO Token",
+      price: 0,
+      marketCap: 0,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 500000000,
+      circulatingSupply: 0,
+      category: "Metaverse",
+      shortDescription: "Community-Driven Metaverse Building Platform",
+      blockchain: "Ethereum, Solana",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000...0000",
+      rank: 7,
+      websiteUrl: "https://metaversedao.io",
+      whitePaperUrl: "https://metaversedao.io/whitepaper.pdf",
+      githubUrl: "https://github.com/metaversedao",
+      twitterUrl: "https://twitter.com/MetaverseDAO",
+      discordUrl: "https://discord.gg/metaversedao",
+      avatarBg: "bg-blue-100",
+      avatarText: "MD",
+      avatarColor: "text-blue-700",
+      isFeatured: false,
+      isNew: true,
+      imageUrl: "/project-logos/metaverse-dao.svg"
     });
 
     // Add features for SafeStake
@@ -411,6 +476,32 @@ export class MemStorage implements IStorage {
     this.addProjectTechnicalDetail({ projectId: 3, label: "Total Value Locked", value: "$73.9M" });
     this.addProjectTechnicalDetail({ projectId: 3, label: "Average Yield", value: "7.4%" });
     this.addProjectTechnicalDetail({ projectId: 3, label: "Integrated Protocols", value: "12" });
+    
+    // Add features for ChainGuard
+    this.addProjectFeature({ projectId: 6, feature: "Real-time monitoring of smart contract vulnerabilities" });
+    this.addProjectFeature({ projectId: 6, feature: "AI-powered threat detection and prevention" });
+    this.addProjectFeature({ projectId: 6, feature: "Automated audit reports for developers" });
+    this.addProjectFeature({ projectId: 6, feature: "Insurance coverage for protected assets" });
+    this.addProjectFeature({ projectId: 6, feature: "Cross-chain security solutions" });
+    
+    // Add technical details for ChainGuard
+    this.addProjectTechnicalDetail({ projectId: 6, label: "Protected Assets", value: "$0" });
+    this.addProjectTechnicalDetail({ projectId: 6, label: "Vulnerability Detection Rate", value: "97.8%" });
+    this.addProjectTechnicalDetail({ projectId: 6, label: "AI Model Accuracy", value: "99.2%" });
+    this.addProjectTechnicalDetail({ projectId: 6, label: "Response Time", value: "<500ms" });
+    
+    // Add features for MetaverseDAO
+    this.addProjectFeature({ projectId: 7, feature: "Community governance of virtual world assets" });
+    this.addProjectFeature({ projectId: 7, feature: "Cross-platform asset interoperability" });
+    this.addProjectFeature({ projectId: 7, feature: "Decentralized marketplace for creators" });
+    this.addProjectFeature({ projectId: 7, feature: "Virtual land acquisition and development" });
+    this.addProjectFeature({ projectId: 7, feature: "Metaverse event hosting capabilities" });
+    
+    // Add technical details for MetaverseDAO
+    this.addProjectTechnicalDetail({ projectId: 7, label: "Virtual Land Parcels", value: "10,000" });
+    this.addProjectTechnicalDetail({ projectId: 7, label: "Connected Platforms", value: "3" });
+    this.addProjectTechnicalDetail({ projectId: 7, label: "Active Creators", value: "120+" });
+    this.addProjectTechnicalDetail({ projectId: 7, label: "Governance Proposals", value: "18" });
     
     // Create sample users
     this.createUser({

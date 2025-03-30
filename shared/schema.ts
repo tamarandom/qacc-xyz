@@ -30,6 +30,8 @@ export const projects = pgTable("projects", {
   avatarText: text("avatar_text").notNull().default(""),
   avatarColor: text("avatar_color").notNull(),
   isFeatured: boolean("is_featured").notNull().default(false),
+  isNew: boolean("is_new").notNull().default(false),
+  imageUrl: text("image_url"),
 });
 
 // Project features/highlights

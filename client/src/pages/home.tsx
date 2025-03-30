@@ -12,7 +12,7 @@ export default function Home() {
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-10">
         <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-          THE FUTURE OF <span className="text-[color:var(--color-peach)]">TOKENISATION</span>
+          THE FUTURE OF <span className="text-[color:var(--color-peach)]">TOKENIZATION</span>
         </h1>
         <p className="mt-3 font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] max-w-3xl">
           Browse through our portfolio of carefully selected Web3 startups participating in our Quadratic Accelerator program.

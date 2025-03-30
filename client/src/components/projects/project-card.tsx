@@ -34,6 +34,11 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                   <span className="text-[7px] text-[color:var(--color-black)] font-bold">⭐</span>
                 </div>
               )}
+              {project.isNew && (
+                <div className="absolute -top-1 -left-1 bg-[color:var(--color-peach)] text-[color:var(--color-black)] text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">
+                  New
+                </div>
+              )}
             </div>
             <div className="ml-3 flex-1">
               <div className="flex justify-between items-start">
@@ -56,22 +61,31 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         
         {/* Project metrics */}
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-            <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
-            <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.price)}</p>
-          </div>
-          <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-            <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
-            <PercentageChange value={project.change24h} />
-          </div>
-          <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-            <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-            <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.marketCap)}</p>
-          </div>
-          <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-            <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
-            <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.volume24h)}</p>
-          </div>
+          {project.isNew ? (
+            <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-full">
+              <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Token Launch Status</p>
+              <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">Coming Soon - First Round</p>
+            </div>
+          ) : (
+            <>
+              <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
+                <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
+                <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.price)}</p>
+              </div>
+              <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
+                <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
+                <PercentageChange value={project.change24h} />
+              </div>
+              <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
+                <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+                <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.marketCap)}</p>
+              </div>
+              <div className="bg-[color:var(--color-light-gray)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
+                <p className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
+                <p className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{formatCurrency(project.volume24h)}</p>
+              </div>
+            </>
+          )}
         </div>
         
         {/* View details button indicator */}
