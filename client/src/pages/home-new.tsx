@@ -15,7 +15,7 @@ import { formatCurrency } from "@/lib/formatters";
 import PercentageChange from "@/components/ui/percentage-change";
 
 export default function Home() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [, navigate] = useLocation();
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("marketCap");
@@ -167,7 +167,7 @@ export default function Home() {
             />
           </div>
           
-          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
+          <Tabs defaultValue="list" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
             <TabsList className="bg-[color:var(--color-light-gray)]">
               <TabsTrigger 
                 value="grid"
@@ -214,7 +214,6 @@ export default function Home() {
               <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
                 <thead className="bg-[color:var(--color-light-gray)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
@@ -227,7 +226,6 @@ export default function Home() {
                       className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                       onClick={() => navigate(`/projects/${project.id}`)}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div 
@@ -320,7 +318,6 @@ export default function Home() {
             <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
               <thead className="bg-[color:var(--color-light-gray)]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
@@ -336,7 +333,6 @@ export default function Home() {
                     className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                     onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div 

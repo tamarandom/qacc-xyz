@@ -223,7 +223,6 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
         <Table>
           <TableHeader className="bg-[color:var(--color-light-gray)]">
             <TableRow>
-              <TableHead className="w-[50px] pl-4 font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">#</TableHead>
               <TableHead className="font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Project</TableHead>
               <TableHead className="font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Token</TableHead>
               <TableHead className="text-right font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Price</TableHead>
@@ -240,8 +239,7 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                   className="hover:bg-[color:var(--color-light-gray)] cursor-pointer border-b border-[color:var(--color-gray-200)]"
                   onClick={() => handleProjectClick(project.id)}
                 >
-                  <TableCell className="font-medium pl-4 font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</TableCell>
-                  <TableCell>
+                  <TableCell className="pl-4">
                     <div className="flex items-center">
                       <ProjectAvatar
                         name={project.name}
