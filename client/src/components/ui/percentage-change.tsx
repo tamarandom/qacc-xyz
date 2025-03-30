@@ -8,10 +8,11 @@ interface PercentageChangeProps {
 
 export default function PercentageChange({ value, showIcon = true, className = '' }: PercentageChangeProps) {
   const isPositive = value >= 0;
-  const textColor = isPositive ? 'text-green-600' : 'text-red-600';
+  // Using custom QACC brand colors for positive/negative
+  const textColor = isPositive ? 'text-[color:var(--color-positive)]' : 'text-[color:var(--color-negative)]';
   
   return (
-    <span className={`flex items-center ${textColor} ${className}`}>
+    <span className={`flex items-center ${textColor} ${className} font-['IBM_Plex_Mono'] font-medium`}>
       {showIcon && (
         isPositive 
           ? <ArrowUpIcon className="mr-1 h-3 w-3" /> 

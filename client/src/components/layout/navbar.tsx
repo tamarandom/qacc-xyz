@@ -12,23 +12,28 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-primary-600 text-xl font-bold cursor-pointer">
-                DeFi Accelerator
+              <Link href="/" className="flex items-center">
+                <span className="font-['Tusker_Grotesk'] uppercase text-[color:var(--color-black)] text-2xl font-bold tracking-wider mr-1">
+                  Quadratic
+                </span>
+                <span className="font-['Tusker_Grotesk'] uppercase text-[color:var(--color-peach)] text-2xl font-bold tracking-wider">
+                  Accelerator
+                </span>
               </Link>
             </div>
-            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-              <Link href="/" className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+            <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
+              <Link href="/" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/" 
-                    ? "border-primary-500 text-gray-900" 
-                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    ? "border-[color:var(--color-peach)] text-[color:var(--color-black)]" 
+                    : "border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)]"
                 }`}>
-                  Projects
+                  PROJECTS
               </Link>
-              <a href="#" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Accelerator
+              <a href="#" className="border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)] inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium">
+                ACCELERATOR
               </a>
-              <a href="#" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                Resources
+              <a href="#" className="border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)] inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium">
+                RESOURCES
               </a>
             </div>
           </div>
@@ -36,34 +41,34 @@ export default function Navbar() {
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon className="h-4 w-4 text-gray-400" />
+                <SearchIcon className="h-4 w-4 text-[color:var(--color-gray)]" />
               </div>
               <Input
                 type="text"
                 placeholder="Search projects"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md"
+                className="block w-full pl-10 pr-3 py-2 border border-[color:var(--color-gray-300)] rounded-md font-['IBM_Plex_Mono'] text-sm"
               />
             </div>
             
             <div className="ml-3 relative">
-              <Button size="icon" variant="ghost" className="text-gray-400 hover:text-gray-500">
+              <Button size="icon" variant="ghost" className="text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
                 <span className="sr-only">View notifications</span>
                 <BellIcon className="h-5 w-5" />
               </Button>
             </div>
             
             <div className="ml-3 relative">
-              <Button variant="ghost" size="sm" className="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              <Button variant="ghost" size="sm" className="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--color-peach)]">
                 <span className="sr-only">Open user menu</span>
-                <div className="h-8 w-8 rounded-full bg-primary-500 flex items-center justify-center text-white">
-                  <span>JD</span>
+                <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
+                  <span className="font-['IBM_Plex_Mono'] font-medium">JD</span>
                 </div>
               </Button>
             </div>
           </div>
           
           <div className="-mr-2 flex items-center sm:hidden">
-            <Button variant="ghost" size="sm" className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+            <Button variant="ghost" size="sm" className="inline-flex items-center justify-center p-2 rounded-md text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
               <span className="sr-only">Open main menu</span>
               <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />

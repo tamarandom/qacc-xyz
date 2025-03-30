@@ -1,6 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* QACC Primary Colors */
+  --color-black: #101010;
+  --color-light-gray: #F6F6F6;
+  --color-peach: #FBBA80;
+  --color-gray: #91A0A1;
+
+  /* QACC Secondary Colors */
+  --color-black-300: #282828;
+  --color-black-200: #404040;
+  --color-black-100: #636363;
+  
+  --color-peach-300: #FCD1AA;
+  --color-peach-200: #FDE0C7;
+  --color-peach-100: #FEF0E3;
+  
+  --color-gray-300: #B6C0C0;
+  --color-gray-200: #E7EAEA;
+  --color-gray-100: #F6F6F6;
+  
+  /* Status colors */
+  --color-positive: #59B287; /* Green for positive changes */
+  --color-negative: #E25C5C; /* Red for negative changes */
+}
+
+@font-face {
+  font-family: "Tusker Grotesk";
+  src: url('/fonts/TuskerGrotesk-6700Medium.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Tusker Grotesk";
+  src: url('/fonts/TuskerGrotesk-4500Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   * {
@@ -8,6 +51,29 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply antialiased bg-background text-foreground;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--color-black);
+    background-color: var(--color-light-gray);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Tusker Grotesk', sans-serif;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .accent-gradient {
+    background: linear-gradient(90deg, var(--color-peach) 0%, var(--color-peach-200) 100%);
+  }
+  
+  .btn-primary {
+    @apply bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)];
+  }
+  
+  .card-highlight {
+    @apply border-[color:var(--color-peach)] bg-white shadow-sm;
   }
 }
