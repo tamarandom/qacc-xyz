@@ -15,7 +15,7 @@ export default function Navbar() {
                 <img 
                   src="/images/qacc-logo.jpg" 
                   alt="Quadratic Accelerator Logo" 
-                  className="h-9"
+                  className="h-8"
                 />
               </Link>
             </div>
