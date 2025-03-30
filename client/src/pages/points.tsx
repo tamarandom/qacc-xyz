@@ -1,43 +1,48 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Crown, Medal, Award, User as UserIcon } from "lucide-react";
+import { Link } from "wouter";
+import { Award, Medal, Trophy, User as UserIcon } from "lucide-react";
 import { type User } from "@shared/schema";
 import { formatNumber } from "@/lib/formatters";
 
-// Component to render rank icons/badges
+// Rank badge component
 const RankBadge = ({ rank }: { rank: number }) => {
   if (rank === 1) {
     return (
-      <Badge className="bg-yellow-500 hover:bg-yellow-600">
-        <Crown className="h-4 w-4 mr-1" />
-        1st
-      </Badge>
+      <div className="flex justify-center items-center w-10 h-10">
+        <Trophy className="w-7 h-7 text-yellow-400" />
+      </div>
     );
   } else if (rank === 2) {
     return (
-      <Badge className="bg-slate-400 hover:bg-slate-500">
-        <Medal className="h-4 w-4 mr-1" />
-        2nd
-      </Badge>
+      <div className="flex justify-center items-center w-10 h-10">
+        <Medal className="w-7 h-7 text-gray-300" />
+      </div>
     );
   } else if (rank === 3) {
     return (
-      <Badge className="bg-amber-700 hover:bg-amber-800">
-        <Award className="h-4 w-4 mr-1" />
-        3rd
-      </Badge>
+      <div className="flex justify-center items-center w-10 h-10">
+        <Award className="w-7 h-7 text-amber-700" />
+      </div>
     );
   }
   
-  return <Badge variant="outline">{rank}th</Badge>;
+  return (
+    <div className="flex justify-center items-center w-10 h-10">
+      <span className="text-xl font-bold">{rank}</span>
+    </div>
+  );
 };
 
 export default function PointsPage() {
-  // Mock current user - in a real app, this would come from authentication
-  const currentUserId = 3; // For demo purposes, we're assuming user with ID 3 is logged in
+  // In a real app, this would come from authentication
+  const currentUserId = 3; // Mock logged in user ID
+  const [activeTab, setActiveTab] = useState<string>("overall");
 
   // Fetch top users for the leaderboard
   const { data: users, isLoading, error } = useQuery({
@@ -51,155 +56,127 @@ export default function PointsPage() {
     }
   });
   
-  // Get the current user from the leaderboard if available
+  // Find current user in leaderboard
   const currentUser = users?.find(user => user.id === currentUserId);
+  const totalUsers = 135424; // Mock value for total users in leaderboard
 
   return (
-    <div className="container mx-auto py-10 px-4 md:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col items-center text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold tracking-wide uppercase text-[color:var(--color-black)] mb-4">
-            Leaderboard
-          </h1>
-          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] max-w-2xl">
-            Earn q/acc points with every project you support
-          </p>
-        </div>
-        
-        <Card className="border-[color:var(--color-light-gray)]">
-          <CardHeader>
-            <CardTitle>Leaderboard</CardTitle>
-            <CardDescription>
-              Updated in real-time
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center space-x-4">
-                    <Skeleton className="h-6 w-6 rounded-full" />
-                    <Skeleton className="h-6 w-32" />
-                    <Skeleton className="h-6 w-16 ml-auto" />
-                  </div>
-                ))}
-              </div>
-            ) : error ? (
-              <div className="p-4 text-center text-red-500">
-                Failed to load leaderboard. Please try again later.
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="font-['IBM_Plex_Mono'] text-xs uppercase">
-                    <TableHead className="w-16">Rank</TableHead>
-                    <TableHead>Username</TableHead>
-                    <TableHead className="text-right">Points</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users?.map((user) => {
-                    const isCurrentUser = user.id === currentUserId;
-                    return (
-                      <TableRow 
-                        key={user.id} 
-                        className={`font-['IBM_Plex_Mono'] ${isCurrentUser ? "bg-[color:var(--color-peach-50)]" : ""}`}
-                      >
-                        <TableCell>
-                          <RankBadge rank={user.rank || 0} />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {isCurrentUser ? (
-                            <div className="flex items-center">
-                              <UserIcon className="h-4 w-4 mr-2 text-[color:var(--color-peach)]" />
-                              <span>{user.username}</span>
-                              <span className="ml-2 text-xs text-[color:var(--color-peach)]">(You)</span>
-                            </div>
-                          ) : (
-                            user.username
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className={user.rank && user.rank <= 3 ? "font-bold" : ""}>
-                            {formatNumber(user.points)}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* User's position section - only displayed if current user not in top leaderboard */}
-        {currentUser === undefined && !isLoading && !error && (
-          <Card className="mt-4 border-[color:var(--color-peach-100)]">
-            <CardContent className="pt-6">
-              <div className="p-3 bg-[color:var(--color-peach-50)] rounded-md">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <UserIcon className="h-5 w-5 mr-3 text-[color:var(--color-peach)]" />
-                    <span className="font-['IBM_Plex_Mono'] font-medium">Your position</span>
-                    <span className="ml-2 text-sm text-[color:var(--color-gray)]">
-                      (Sign in to track your ranking)
-                    </span>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-[color:var(--color-peach)]">
-                    Sign in
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-        
-        <div className="mt-8 bg-[color:var(--color-light-gray)] rounded-lg p-6">
-          <h2 className="font-['Tusker_Grotesk'] text-2xl font-bold mb-4 text-[color:var(--color-black)]">
-            How to Earn Points
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-start">
-              <div className="bg-[color:var(--color-peach)] p-2 rounded-full mr-4">
-                <span className="font-bold text-lg">1</span>
-              </div>
-              <div>
-                <h3 className="font-['IBM_Plex_Mono'] font-bold text-[color:var(--color-black)]">
-                  Browse Projects
-                </h3>
-                <p className="text-sm text-[color:var(--color-gray)]">
-                  Explore the various projects in our accelerator program
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <div className="bg-[color:var(--color-peach)] p-2 rounded-full mr-4">
-                <span className="font-bold text-lg">2</span>
-              </div>
-              <div>
-                <h3 className="font-['IBM_Plex_Mono'] font-bold text-[color:var(--color-black)]">
-                  Purchase Tokens
-                </h3>
-                <p className="text-sm text-[color:var(--color-gray)]">
-                  Buy tokens from projects you believe in
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <div className="bg-[color:var(--color-peach)] p-2 rounded-full mr-4">
-                <span className="font-bold text-lg">3</span>
-              </div>
-              <div>
-                <h3 className="font-['IBM_Plex_Mono'] font-bold text-[color:var(--color-black)]">
-                  Earn Points
-                </h3>
-                <p className="text-sm text-[color:var(--color-gray)]">
-                  Automatically earn points based on your token purchases
-                </p>
-              </div>
-            </div>
+    <div className="container mx-auto py-10 px-4 md:px-6 bg-black text-white">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">Score Leaderboard</h1>
+          <p className="text-gray-400 mb-6">Climb the ranks, showcase your expertise</p>
+          
+          <div className="mb-8">
+            <p className="text-sm text-gray-400 mb-2">Filter by:</p>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="w-full bg-gray-900 grid grid-cols-4 h-12">
+                <TabsTrigger value="overall" className="data-[state=active]:bg-gray-800">Overall</TabsTrigger>
+                <TabsTrigger value="dev" className="data-[state=active]:bg-gray-800">Dev</TabsTrigger>
+                <TabsTrigger value="on-chain" className="data-[state=active]:bg-gray-800">On-Chain</TabsTrigger>
+                <TabsTrigger value="social" className="data-[state=active]:bg-gray-800">Social</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
+        </div>
+
+        {/* User standing section */}
+        <div>
+          <h2 className="text-xl font-bold mb-2">Your Standing</h2>
+          <p className="text-gray-400 text-sm mb-4">Compared to others</p>
+          
+          {currentUser ? (
+            <div className="bg-gray-900 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <span className="text-2xl font-bold">{currentUser.rank}</span>
+                  <div className="h-10 w-10 bg-green-500 rounded-md mr-2 flex items-center justify-center">
+                    <span className="text-black font-bold">{currentUser.username.charAt(0)}</span>
+                  </div>
+                  <span className="font-medium">{currentUser.username}</span>
+                </div>
+                <span className="font-bold text-xl">{formatNumber(currentUser.points)}</span>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gray-900 rounded-lg p-6 text-center">
+              <p className="text-gray-400">Sign in to see your position on the leaderboard</p>
+            </div>
+          )}
+        </div>
+
+        {/* Leaderboard section */}
+        <div>
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-xl font-bold">Leaderboard</h2>
+            <p className="text-gray-400 text-sm">{formatNumber(totalUsers)} centurions</p>
+          </div>
+          
+          {isLoading ? (
+            <div className="space-y-4">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="bg-gray-900 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <Skeleton className="h-6 w-32" />
+                    </div>
+                    <Skeleton className="h-6 w-16" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="p-6 text-center text-red-500 bg-gray-900 rounded-lg">
+              Failed to load leaderboard. Please try again later.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {users?.slice(0, 10).map((user) => {
+                const isCurrentUser = user.id === currentUserId;
+                return (
+                  <div 
+                    key={user.id} 
+                    className={`flex items-stretch bg-gray-900 rounded-lg overflow-hidden 
+                    ${isCurrentUser ? "border border-yellow-500" : ""}`}
+                  >
+                    <div className="w-16 bg-gray-800 flex items-center justify-center">
+                      <RankBadge rank={user.rank || 0} />
+                    </div>
+                    <div className="flex-1 p-4 flex items-center justify-between relative overflow-hidden">
+                      {/* Diagonal lines for design */}
+                      <div className="absolute right-0 top-0 bottom-0 flex items-center">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <div 
+                            key={i} 
+                            className="w-[2px] h-full bg-gray-800 transform rotate-[20deg] ml-4"
+                            style={{ height: '200%' }}
+                          />
+                        ))}
+                      </div>
+                      
+                      <div className="flex items-center z-10">
+                        <Link href="/user-score" className="flex items-center space-x-3">
+                          <div className="h-10 w-10 rounded-md bg-blue-500 flex items-center justify-center">
+                            <span className="font-bold text-lg">{user.username.charAt(0)}</span>
+                          </div>
+                          <div>
+                            <div className="font-medium">{user.username}</div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {isCurrentUser ? "You" : "Legion member"}
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
+                      <div className="text-right z-10 font-bold text-lg">
+                        {formatNumber(user.points)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

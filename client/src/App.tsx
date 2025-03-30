@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/navbar";
 import Home from "@/pages/home";
 import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
+import UserScorePage from "@/pages/user-score";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
+      <Route path="/user-score" component={UserScorePage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
@@ -25,7 +27,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-1 bg-gray-50">
+        <main className="flex-1">
           <Router />
         </main>
       </div>
