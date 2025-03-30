@@ -13,7 +13,9 @@ export interface SortOption {
 export const PROJECT_CATEGORIES: ProjectCategory[] = [
   { id: 'all', name: 'All' },
   { id: 'defi', name: 'DeFi' },
-  { id: 'nft', name: 'NFT' },
+  { id: 'ai', name: 'AI' },
+  { id: 'gaming', name: 'Gaming' },
+  { id: 'infra', name: 'Infra/Tooling' },
   { id: 'dao', name: 'DAO' },
   { id: 'lending', name: 'Lending' },
   { id: 'yield', name: 'Yield' }

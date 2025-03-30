@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { ChevronDown, Search, Filter } from "lucide-react";
 import { 
   Table, 
   TableBody, 
@@ -21,11 +21,18 @@ import {
   PaginationPrevious 
 } from "@/components/ui/pagination";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency } from "@/lib/formatters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Project } from "@shared/schema";
+import { PROJECT_CATEGORIES } from "@/lib/types";
 
 export default function ProjectList() {
   const [_, navigate] = useLocation();
@@ -35,31 +42,53 @@ export default function ProjectList() {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   
   const { data: projects = [], isLoading } = useQuery<Project[]>({
-    queryKey: ['/api/projects', { category, sortBy }],
+    queryKey: ['/api/projects'],
   });
   
-  // Filter projects based on search query
+  // Filter projects based on search query and category
   useEffect(() => {
     if (!projects || projects.length === 0) {
       setFilteredProjects([]);
       return;
     }
     
-    if (!searchQuery) {
-      setFilteredProjects(projects);
-      return;
+    // First, filter by category
+    let filtered = projects;
+    if (category !== 'all') {
+      filtered = filtered.filter(project => {
+        // Check if project category contains the selected category ID
+        // For example, if category is "defi", it should match "DeFi Staking", "DeFi Exchange", etc.
+        return project.category.toLowerCase().includes(category.toLowerCase());
+      });
     }
     
-    const query = searchQuery.toLowerCase();
-    const filtered = projects.filter(
-      project => 
-        project.name.toLowerCase().includes(query) || 
-        project.tokenSymbol.toLowerCase().includes(query) ||
-        project.tokenName.toLowerCase().includes(query)
-    );
+    // Then filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        project => 
+          project.name.toLowerCase().includes(query) || 
+          project.tokenSymbol.toLowerCase().includes(query) ||
+          project.tokenName.toLowerCase().includes(query)
+      );
+    }
+    
+    // Sort projects
+    filtered = [...filtered].sort((a, b) => {
+      if (sortBy === 'name') {
+        return a.name.localeCompare(b.name);
+      } else if (sortBy === 'volume24h') {
+        return b.volume24h - a.volume24h;
+      } else if (sortBy === 'price') {
+        return b.price - a.price;
+      } else {
+        // Default: marketCap
+        return b.marketCap - a.marketCap;
+      }
+    });
     
     setFilteredProjects(filtered);
-  }, [searchQuery, projects]);
+  }, [searchQuery, category, sortBy, projects]);
   
   if (isLoading) {
     return (
@@ -98,24 +127,32 @@ export default function ProjectList() {
           >
             All Projects
           </Button>
-          <Button
-            variant={category === "defi" ? "default" : "outline"}
-            className={category === "defi" 
-              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
-              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
-            onClick={() => setCategory("defi")}
-          >
-            DeFi
-          </Button>
-          <Button
-            variant={category === "nft" ? "default" : "outline"}
-            className={category === "nft" 
-              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
-              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
-            onClick={() => setCategory("nft")}
-          >
-            NFT
-          </Button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"
+              >
+                <span>{PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}</span>
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48">
+              {PROJECT_CATEGORIES.filter(cat => cat.id !== 'all').map((cat) => (
+                <DropdownMenuItem 
+                  key={cat.id}
+                  onClick={() => setCategory(cat.id)}
+                  className={`
+                    font-['IBM_Plex_Mono'] text-sm cursor-pointer
+                    ${category === cat.id ? 'bg-[color:var(--color-peach-100)] text-[color:var(--color-black)]' : ''}
+                  `}
+                >
+                  {cat.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">

@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { BellIcon, SearchIcon } from "lucide-react";
+import { BellIcon } from "lucide-react";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -39,17 +38,6 @@ export default function Navbar() {
           </div>
           
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <SearchIcon className="h-4 w-4 text-[color:var(--color-gray)]" />
-              </div>
-              <Input
-                type="text"
-                placeholder="Search projects"
-                className="block w-full pl-10 pr-3 py-2 border border-[color:var(--color-gray-300)] rounded-md font-['IBM_Plex_Mono'] text-sm"
-              />
-            </div>
-            
             <div className="ml-3 relative">
               <Button size="icon" variant="ghost" className="text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
                 <span className="sr-only">View notifications</span>
