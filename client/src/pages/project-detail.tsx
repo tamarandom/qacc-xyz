@@ -10,11 +10,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { ArrowLeft } from "lucide-react";
+import { Project, ProjectWithDetails } from "@shared/schema";
 
 export default function ProjectDetail() {
   const { id } = useParams();
   
-  const { data: project, isLoading, isError } = useQuery({
+  const { data: project, isLoading, isError } = useQuery<ProjectWithDetails>({
     queryKey: [`/api/projects/${id}`],
   });
   
@@ -68,6 +69,7 @@ export default function ProjectDetail() {
           <div className="flex items-center">
             <ProjectAvatar
               name={project.name}
+              tokenSymbol={project.tokenSymbol}
               bgColor={project.avatarBg}
               textColor={project.avatarColor}
               initials={project.avatarText || project.name.substring(0, 2)}

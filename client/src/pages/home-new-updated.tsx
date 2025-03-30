@@ -16,7 +16,8 @@ import PercentageChange from "@/components/ui/percentage-change";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 
 export default function Home() {
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  // Default to list view as requested
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [, navigate] = useLocation();
   const [category, setCategory] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("marketCap");
@@ -211,14 +212,15 @@ export default function Home() {
                               bgColor={project.avatarBg || "#FBBA80"}
                               textColor={project.avatarColor || "#101010"}
                               initials={project.avatarText || project.name.substring(0, 2)}
+                              tokenSymbol={project.tokenSymbol}
                               imageUrl={project.imageUrl}
-                              size="sm"
+                              size="md"
                             />
                             <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">DEX listing after this round</td>
                       </tr>
                     ))}
                   </tbody>
@@ -232,7 +234,7 @@ export default function Home() {
       {/* View and Sort Controls - Apply to all projects */}
       <div className="mb-8 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
+          <Tabs defaultValue="list" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
             <TabsList className="bg-[color:var(--color-light-gray)]">
               <TabsTrigger 
                 value="grid"
@@ -285,19 +287,18 @@ export default function Home() {
         </div>
       </div>
       
-      {/* New Projects Section */}
-      {!isLoading && filteredNewProjects.length > 0 && (
-        <div className="mb-10">
+      {/* Launched Projects Section */}
+      {!isLoading && filteredLaunchedProjects.length > 0 && (
+        <div>
           <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-5 w-5 text-[color:var(--color-peach)]" />
             <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-              New Projects
+              Launched Projects
             </h2>
-            <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
+            <div className="h-1 w-12 bg-[color:var(--color-black)] mt-1 ml-2"></div>
           </div>
-          <div className={`${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : ""}`}>
+          <div className={`${viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" : ""}`}>
             {viewMode === "grid" ? (
-              filteredNewProjects.map((project) => (
+              filteredLaunchedProjects.slice(0, 8).map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}
@@ -311,12 +312,14 @@ export default function Home() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
                       <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">24h</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Volume</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
-                    {filteredNewProjects.map((project) => (
+                    {filteredLaunchedProjects.slice(0, 8).map((project) => (
                       <tr 
                         key={project.id} 
                         className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
@@ -330,14 +333,28 @@ export default function Home() {
                               bgColor={project.avatarBg || "#FBBA80"}
                               textColor={project.avatarColor || "#101010"}
                               initials={project.avatarText || project.name.substring(0, 2)}
+                              tokenSymbol={project.tokenSymbol}
                               imageUrl={project.imageUrl}
-                              size="sm"
+                              size="md"
                             />
-                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                            <div className="ml-3">
+                              <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</div>
+                              <div className="font-['IBM_Plex_Mono'] text-xs text-[color:var(--color-black-100)]">{project.tokenSymbol}</div>
+                            </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">Coming Soon</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                          {formatCurrency(project.price)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <PercentageChange value={project.change24h} />
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                          {formatCurrency(project.marketCap)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                          {formatCurrency(project.volume24h)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -348,109 +365,26 @@ export default function Home() {
         </div>
       )}
       
-      {/* Launched Projects Section */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-          Launched Projects
-        </h2>
-        <div className="h-1 w-20 bg-[color:var(--color-peach)] mt-2"></div>
-      </div>
-      
-      {/* Launched Projects Grid/List View */}
-      {filteredLaunchedProjects.length > 0 ? (
-        viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredLaunchedProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => navigate(`/projects/${project.id}`)}
-              />
+      {/* Loading State */}
+      {isLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-12 w-3/4" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="border border-[color:var(--color-gray-200)] rounded-lg p-4 space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <Skeleton className="h-5 w-40" />
+                </div>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-6 w-20" />
+                  <Skeleton className="h-6 w-20" />
+                </div>
+              </div>
             ))}
           </div>
-        ) : (
-          <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
-            <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
-              <thead className="bg-[color:var(--color-light-gray)]">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Volume (24h)</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
-                {filteredLaunchedProjects.map((project) => (
-                  <tr 
-                    key={project.id} 
-                    className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
-                    onClick={() => navigate(`/projects/${project.id}`)}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <ProjectAvatar
-                          name={project.name}
-                          bgColor={project.avatarBg || "#FBBA80"}
-                          textColor={project.avatarColor || "#101010"}
-                          initials={project.avatarText || project.name.substring(0, 2)}
-                          imageUrl={project.imageUrl}
-                          size="sm"
-                        />
-                        <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.marketCap.toLocaleString('en-US')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.volume24h.toLocaleString('en-US')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )
-      ) : (
-        <div className="bg-white rounded-lg border border-[color:var(--color-gray-200)] p-10 text-center">
-          <div className="flex flex-col items-center justify-center">
-            <Search className="h-8 w-8 text-[color:var(--color-black-100)] mb-2" />
-            <p className="text-[color:var(--color-black-100)] font-['IBM_Plex_Mono']">No projects found matching your search</p>
-            {(searchQuery || category !== 'all') && (
-              <Button 
-                variant="link" 
-                onClick={() => {
-                  setSearchQuery("");
-                  setCategory("all");
-                }}
-                className="text-[color:var(--color-peach)] font-['IBM_Plex_Mono'] hover:text-[color:var(--color-peach-300)]"
-              >
-                Clear filters
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {/* Results count */}
-      {(filteredNewProjects.length > 0 || filteredLaunchedProjects.length > 0) && (
-        <div className="mt-6 text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">
-          Showing <span className="font-medium text-[color:var(--color-black)]">{filteredNewProjects.length + filteredLaunchedProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{projects.length}</span> projects
-          {(searchQuery || category !== 'all') && (
-            <span className="ml-1">
-              {category !== 'all' && (
-                <span className="ml-2 text-[10px] py-0 px-1.5 font-['IBM_Plex_Mono'] bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] rounded-full">
-                  Category: {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name || category}
-                </span>
-              )}
-              {searchQuery && (
-                <span className="ml-2 text-[10px] py-0 px-1.5 font-['IBM_Plex_Mono'] bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] rounded-full">
-                  Search: "{searchQuery}"
-                </span>
-              )}
-            </span>
-          )}
         </div>
       )}
     </div>
