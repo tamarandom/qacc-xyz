@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, numeric, doublePrecision, foreignKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, numeric, doublePrecision, foreignKey, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -70,8 +70,57 @@ export type InsertProjectFeature = z.infer<typeof insertProjectFeatureSchema>;
 export type ProjectTechnicalDetail = typeof projectTechnicalDetails.$inferSelect;
 export type InsertProjectTechnicalDetail = z.infer<typeof insertProjectTechnicalDetailSchema>;
 
+// User table
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
+  avatarUrl: text("avatar_url"),
+  points: integer("points").notNull().default(0),
+  rank: integer("rank"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Points transactions (history of how users earned points)
+export const pointTransactions = pgTable("point_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  projectId: integer("project_id").notNull().references(() => projects.id),
+  amount: integer("amount").notNull(),
+  tokenAmount: doublePrecision("token_amount").notNull(),
+  transactionHash: text("transaction_hash"),
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Insert schemas for users and point transactions
+export const insertUserSchema = createInsertSchema(users).omit({ 
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertPointTransactionSchema = createInsertSchema(pointTransactions).omit({ 
+  id: true,
+  createdAt: true 
+});
+
+// User types
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+
+// Point transaction types
+export type PointTransaction = typeof pointTransactions.$inferSelect;
+export type InsertPointTransaction = z.infer<typeof insertPointTransactionSchema>;
+
 // Extended types for frontend consumption
 export type ProjectWithDetails = Project & {
   features: ProjectFeature[];
   technicalDetails: ProjectTechnicalDetail[];
+};
+
+// Extended user type with transaction history
+export type UserWithTransactions = User & {
+  transactions: PointTransaction[];
 };

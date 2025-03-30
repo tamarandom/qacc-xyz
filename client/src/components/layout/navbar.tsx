@@ -31,9 +31,13 @@ export default function Navbar() {
               <a href="#" className="border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)] inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium">
                 ACCELERATOR
               </a>
-              <a href="#" className="border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)] inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium">
-                RESOURCES
-              </a>
+              <Link href="/points" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
+                  location === "/points" 
+                    ? "border-[color:var(--color-peach)] text-[color:var(--color-black)]" 
+                    : "border-transparent text-[color:var(--color-black-100)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--color-black)]"
+                }`}>
+                POINTS
+              </Link>
             </div>
           </div>
           

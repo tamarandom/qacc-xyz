@@ -6,12 +6,14 @@ import NotFound from "@/pages/not-found";
 import Navbar from "@/components/layout/navbar";
 import Home from "@/pages/home";
 import ProjectDetail from "@/pages/project-detail";
+import PointsPage from "@/pages/points";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/projects/:id" component={ProjectDetail} />
+      <Route path="/points" component={PointsPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

@@ -8,12 +8,18 @@ import {
   type InsertProjectFeature,
   type ProjectTechnicalDetail,
   type InsertProjectTechnicalDetail,
-  type ProjectWithDetails
+  type ProjectWithDetails,
+  type User,
+  type InsertUser,
+  type PointTransaction,
+  type InsertPointTransaction,
+  type UserWithTransactions
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
 // you might need
 export interface IStorage {
+  // Project methods
   getAllProjects(): Promise<Project[]>;
   getProjectById(id: number): Promise<Project | undefined>;
   getProjectFeatures(projectId: number): Promise<ProjectFeature[]>;
@@ -21,23 +27,44 @@ export interface IStorage {
   createProject(project: InsertProject): Promise<Project>;
   addProjectFeature(feature: InsertProjectFeature): Promise<ProjectFeature>;
   addProjectTechnicalDetail(detail: InsertProjectTechnicalDetail): Promise<ProjectTechnicalDetail>;
+  
+  // User methods
+  getAllUsers(): Promise<User[]>;
+  getUserById(id: number): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  updateUserPoints(userId: number, points: number): Promise<User>;
+  
+  // Points methods
+  getUserPoints(userId: number): Promise<number>;
+  getTopUsers(limit?: number): Promise<User[]>;
+  addPointTransaction(transaction: InsertPointTransaction): Promise<PointTransaction>;
+  getUserTransactions(userId: number): Promise<PointTransaction[]>;
 }
 
 export class MemStorage implements IStorage {
   private projects: Map<number, Project>;
   private projectFeatures: Map<number, ProjectFeature[]>;
   private projectTechnicalDetails: Map<number, ProjectTechnicalDetail[]>;
+  private users: Map<number, User>;
+  private pointTransactions: Map<number, PointTransaction[]>;
   private nextProjectId: number;
   private nextFeatureId: number;
   private nextDetailId: number;
+  private nextUserId: number;
+  private nextTransactionId: number;
 
   constructor() {
     this.projects = new Map();
     this.projectFeatures = new Map();
     this.projectTechnicalDetails = new Map();
+    this.users = new Map();
+    this.pointTransactions = new Map();
     this.nextProjectId = 1;
     this.nextFeatureId = 1;
     this.nextDetailId = 1;
+    this.nextUserId = 1;
+    this.nextTransactionId = 1;
     
     // Initialize with sample data
     this.initializeSampleData();
@@ -61,7 +88,12 @@ export class MemStorage implements IStorage {
 
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.nextProjectId++;
-    const project: Project = { ...insertProject, id };
+    const project: Project = { 
+      ...insertProject, 
+      id, 
+      avatarText: insertProject.avatarText || "",
+      isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false
+    };
     this.projects.set(id, project);
     return project;
   }
@@ -86,6 +118,115 @@ export class MemStorage implements IStorage {
     this.projectTechnicalDetails.set(detail.projectId, projectDetails);
     
     return detail;
+  }
+  
+  // User methods implementation
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+  
+  async getUserById(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+  
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+  
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const id = this.nextUserId++;
+    const now = new Date();
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      points: insertUser.points || 0,
+      rank: null,
+      avatarUrl: insertUser.avatarUrl || null,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.users.set(id, user);
+    return user;
+  }
+  
+  async updateUserPoints(userId: number, points: number): Promise<User> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    const updatedUser: User = {
+      ...user,
+      points: points,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(userId, updatedUser);
+    
+    // Update user ranks after point change
+    await this.updateUserRanks();
+    
+    return updatedUser;
+  }
+  
+  // Points methods implementation
+  async getUserPoints(userId: number): Promise<number> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    return user.points;
+  }
+  
+  async getTopUsers(limit: number = 10): Promise<User[]> {
+    // Update all user ranks first
+    await this.updateUserRanks();
+    
+    // Get all users, sort by points in descending order, and take the top 'limit'
+    return Array.from(this.users.values())
+      .sort((a, b) => b.points - a.points)
+      .slice(0, limit);
+  }
+  
+  async addPointTransaction(insertTransaction: InsertPointTransaction): Promise<PointTransaction> {
+    const id = this.nextTransactionId++;
+    const transaction: PointTransaction = {
+      ...insertTransaction,
+      id,
+      transactionHash: insertTransaction.transactionHash || null,
+      createdAt: new Date()
+    };
+    
+    // Add transaction to the user's transaction list
+    const userTransactions = this.pointTransactions.get(transaction.userId) || [];
+    userTransactions.push(transaction);
+    this.pointTransactions.set(transaction.userId, userTransactions);
+    
+    // Update user's points
+    const user = await this.getUserById(transaction.userId);
+    if (user) {
+      await this.updateUserPoints(user.id, user.points + transaction.amount);
+    }
+    
+    return transaction;
+  }
+  
+  async getUserTransactions(userId: number): Promise<PointTransaction[]> {
+    return this.pointTransactions.get(userId) || [];
+  }
+  
+  // Helper method to update all user ranks based on points
+  private async updateUserRanks(): Promise<void> {
+    const users = Array.from(this.users.values()).sort((a, b) => b.points - a.points);
+    
+    // Assign ranks (1-based)
+    users.forEach((user, index) => {
+      const updatedUser: User = {
+        ...user,
+        rank: index + 1
+      };
+      this.users.set(user.id, updatedUser);
+    });
   }
 
   private initializeSampleData() {
@@ -270,6 +411,108 @@ export class MemStorage implements IStorage {
     this.addProjectTechnicalDetail({ projectId: 3, label: "Total Value Locked", value: "$73.9M" });
     this.addProjectTechnicalDetail({ projectId: 3, label: "Average Yield", value: "7.4%" });
     this.addProjectTechnicalDetail({ projectId: 3, label: "Integrated Protocols", value: "12" });
+    
+    // Create sample users
+    this.createUser({
+      username: "cryptowhale",
+      email: "whale@example.com",
+      avatarUrl: null,
+      points: 12450,
+    });
+    
+    this.createUser({
+      username: "hodler123",
+      email: "hodl@example.com",
+      avatarUrl: null,
+      points: 8920,
+    });
+    
+    this.createUser({
+      username: "satoshifan",
+      email: "satoshi@example.com",
+      avatarUrl: null,
+      points: 7340,
+    });
+    
+    this.createUser({
+      username: "tokenmasterx",
+      email: "tokenmaster@example.com",
+      avatarUrl: null,
+      points: 5100,
+    });
+    
+    this.createUser({
+      username: "defi_guru",
+      email: "defiguru@example.com",
+      avatarUrl: null,
+      points: 4320,
+    });
+    
+    this.createUser({
+      username: "blockchain_dev",
+      email: "blockdev@example.com",
+      avatarUrl: null,
+      points: 3840,
+    });
+    
+    this.createUser({
+      username: "ethinvestor",
+      email: "eth@example.com",
+      avatarUrl: null,
+      points: 2950,
+    });
+    
+    this.createUser({
+      username: "nftcollector",
+      email: "nft@example.com",
+      avatarUrl: null,
+      points: 1750,
+    });
+    
+    this.createUser({
+      username: "web3builder",
+      email: "web3@example.com",
+      avatarUrl: null,
+      points: 1320,
+    });
+    
+    this.createUser({
+      username: "metaversefan",
+      email: "meta@example.com",
+      avatarUrl: null,
+      points: 980,
+    });
+    
+    // Update all user ranks
+    this.updateUserRanks();
+    
+    // Add some point transactions as examples
+    this.addPointTransaction({
+      userId: 1,
+      projectId: 1,
+      amount: 500,
+      tokenAmount: 40,
+      transactionHash: "0x1234...5678",
+      description: "Purchased SAFE tokens"
+    });
+    
+    this.addPointTransaction({
+      userId: 1,
+      projectId: 2,
+      amount: 300,
+      tokenAmount: 80,
+      transactionHash: "0x8765...4321",
+      description: "Purchased LSWP tokens"
+    });
+    
+    this.addPointTransaction({
+      userId: 2,
+      projectId: 3,
+      amount: 450,
+      tokenAmount: 55,
+      transactionHash: "0xabcd...ef01",
+      description: "Purchased NEXUS tokens"
+    });
   }
 }
 
