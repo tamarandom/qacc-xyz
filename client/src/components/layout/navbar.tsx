@@ -3,30 +3,14 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { X, Menu, LogOut, Moon, Sun } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
-  const [theme, setTheme] = useState('light');
-  
-  // Initialize theme from localStorage on component mount
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    }
-  }, []);
-  
-  // Toggle theme function
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-  };
+  const { theme, toggleTheme } = useTheme();
 
   // Initialize authentication state from localStorage on component mount
   useEffect(() => {
