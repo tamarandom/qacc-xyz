@@ -155,20 +155,35 @@ export default function ProjectDetail() {
             
             <div className="mb-6">
               <Tabs defaultValue="overview">
-                <TabsList className="w-full justify-start border-b border-gray-200 pb-0">
-                  <TabsTrigger value="overview" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
-                    Overview
-                  </TabsTrigger>
-                  <TabsTrigger value="tokenomics" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
-                    Tokenomics
-                  </TabsTrigger>
-                  <TabsTrigger value="team" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm mr-8">
-                    Team
-                  </TabsTrigger>
-                  <TabsTrigger value="roadmap" className="data-[state=active]:border-primary-500 data-[state=active]:text-primary-600 data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-6 py-3 text-sm">
-                    Roadmap
-                  </TabsTrigger>
-                </TabsList>
+                {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
+                <div className="overflow-x-auto no-scrollbar border-b border-gray-200">
+                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-transparent">
+                    <TabsTrigger 
+                      value="overview" 
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                    >
+                      Overview
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="tokenomics" 
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                    >
+                      Tokenomics
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="team" 
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                    >
+                      Team
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="roadmap" 
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap"
+                    >
+                      Roadmap
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
                 
                 <TabsContent value="overview" className="pt-4">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">About {project.name}</h3>
