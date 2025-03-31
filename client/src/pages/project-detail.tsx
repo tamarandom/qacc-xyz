@@ -104,7 +104,7 @@ export default function ProjectDetail() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
               >
                 <img src={quickswapLogo} alt="DEX" className="h-5 w-5 rounded-full" />
-                <span>Buy on DEX</span>
+                <span>Swap on DEX</span>
               </a>
             )}
           </div>
