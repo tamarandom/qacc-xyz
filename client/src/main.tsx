@@ -1,10 +1,13 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
-import { ThemeProvider } from "./contexts/theme-context";
 import "./index.css";
 
+// Set the initial theme from localStorage if available
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+  document.documentElement.setAttribute('data-theme', savedTheme);
+}
+
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider>
-    <App />
-  </ThemeProvider>
+  <App />
 );

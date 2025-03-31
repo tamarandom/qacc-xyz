@@ -1,16 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { X, Menu, LogOut, Moon, Sun } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
-import { useTheme } from "@/contexts/theme-context";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
-  const { theme, toggleTheme } = useTheme();
+  const [theme, setTheme] = useState('light');
+  
+  // Initialize theme from localStorage on component mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+  }, []);
+  
+  // Toggle theme function
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+  };
 
   // Mock authentication functions
   const handleLogin = () => {
@@ -33,7 +49,7 @@ export default function Navbar() {
   };
   
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-10">
+    <nav className="bg-[color:var(--card-background)] shadow-sm sticky top-0 z-10 border-b border-[color:var(--border-color)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">

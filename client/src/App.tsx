@@ -9,7 +9,7 @@ import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
-import { ThemeProvider } from "@/contexts/theme-context";
+// Don't import ThemeProvider here, it's imported in main.tsx
 
 function Router() {
   return (
@@ -28,15 +28,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-1">
-            <Router />
-          </main>
-        </div>
-        <Toaster />
-      </ThemeProvider>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <main className="flex-1">
+          <Router />
+        </main>
+      </div>
+      <Toaster />
     </QueryClientProvider>
   );
 }

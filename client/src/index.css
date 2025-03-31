@@ -48,6 +48,12 @@
   --color-light-gray: #1E1E1E;
   --color-gray-100: #2A2A2A;
   --color-gray-200: #333333;
+  --color-dark-gray: #2A2A2A;
+  --color-gray-400: #A0A0A0;
+  
+  /* Override text colors for dark mode */
+  --color-black: #F6F6F6; 
+  --color-black-100: #B0B0B0;
 }
 
 @font-face {
@@ -111,12 +117,43 @@
     color: var(--text-primary);
   }
   
+  /* Update specific color for status text in dark mode */
+  [data-theme='dark'] .bg-[color\:var\(--color-gray-100\)] {
+    color: white;
+  }
+  
+  /* Fix dark mode table */
+  [data-theme='dark'] .bg-[color\:var\(--color-light-gray\)] {
+    background-color: var(--color-dark-gray);
+    color: white;
+  }
+  
+  [data-theme='dark'] .text-\[color\:var\(--color-black\)\] {
+    color: white;
+  }
+  
+  [data-theme='dark'] .text-\[color\:var\(--color-black-100\)\] {
+    color: var(--color-gray-400);
+  }
+  
   [data-theme='dark'] .bg-white {
     background-color: var(--card-background);
   }
   
   [data-theme='dark'] .border-[color\:var\(--color-gray-200\)] {
     border-color: var(--border-color);
+  }
+  
+  /* Fix for "NEW" tag in dark mode */
+  [data-theme='dark'] .absolute.top-2.left-2.px-1\.5.py-0\.5.bg-\[color\:var\(--color-black\)\].text-white.rounded.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].font-bold.uppercase.tracking-wide {
+    background-color: white;
+    color: var(--color-black-300);
+  }
+  
+  /* Fix status text in dark mode */
+  [data-theme='dark'] .bg-\[color\:var\(--color-gray-100\)\].px-2\.5.py-1\.5.rounded-md.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].uppercase.tracking-wide.text-\[color\:var\(--color-black-100\)\] {
+    background-color: var(--color-gray-100);
+    color: white;
   }
 }
 
