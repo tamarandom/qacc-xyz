@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { PointTransaction, Project, User } from "@shared/schema";
-import { formatCurrency, formatNumber } from "@/lib/formatters";
+import { Link } from "wouter";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Coins, Briefcase, ArrowUpRight, LockOpen, Calendar, Check } from "lucide-react";
+import { Briefcase, Calendar, Coins, ArrowUpRight, Check, LockOpen } from "lucide-react";
+import { type Project, type User, type PointTransaction } from "@shared/schema";
+import { formatNumber, formatCurrency } from "@/lib/formatters";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
-import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 
+// Token unlock structure
 interface TokenUnlock {
   projectId: number;
   amount: number;
@@ -37,11 +39,14 @@ interface PortfolioItem {
 }
 
 export default function PortfolioPage() {
-  // Get user data with transactions
+  // In a real app, this would come from authentication
+  const userId = 1; // Mock logged in user ID for cryptowhale
+  
+  // Get user data
   const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: ['/api/users/1'],
+    queryKey: ['/api/users', userId],
     queryFn: async () => {
-      const res = await fetch('/api/users/1');
+      const res = await fetch(`/api/users/${userId}`);
       if (!res.ok) {
         throw new Error('Failed to fetch user');
       }
@@ -140,7 +145,7 @@ export default function PortfolioPage() {
       buyDate: new Date(2024, 8, 15), // September 15, 2024 (6 months before cliff)
       spent: 300
     },
-    // Adding more tokens with different cliff and end dates
+    // Adding 5 more tokens with different cliff and end dates
     {
       projectId: 4,
       amount: 150,
@@ -193,13 +198,13 @@ export default function PortfolioPage() {
     const project = projects?.find(p => p.id === projectId);
     
     // Find all unlocks for this project
-    const unlocks = tokenUnlocks.filter(t => t.projectId === projectId);
+    const unlocks = tokenUnlocks.filter((t: TokenUnlock) => t.projectId === projectId);
     
     // Calculate total token amount across all transactions for this project
-    const totalTokens = transactions.reduce((sum, tx) => sum + tx.tokenAmount, 0);
+    const totalTokens = unlocks.reduce((sum, unlock) => sum + unlock.amount, 0);
     
     // Calculate total spent across all transactions for this project
-    const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+    const totalSpent = unlocks.reduce((sum, unlock) => sum + (unlock.spent || 0), 0);
     
     // Use the most recent transaction data as a base, but override with calculated totals
     const latestTransaction = {
@@ -230,7 +235,7 @@ export default function PortfolioPage() {
   
   // Handle claiming tokens for a specific unlock
   const handleClaimTokens = (tokenId: string) => {
-    const unlock = tokenUnlocks.find(t => t.id === tokenId);
+    const unlock = tokenUnlocks.find((t: TokenUnlock) => t.id === tokenId);
     if (!unlock?.claimable) return;
     
     // In a real app, this would be an API call
@@ -251,13 +256,13 @@ export default function PortfolioPage() {
   // Handle claiming all available tokens
   const handleClaimAllTokens = () => {
     const claimableTokens = tokenUnlocks
-      .filter(t => t.claimable && !t.claimed);
+      .filter((t: TokenUnlock) => t.claimable && !t.claimed);
       
     if (claimableTokens.length === 0) return;
     
     // In a real app, this would be an API call
     const newClaimedTokens = { ...claimedTokens };
-    claimableTokens.forEach(unlock => {
+    claimableTokens.forEach((unlock: TokenUnlock) => {
       newClaimedTokens[unlock.id] = true;
     });
     
@@ -270,7 +275,7 @@ export default function PortfolioPage() {
   };
   
   // Check if there are any tokens available to claim
-  const hasClaimableTokens = tokenUnlocks.some(t => t.claimable && !t.claimed);
+  const hasClaimableTokens = tokenUnlocks.some((t: TokenUnlock) => t.claimable && !t.claimed);
   
   // Format dates helper
   const formatDate = (date: Date) => {
