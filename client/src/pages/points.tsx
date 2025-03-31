@@ -47,7 +47,13 @@ const RankBadge = ({ rank }: { rank: number }) => {
 
 export default function PointsPage() {
   // In a real app, this would come from authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const currentUserId = 3; // Mock logged in user ID
+  
+  // Mock authentication functions - just for demo purposes
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
   // Fetch top users for the leaderboard
   const { data: users, isLoading, error } = useQuery({
@@ -67,48 +73,61 @@ export default function PointsPage() {
   return (
     <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
       <div className="max-w-4xl mx-auto space-y-8">
-        <div>
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
-          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
-        </div>
-
-        {/* User standing section */}
-        <div>
-          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your Standing</h2>
-          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] text-sm mb-4">Compared to others</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
+            <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
+          </div>
           
-          {currentUser ? (
-            <div className="rounded-lg p-3 border border-[color:var(--color-peach-100)] bg-white">
-              <div className="flex items-center justify-between">
-                <Link href="/user-score" className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
-                  <span className="text-2xl font-bold text-[color:var(--color-black)]">{currentUser.rank}</span>
-                  {currentUser.avatarUrl ? (
-                    <img 
-                      src={currentUser.avatarUrl} 
-                      alt={currentUser.username} 
-                      className="h-10 w-10 rounded-md object-cover border border-[color:var(--color-peach)] mr-2"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 bg-[color:var(--color-peach)] rounded-md mr-2 flex items-center justify-center">
-                      <span className="text-white font-bold">{currentUser.username.charAt(0)}</span>
-                    </div>
-                  )}
-                  <div>
-                    <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</div>
-                    <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
-                      You
-                    </div>
-                  </div>
-                </Link>
-                <span className="font-bold text-xl text-[color:var(--color-black)]">{formatNumber(currentUser.points)}</span>
-              </div>
-            </div>
-          ) : (
-            <div className="rounded-lg p-6 text-center border border-[color:var(--color-peach-100)] bg-white">
-              <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">Sign in to see your position on the leaderboard</p>
-            </div>
+          {!isAuthenticated && (
+            <Button 
+              onClick={handleLogin}
+              className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
+            >
+              Log In
+            </Button>
           )}
         </div>
+
+        {/* User standing section - Only show when authenticated */}
+        {isAuthenticated && (
+          <div>
+            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your Standing</h2>
+            <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] text-sm mb-4">Compared to others</p>
+            
+            {currentUser ? (
+              <div className="rounded-lg p-3 border border-[color:var(--color-peach-100)] bg-white">
+                <div className="flex items-center justify-between">
+                  <Link href={`/user-score?id=${currentUser.id}`} className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
+                    <span className="text-2xl font-bold text-[color:var(--color-black)]">#{currentUser.rank}</span>
+                    {currentUser.avatarUrl ? (
+                      <img 
+                        src={currentUser.avatarUrl} 
+                        alt={currentUser.username} 
+                        className="h-10 w-10 rounded-md object-cover border border-[color:var(--color-peach)] mr-2"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 bg-[color:var(--color-peach)] rounded-md mr-2 flex items-center justify-center">
+                        <span className="text-white font-bold">{currentUser.username.charAt(0)}</span>
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</div>
+                      <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
+                        You
+                      </div>
+                    </div>
+                  </Link>
+                  <span className="font-bold text-xl text-[color:var(--color-black)]">{formatNumber(currentUser.points)}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg p-6 text-center border border-[color:var(--color-peach-100)] bg-white">
+                <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">Sign in to see your position on the leaderboard</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Leaderboard section */}
         <div>
@@ -137,9 +156,10 @@ export default function PointsPage() {
               {Array.isArray(users) ? users.slice(0, 10).map((user) => {
                 const isCurrentUser = user.id === currentUserId;
                 return (
-                  <div 
-                    key={user.id} 
-                    className={`flex items-stretch bg-white rounded-lg overflow-hidden 
+                  <Link 
+                    href={`/user-score?id=${user.id}`}
+                    key={user.id}
+                    className={`flex items-stretch bg-white rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity
                     ${isCurrentUser ? "border-2 border-[color:var(--color-peach)]" : "border border-[color:var(--color-peach-100)]"}`}
                   >
                     <div className="w-16 bg-[color:var(--color-light-gray)] flex items-center justify-center">
@@ -158,7 +178,7 @@ export default function PointsPage() {
                       </div>
                       
                       <div className="flex items-center z-10">
-                        <Link href="/user-score" className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-3">
                           {user.avatarUrl ? (
                             <img 
                               src={user.avatarUrl} 
@@ -173,16 +193,16 @@ export default function PointsPage() {
                           <div>
                             <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{user.username}</div>
                             <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
-                              {isCurrentUser ? "You" : "Legion member"}
+                              {isCurrentUser ? "You" : "q/acc member"}
                             </div>
                           </div>
-                        </Link>
+                        </div>
                       </div>
                       <div className="text-right z-10 font-bold text-lg text-[color:var(--color-black)]">
                         {formatNumber(user.points)}
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               }) : <p className="p-4 text-center text-[color:var(--color-gray)]">No users found</p>}
             </div>
