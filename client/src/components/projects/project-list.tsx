@@ -261,7 +261,9 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</TableCell>
+                  <TableCell className="font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                    {project.isNew ? `$${project.tokenSymbol}` : project.tokenSymbol}
+                  </TableCell>
                   <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
                     {project.isNew ? "-" : formatCurrency(project.price)}
                   </TableCell>
