@@ -24,6 +24,10 @@ interface TokenUnlock {
   // For multiple rounds of the same project
   round?: number;
   transactionHash?: string;
+  // Purchase date
+  buyDate?: Date;
+  // Amount spent on this purchase
+  spent?: number;
 }
 
 interface PortfolioItem {
@@ -72,16 +76,47 @@ export default function PortfolioPage() {
   
   // Mock token unlock data - in a real app this would come from the API
   const tokenUnlocks: TokenUnlock[] = [
+    // Project #1, Round 1 - First purchase
     {
       projectId: 1,
       amount: 40,
       cliffDate: new Date(2025, 5, 15), // June 15, 2025
       endDate: new Date(2026, 5, 15), // June 15, 2026
-      claimed: claimedTokens['1-0'] || false,
+      claimed: claimedTokens['1-1'] || false,
       claimable: new Date() >= new Date(2025, 5, 15), // Check if current date is after cliff date
-      id: '1-0',
+      id: '1-1',
       transactionHash: "0x1234...5678",
-      round: 1
+      round: 1,
+      buyDate: new Date(2024, 11, 10), // December 10, 2024
+      spent: 500
+    },
+    // Project #1, Round 2 - Second purchase
+    {
+      projectId: 1,
+      amount: 75,
+      cliffDate: new Date(2025, 3, 20), // April 20, 2025
+      endDate: new Date(2026, 3, 20), // April 20, 2026
+      claimed: claimedTokens['1-2'] || false,
+      claimable: new Date() >= new Date(2025, 3, 20),
+      id: '1-2',
+      transactionHash: "0x5678...9abc",
+      round: 2,
+      buyDate: new Date(2025, 0, 15), // January 15, 2025
+      spent: 850
+    },
+    // Project #1, Round 3 - Third purchase
+    {
+      projectId: 1,
+      amount: 120,
+      cliffDate: new Date(2024, 8, 5), // September 5, 2024
+      endDate: new Date(2025, 8, 5), // September 5, 2025
+      claimed: claimedTokens['1-3'] || false,
+      claimable: true, // This one is claimable
+      id: '1-3',
+      transactionHash: "0xdef0...1234",
+      round: 3,
+      buyDate: new Date(2024, 6, 1), // July 1, 2024
+      spent: 1200
     },
     {
       projectId: 2,
@@ -442,15 +477,15 @@ export default function PortfolioPage() {
                       <div className="space-y-4">
                         {item.allUnlocks.map((unlock) => (
                           <div key={unlock.id} className="bg-[color:var(--color-light-gray)] p-4 rounded-lg">
-                            <div className="flex flex-wrap justify-between mb-2">
-                              <div className="font-['IBM_Plex_Mono'] text-sm mb-2">
+                            <div className="flex flex-wrap justify-between items-center mb-2">
+                              <div className="font-['IBM_Plex_Mono'] text-sm">
                                 <span className="text-[color:var(--color-black)] font-bold mr-2">
                                   {unlock.amount} {item.project?.tokenSymbol || "tokens"}
                                 </span>
                                 {unlock.round && <span className="text-[color:var(--color-gray)]">Round {unlock.round}</span>}
                               </div>
                               
-                              {/* Claim button per unlock */}
+                              {/* Claim button per unlock - aligned to the right */}
                               <div>
                                 {unlock.claimed ? (
                                   <Button 
@@ -486,15 +521,38 @@ export default function PortfolioPage() {
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-2 text-sm gap-2">
-                              <div>
-                                <span className="text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono']">CLIFF DATE:</span>
-                                <span className="ml-2 text-[color:var(--color-black)]">{formatDate(unlock.cliffDate)}</span>
-                              </div>
-                              <div>
-                                <span className="text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono']">END DATE:</span>
-                                <span className="ml-2 text-[color:var(--color-black)]">{formatDate(unlock.endDate)}</span>
-                              </div>
+                            {/* Expanded token details in a table-like format */}
+                            <div className="w-full overflow-x-auto">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr>
+                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">BUY DATE</th>
+                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">SPENT</th>
+                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal"># TOKENS</th>
+                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">CLIFF DATE</th>
+                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">END DATE</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td className="pr-4 text-[color:var(--color-black)]">
+                                      {unlock.buyDate ? formatDate(unlock.buyDate) : 'N/A'}
+                                    </td>
+                                    <td className="pr-4 text-[color:var(--color-black)]">
+                                      {unlock.spent ? formatCurrency(unlock.spent, true) : 'N/A'}
+                                    </td>
+                                    <td className="pr-4 text-[color:var(--color-black)]">
+                                      {unlock.amount}
+                                    </td>
+                                    <td className="pr-4 text-[color:var(--color-black)]">
+                                      {formatDate(unlock.cliffDate)}
+                                    </td>
+                                    <td className="pr-4 text-[color:var(--color-black)]">
+                                      {formatDate(unlock.endDate)}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
                             </div>
                           </div>
                         ))}
