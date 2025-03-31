@@ -217,7 +217,7 @@ export default function Home() {
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Ticker</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
@@ -245,7 +245,7 @@ export default function Home() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">DEX listing after this round</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">$400,000</td>
                     </tr>
                   ))}
                 </tbody>
