@@ -10,11 +10,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { ArrowLeft } from "lucide-react";
+import { PriceChart } from "@/components/projects/price-chart";
+import { VolumeChart } from "@/components/projects/volume-chart";
+import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
 
 export default function ProjectDetail() {
   const { id } = useParams();
   
-  const { data: project, isLoading, isError } = useQuery({
+  const { data: project, isLoading, isError } = useQuery<Project & {
+    features: ProjectFeature[];
+    technicalDetails: ProjectTechnicalDetail[];
+  }>({
     queryKey: [`/api/projects/${id}`],
   });
   
@@ -206,7 +212,17 @@ export default function ProjectDetail() {
                 
                 <TabsContent value="tokenomics">
                   <div className="py-4">
-                    <h3 className="text-lg font-medium mb-4">Token Distribution</h3>
+                    <h3 className="text-lg font-medium mb-4">Token Price & Volume Analytics</h3>
+                    
+                    <div className="grid grid-cols-1 gap-4 mb-6">
+                      <PriceChart projectId={parseInt(id || "0")} />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-4 mb-6">
+                      <VolumeChart projectId={parseInt(id || "0")} />
+                    </div>
+                    
+                    <h3 className="text-lg font-medium mb-4 mt-8">Token Distribution</h3>
                     <p className="text-gray-600">
                       Information about token distribution will be available soon.
                     </p>

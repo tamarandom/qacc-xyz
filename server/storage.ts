@@ -2,6 +2,7 @@ import {
   projects,
   projectFeatures,
   projectTechnicalDetails,
+  priceHistory,
   type Project,
   type InsertProject, 
   type ProjectFeature,
@@ -13,7 +14,9 @@ import {
   type InsertUser,
   type PointTransaction,
   type InsertPointTransaction,
-  type UserWithTransactions
+  type UserWithTransactions,
+  type PriceHistory,
+  type InsertPriceHistory
 } from "@shared/schema";
 
 // modify the interface with any CRUD methods
@@ -40,12 +43,17 @@ export interface IStorage {
   getTopUsers(limit?: number): Promise<User[]>;
   addPointTransaction(transaction: InsertPointTransaction): Promise<PointTransaction>;
   getUserTransactions(userId: number): Promise<PointTransaction[]>;
+  
+  // Price history methods
+  getProjectPriceHistory(projectId: number, timeframe?: string): Promise<PriceHistory[]>;
+  addPriceHistoryEntry(entry: InsertPriceHistory): Promise<PriceHistory>;
 }
 
 export class MemStorage implements IStorage {
   private projects: Map<number, Project>;
   private projectFeatures: Map<number, ProjectFeature[]>;
   private projectTechnicalDetails: Map<number, ProjectTechnicalDetail[]>;
+  private priceHistory: Map<number, PriceHistory[]>;
   private users: Map<number, User>;
   private pointTransactions: Map<number, PointTransaction[]>;
   private nextProjectId: number;
@@ -53,11 +61,13 @@ export class MemStorage implements IStorage {
   private nextDetailId: number;
   private nextUserId: number;
   private nextTransactionId: number;
+  private nextPriceHistoryId: number;
 
   constructor() {
     this.projects = new Map();
     this.projectFeatures = new Map();
     this.projectTechnicalDetails = new Map();
+    this.priceHistory = new Map();
     this.users = new Map();
     this.pointTransactions = new Map();
     this.nextProjectId = 1;
@@ -65,9 +75,64 @@ export class MemStorage implements IStorage {
     this.nextDetailId = 1;
     this.nextUserId = 1;
     this.nextTransactionId = 1;
+    this.nextPriceHistoryId = 1;
     
     // Initialize with sample data
     this.initializeSampleData();
+  }
+  
+  // Price history methods implementation
+  async getProjectPriceHistory(projectId: number, timeframe?: string): Promise<PriceHistory[]> {
+    const history = this.priceHistory.get(projectId) || [];
+    
+    if (!timeframe) {
+      return history;
+    }
+    
+    // Filter based on timeframe
+    const now = new Date();
+    let startDate = new Date();
+    
+    switch (timeframe) {
+      case '24h':
+        startDate.setDate(now.getDate() - 1);
+        break;
+      case '7d':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case '30d':
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case '90d':
+        startDate.setDate(now.getDate() - 90);
+        break;
+      case '1y':
+        startDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        // If timeframe is invalid, return all data
+        return history;
+    }
+    
+    return history.filter(entry => new Date(entry.timestamp) >= startDate);
+  }
+  
+  async addPriceHistoryEntry(entry: InsertPriceHistory): Promise<PriceHistory> {
+    const id = this.nextPriceHistoryId++;
+    const timestamp = entry.timestamp || new Date();
+    
+    const priceEntry: PriceHistory = {
+      ...entry,
+      id,
+      timestamp,
+      volume: entry.volume !== undefined ? entry.volume : null
+    };
+    
+    const projectHistory = this.priceHistory.get(entry.projectId) || [];
+    projectHistory.push(priceEntry);
+    this.priceHistory.set(entry.projectId, projectHistory);
+    
+    return priceEntry;
   }
 
   async getAllProjects(): Promise<Project[]> {
@@ -229,6 +294,41 @@ export class MemStorage implements IStorage {
       };
       this.users.set(user.id, updatedUser);
     });
+  }
+
+  private generateSamplePriceHistory(projectId: number, basePrice: number, volatility: number, days: number): void {
+    const now = new Date();
+    const millisecondsPerDay = 24 * 60 * 60 * 1000;
+    let currentPrice = basePrice;
+    
+    // Generate a data point for each day
+    for (let i = days; i >= 0; i--) {
+      // Calculate timestamp for this data point
+      const timestamp = new Date(now.getTime() - (i * millisecondsPerDay));
+      
+      // Add some randomness to create price fluctuations
+      // More recent days have more data points
+      const dataPointsPerDay = i < 7 ? 24 : i < 30 ? 8 : 1;
+      
+      for (let j = 0; j < dataPointsPerDay; j++) {
+        // Add some hours to the timestamp
+        const pointTimestamp = new Date(timestamp.getTime() + (j * millisecondsPerDay / dataPointsPerDay));
+        
+        // Calculate random price change (more volatile for older dates)
+        const change = (Math.random() * 2 - 1) * volatility * (1 + (i / days));
+        currentPrice = Math.max(0.1, currentPrice * (1 + (change / 100)));
+        
+        // Calculate volume based on price and some randomness
+        const volume = currentPrice * basePrice * 1000 * (0.5 + Math.random());
+        
+        this.addPriceHistoryEntry({
+          projectId,
+          timestamp: pointTimestamp,
+          price: currentPrice.toFixed(6),
+          volume: volume.toFixed(2)
+        });
+      }
+    }
   }
 
   private initializeSampleData() {
@@ -872,6 +972,17 @@ export class MemStorage implements IStorage {
       transactionHash: "0xabcd...ef01",
       description: "Purchased NEXUS tokens"
     });
+    
+    // Generate price history for launched projects 
+    // (excluding new projects that don't have price data yet)
+    this.generateSamplePriceHistory(1, 12.45, 3.0, 90); // SafeStake
+    this.generateSamplePriceHistory(2, 3.78, 5.0, 90); // LiquidSwap
+    this.generateSamplePriceHistory(3, 8.21, 2.5, 90); // NexusFi
+    this.generateSamplePriceHistory(4, 2.15, 4.0, 90); // DecentLend
+    this.generateSamplePriceHistory(5, 5.67, 3.5, 90); // QuantumYield
+    this.generateSamplePriceHistory(10, 4.25, 4.5, 90); // DeFi Pulse
+    this.generateSamplePriceHistory(11, 2.87, 6.0, 90); // NFT Marketplace
+    this.generateSamplePriceHistory(12, 5.12, 5.5, 90); // Web3 Social
   }
 }
 

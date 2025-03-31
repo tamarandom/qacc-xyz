@@ -204,6 +204,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch user transactions' });
     }
   });
+  
+  // PRICE HISTORY ENDPOINTS
+  
+  // Get price history for a project
+  app.get('/api/projects/:id/price-history', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const timeframe = req.query.timeframe as string || undefined;
+      const priceHistory = await storage.getProjectPriceHistory(id, timeframe);
+      
+      res.json(priceHistory);
+    } catch (error) {
+      console.error('Error fetching price history:', error);
+      res.status(500).json({ error: 'Failed to fetch price history' });
+    }
+  });
 
   const httpServer = createServer(app);
 

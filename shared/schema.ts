@@ -117,9 +117,26 @@ export type PointTransaction = typeof pointTransactions.$inferSelect;
 export type InsertPointTransaction = z.infer<typeof insertPointTransactionSchema>;
 
 // Extended types for frontend consumption
+// Price history
+export const priceHistory = pgTable("price_history", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+  price: numeric("price", { precision: 18, scale: 6 }).notNull(),
+  volume: numeric("volume", { precision: 18, scale: 2 }),
+});
+
+export const insertPriceHistorySchema = createInsertSchema(priceHistory).omit({ 
+  id: true 
+});
+
+export type PriceHistory = typeof priceHistory.$inferSelect;
+export type InsertPriceHistory = z.infer<typeof insertPriceHistorySchema>;
+
 export type ProjectWithDetails = Project & {
   features: ProjectFeature[];
   technicalDetails: ProjectTechnicalDetail[];
+  priceHistory?: PriceHistory[];
 };
 
 // Extended user type with transaction history
