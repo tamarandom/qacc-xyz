@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NewTag } from "@/components/ui/new-tag";
 import { ChevronDown, ChevronUp, Search, Filter, ArrowDownAZ, ArrowUpAZ, ArrowDownZA, ArrowUpZA } from "lucide-react";
 import { 
   Table, 
@@ -242,18 +241,13 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                 >
                   <TableCell className="pl-4">
                     <div className="flex items-center">
-                      <div className="relative">
-                        <ProjectAvatar
-                          name={project.name}
-                          bgColor={project.avatarBg || "#FBBA80"}
-                          textColor={project.avatarColor || "#101010"}
-                          initials={project.avatarText || project.name.substring(0, 2)}
-                          imageUrl={project.imageUrl || undefined}
-                        />
-                        {project.isNew && (
-                          <NewTag />
-                        )}
-                      </div>
+                      <ProjectAvatar
+                        name={project.name}
+                        bgColor={project.avatarBg || "#FBBA80"}
+                        textColor={project.avatarColor || "#101010"}
+                        initials={project.avatarText || project.name.substring(0, 2)}
+                        imageUrl={project.imageUrl || undefined}
+                      />
                       <div className="ml-4">
                         <div className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{project.name}</div>
                         <div className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono']">{project.shortDescription}</div>
