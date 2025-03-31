@@ -224,7 +224,7 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
           <TableHeader className="bg-[color:var(--color-light-gray)]">
             <TableRow>
               <TableHead className="font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Project</TableHead>
-              <TableHead className="font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Token</TableHead>
+              <TableHead className="font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Ticker</TableHead>
               <TableHead className="text-right font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Price</TableHead>
               <TableHead className="text-right font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">24h Change</TableHead>
               <TableHead className="text-right font-['IBM_Plex_Mono'] uppercase text-xs text-[color:var(--color-black-100)]">Market Cap</TableHead>

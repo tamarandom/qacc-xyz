@@ -216,7 +216,7 @@ export default function Home() {
                 <thead className="bg-[color:var(--color-light-gray)]">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Ticker</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
                   </tr>
                 </thead>
@@ -244,7 +244,7 @@ export default function Home() {
                           <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
                       <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">DEX listing after this round</td>
                     </tr>
                   ))}
@@ -315,7 +315,7 @@ export default function Home() {
               <thead className="bg-[color:var(--color-light-gray)]">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Ticker</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">24h Change</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
@@ -348,7 +348,7 @@ export default function Home() {
                         <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
+                    <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.price)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <PercentageChange value={project.change24h} />
