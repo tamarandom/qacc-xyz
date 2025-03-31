@@ -873,36 +873,7 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/cosmos-bridge.svg"
     });
     
-    // Project 10: DeFi Pulse
-    const defiPulse = await this.createProject({
-      name: "DeFi Pulse",
-      description: "DeFi Pulse offers real-time analytics and tracking of all major decentralized finance protocols. Our platform provides comprehensive data visualizations, risk assessments, and yield comparisons to help users make informed decisions. We've expanded to include tools for portfolio management and automated yield optimization.",
-      tokenSymbol: "PULSE",
-      tokenName: "DeFi Pulse Token",
-      price: 0.45,
-      marketCap: 3500000,
-      volume24h: 420000,
-      change24h: 7.8,
-      totalSupply: 100000000,
-      circulatingSupply: 20000000,
-      category: "Analytics",
-      shortDescription: "DeFi Analytics and Yield Optimization Platform",
-      blockchain: "Ethereum",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 10,
-      websiteUrl: "https://defipulse.io",
-      whitePaperUrl: "https://defipulse.io/whitepaper.pdf",
-      githubUrl: "https://github.com/defipulse",
-      twitterUrl: "https://twitter.com/DeFiPulse",
-      discordUrl: "https://discord.gg/defipulse",
-      avatarBg: "#FBBA80",
-      avatarText: "DP",
-      avatarColor: "#101010",
-      isFeatured: true,
-      isNew: false,
-      imageUrl: "/project-logos/defi-pulse.svg"
-    });
+
     
     // Project 11: How to DAO
     const nftMarketplace = await this.createProject({
@@ -1282,7 +1253,6 @@ export class MemStorage implements IStorage {
     await this.generateSamplePriceHistory(3, 0.92, 3.8, 90); // NexusFi
     await this.generateSamplePriceHistory(4, 0.78, 6.0, 90); // DecentLend
     await this.generateSamplePriceHistory(5, 0.65, 4.3, 90); // QuantumYield
-    await this.generateSamplePriceHistory(10, 0.45, 7.5, 90); // DeFi Pulse
     await this.generateSamplePriceHistory(11, 0.32, 8.0, 90); // NFT Marketplace
     await this.generateSamplePriceHistory(12, 0.18, 9.5, 90); // Web3 Social (lowest price)
     // Note: Project 13 (Oracle Finance) has been removed

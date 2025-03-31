@@ -152,17 +152,38 @@ export default function Home() {
           </DropdownMenu>
         </div>
         
-        <div className="relative w-full sm:w-auto">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
+        <div className="flex items-center gap-2">
+          <div className="relative w-full sm:w-auto">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
+            </div>
+            <Input
+              type="text"
+              placeholder="Search projects or tokens..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[260px]"
+            />
           </div>
-          <Input
-            type="text"
-            placeholder="Search projects or tokens..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[260px]"
-          />
+          
+          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
+            <TabsList className="bg-[color:var(--color-light-gray)]">
+              <TabsTrigger 
+                value="grid"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+              >
+                <LayoutGrid className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="list"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+              >
+                <List className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
       
@@ -190,7 +211,7 @@ export default function Home() {
                 <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
                   <thead className="bg-[color:var(--color-light-gray)]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
+
                       <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                       <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
                       <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
@@ -203,7 +224,7 @@ export default function Home() {
                         className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                         onClick={() => navigate(`/projects/${project.id}`)}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
+
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <ProjectAvatar
@@ -229,30 +250,8 @@ export default function Home() {
         </div>
       )}
       
-      {/* View and Sort Controls - Apply to all projects */}
-      <div className="mb-8 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
-            <TabsList className="bg-[color:var(--color-light-gray)]">
-              <TabsTrigger 
-                value="grid"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
-              >
-                <LayoutGrid className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="list"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
-              >
-                <List className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-        
-        {/* Sort Controls - Only for Launched Projects */}
+      {/* Sort Controls - Only for Launched Projects */}
+      <div className="mb-8 flex justify-end items-center">
         <div className="flex items-center space-x-2">
           <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
           <Select 
@@ -310,7 +309,7 @@ export default function Home() {
               <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
                 <thead className="bg-[color:var(--color-light-gray)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">#</th>
+
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
                     <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
@@ -325,7 +324,7 @@ export default function Home() {
                       className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                       onClick={() => navigate(`/projects/${project.id}`)}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">{project.rank}</td>
+
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <ProjectAvatar
