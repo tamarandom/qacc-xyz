@@ -95,7 +95,27 @@
   }
 }
 
+@keyframes pulse-border {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes new-project-avatar {
+  0% { transform: scale(1); box-shadow: 0 0 0 rgba(251, 186, 128, 0.4); }
+  50% { transform: scale(1.03); box-shadow: 0 0 10px rgba(251, 186, 128, 0.6); }
+  100% { transform: scale(1); box-shadow: 0 0 0 rgba(251, 186, 128, 0.4); }
+}
+
 @layer components {
+  .new-project-gradient {
+    background: linear-gradient(135deg, var(--color-peach) 0%, var(--color-peach-300) 50%, var(--color-peach) 100%);
+    animation: pulse-border 3s ease-in-out infinite;
+  }
+  
+  .new-project-avatar {
+    animation: new-project-avatar 3s ease-in-out infinite;
+  }
+  
   .accent-gradient {
     background: linear-gradient(90deg, var(--color-peach) 0%, var(--color-peach-200) 100%);
   }
