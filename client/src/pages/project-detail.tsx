@@ -275,7 +275,16 @@ export default function ProjectDetail() {
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Contract</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white truncate font-mono">{project.contractAddress}</dd>
+                    <dd className="mt-1 text-sm truncate font-mono">
+                      <a 
+                        href="https://polygonscan.com/token/0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]"
+                      >
+                        {project.contractAddress}
+                      </a>
+                    </dd>
                   </div>
                 </dl>
               </CardContent>
