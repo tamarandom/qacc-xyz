@@ -238,7 +238,7 @@ export default function Home() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(400000, true)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -340,7 +340,7 @@ export default function Home() {
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <PercentageChange value={project.change24h} />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap, true)}</td>
                     </tr>
                   ))}
                 </tbody>

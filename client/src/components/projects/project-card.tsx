@@ -67,10 +67,10 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             <>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors dark:text-white">
                 <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">$400,000</p>
+                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, true)}</p>
               </div>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-1 dark:text-white">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Ticker</p>
+                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
                 <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
               </div>
             </>
@@ -86,7 +86,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
               </div>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors dark:text-white">
                 <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap)}</p>
+                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, true)}</p>
               </div>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors dark:text-white">
                 <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
