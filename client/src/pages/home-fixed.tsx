@@ -250,48 +250,48 @@ export default function Home() {
         </div>
       )}
       
-      {/* Sort Controls - Only for Launched Projects */}
-      <div className="mb-8 flex justify-end items-center">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
-          <Select 
-            value={sortBy} 
-            onValueChange={setSortBy}
-          >
-            <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent className="font-['IBM_Plex_Mono']">
-              <SelectItem value="marketCap">Market Cap</SelectItem>
-              <SelectItem value="price">Price</SelectItem>
-              <SelectItem value="volume24h">Volume</SelectItem>
-              <SelectItem value="name">Name</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-            className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
-            title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
-          >
-            {sortDirection === 'asc' ? 
-              <ChevronDown className="h-4 w-4 rotate-180" /> : 
-              <ChevronDown className="h-4 w-4" />
-            }
-          </Button>
-        </div>
-      </div>
-      
-      {/* Launched Projects Section */}
+      {/* Launched Projects Section with Sort Controls */}
       {!isLoading && filteredLaunchedProjects.length > 0 && (
         <div>
-          <div className="flex items-center gap-2 mb-4">
-            <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
-              Launched Projects
-            </h2>
-            <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+                Launched Projects
+              </h2>
+              <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
+            </div>
+            
+            {/* Sort Controls - integrated with heading */}
+            <div className="flex items-center space-x-2">
+              <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
+              <Select 
+                value={sortBy} 
+                onValueChange={setSortBy}
+              >
+                <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent className="font-['IBM_Plex_Mono']">
+                  <SelectItem value="marketCap">Market Cap</SelectItem>
+                  <SelectItem value="price">Price</SelectItem>
+                  <SelectItem value="volume24h">Volume</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+                className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+                title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
+              >
+                {sortDirection === 'asc' ? 
+                  <ChevronDown className="h-4 w-4 rotate-180" /> : 
+                  <ChevronDown className="h-4 w-4" />
+                }
+              </Button>
+            </div>
           </div>
           
           {viewMode === "grid" ? (
