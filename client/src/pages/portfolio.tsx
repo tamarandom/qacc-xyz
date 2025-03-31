@@ -79,7 +79,7 @@ export default function PortfolioPage() {
     // Project #1, Round 1 - First purchase
     {
       projectId: 1,
-      amount: 40,
+      amount: 75,
       cliffDate: new Date(2025, 5, 15), // June 15, 2025
       endDate: new Date(2026, 5, 15), // June 15, 2026
       claimed: claimedTokens['1-1'] || false,
@@ -87,13 +87,13 @@ export default function PortfolioPage() {
       id: '1-1',
       transactionHash: "0x1234...5678",
       round: 1,
-      buyDate: new Date(2024, 11, 10), // December 10, 2024
-      spent: 500
+      buyDate: new Date(2024, 11, 15), // December 15, 2024 (6 months before cliff)
+      spent: 250
     },
     // Project #1, Round 2 - Second purchase
     {
       projectId: 1,
-      amount: 75,
+      amount: 120,
       cliffDate: new Date(2025, 3, 20), // April 20, 2025
       endDate: new Date(2026, 3, 20), // April 20, 2026
       claimed: claimedTokens['1-2'] || false,
@@ -101,22 +101,22 @@ export default function PortfolioPage() {
       id: '1-2',
       transactionHash: "0x5678...9abc",
       round: 2,
-      buyDate: new Date(2025, 0, 15), // January 15, 2025
-      spent: 850
+      buyDate: new Date(2024, 9, 20), // October 20, 2024 (6 months before cliff)
+      spent: 300
     },
     // Project #1, Round 3 - Third purchase
     {
       projectId: 1,
-      amount: 120,
-      cliffDate: new Date(2024, 8, 5), // September 5, 2024
-      endDate: new Date(2025, 8, 5), // September 5, 2025
+      amount: 150,
+      cliffDate: new Date(2025, 2, 5), // March 5, 2025
+      endDate: new Date(2026, 2, 5), // March 5, 2026
       claimed: claimedTokens['1-3'] || false,
-      claimable: true, // This one is claimable
+      claimable: new Date() >= new Date(2025, 2, 5),
       id: '1-3',
       transactionHash: "0xdef0...1234",
       round: 3,
-      buyDate: new Date(2024, 6, 1), // July 1, 2024
-      spent: 1200
+      buyDate: new Date(2024, 8, 5), // September 5, 2024 (6 months before cliff)
+      spent: 200
     },
     {
       projectId: 2,
@@ -127,100 +127,49 @@ export default function PortfolioPage() {
       claimable: new Date() >= new Date(2025, 8, 1), // Check if current date is after cliff date
       id: '2-0',
       transactionHash: "0x8765...4321",
-      round: 1
+      round: 1,
+      buyDate: new Date(2025, 2, 1), // March 1, 2025 (6 months before cliff)
+      spent: 250
     },
     {
       projectId: 3,
       amount: 120,
-      cliffDate: new Date(2023, 2, 15), // March 15, 2023 (already passed)
-      endDate: new Date(2024, 2, 15), // March 15, 2024
+      cliffDate: new Date(2025, 2, 15), // March 15, 2025
+      endDate: new Date(2026, 2, 15), // March 15, 2026
       claimed: claimedTokens['3-0'] || false,
-      claimable: true, // This one is claimable
+      claimable: false,
       id: '3-0',
       transactionHash: "0xabcd...ef01",
-      round: 1
+      round: 1,
+      buyDate: new Date(2024, 8, 15), // September 15, 2024 (6 months before cliff)
+      spent: 300
     },
     // Adding 5 more tokens with different cliff and end dates
     {
       projectId: 4,
       amount: 150,
-      cliffDate: new Date(2024, 7, 10), // August 10, 2024
-      endDate: new Date(2025, 7, 10), // August 10, 2025
+      cliffDate: new Date(2025, 7, 10), // August 10, 2025
+      endDate: new Date(2026, 7, 10), // August 10, 2026
       claimed: claimedTokens['4-0'] || false,
-      claimable: true, // This one is claimable (date is in the past)
+      claimable: false,
       id: '4-0',
       transactionHash: "0xdef0...1234",
-      round: 1
+      round: 1,
+      buyDate: new Date(2025, 1, 10), // February 10, 2025 (6 months before cliff)
+      spent: 350
     },
     {
       projectId: 5,
       amount: 200,
-      cliffDate: new Date(2024, 11, 25), // December 25, 2024
-      endDate: new Date(2025, 11, 25), // December 25, 2025
+      cliffDate: new Date(2025, 11, 25), // December 25, 2025
+      endDate: new Date(2026, 11, 25), // December 25, 2026
       claimed: claimedTokens['5-0'] || false,
-      claimable: true, // This one is claimable (date is in the past)
+      claimable: false,
       id: '5-0',
       transactionHash: "0x5678...9abc",
-      round: 1
-    },
-    {
-      projectId: 6,
-      amount: 75,
-      cliffDate: new Date(2025, 1, 14), // February 14, 2025
-      endDate: new Date(2026, 1, 14), // February 14, 2026
-      claimed: claimedTokens['6-0'] || false,
-      claimable: false, // Not yet claimable
-      id: '6-0',
-      transactionHash: "0xfedc...ba98",
-      round: 1
-    },
-    {
-      projectId: 7,
-      amount: 320,
-      cliffDate: new Date(2025, 3, 30), // April 30, 2025
-      endDate: new Date(2026, 9, 30), // October 30, 2026 (longer vesting period)
-      claimed: claimedTokens['7-0'] || false,
-      claimable: false, // Not yet claimable
-      id: '7-0',
-      transactionHash: "0x7654...3210",
-      round: 1
-    },
-    {
-      projectId: 8,
-      amount: 90,
-      cliffDate: new Date(2023, 11, 31), // December 31, 2023 (already passed)
-      endDate: new Date(2025, 0, 31), // January 31, 2025
-      claimed: claimedTokens['8-0'] || false,
-      claimable: true, // This one is claimable
-      id: '8-0',
-      transactionHash: "0xcba9...8765",
-      round: 1
-    },
-    // X23 Round 1 - First purchase: $1200 spent on 583 tokens
-    // Sep 1, 2025 to Mar 1, 2026 (as per user request)
-    {
-      projectId: 0, // X23 has ID 0
-      amount: 583,
-      cliffDate: new Date(2025, 8, 1), // September 1, 2025
-      endDate: new Date(2026, 2, 1), // March 1, 2026
-      claimed: claimedTokens['0-1'] || false,
-      claimable: false, // Not yet claimable
-      id: '0-1',
-      transactionHash: "0x3456...7890",
-      round: 1
-    },
-    // X23 Round 2 - Second purchase
-    // Feb 15, 2025 to Aug 15, 2025 (as per user request)
-    {
-      projectId: 0, // X23 has ID 0
-      amount: 350,
-      cliffDate: new Date(2025, 1, 15), // February 15, 2025
-      endDate: new Date(2025, 7, 15), // August 15, 2025
-      claimed: claimedTokens['0-2'] || false,
-      claimable: false, // Not yet claimable
-      id: '0-2',
-      transactionHash: "0x9012...3456",
-      round: 2
+      round: 1,
+      buyDate: new Date(2025, 5, 25), // June 25, 2025 (6 months before cliff)
+      spent: 280
     }
   ];
   
