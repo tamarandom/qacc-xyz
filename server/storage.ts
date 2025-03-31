@@ -1246,6 +1246,25 @@ export class MemStorage implements IStorage {
       description: "Purchased META tokens"
     });
     
+    // Add X23 transactions for user 1 (multiple rounds with different cliff and end dates)
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 0, // X23 has ID 0 based on the update_project_data.js
+      amount: 850,
+      tokenAmount: 350,
+      transactionHash: "0x3456...7890",
+      description: "Purchased X23 tokens - Round 1"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 0, // X23 has ID 0 based on the update_project_data.js
+      amount: 1200,
+      tokenAmount: 583,
+      transactionHash: "0x9012...3456",
+      description: "Purchased X23 tokens - Round 2"
+    });
+    
     // Add transaction for user 2
     await this.addPointTransaction({
       userId: 2,

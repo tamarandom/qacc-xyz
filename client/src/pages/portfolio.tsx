@@ -19,6 +19,17 @@ interface TokenUnlock {
   endDate: Date;
   claimed: boolean;
   claimable: boolean;
+  // Unique identifier for each unlock (projectId + round number)
+  id: string;
+  // For multiple rounds of the same project
+  round?: number;
+  transactionHash?: string;
+}
+
+interface PortfolioItem {
+  transaction: PointTransaction;
+  project: Project | undefined;
+  unlock: TokenUnlock | undefined;
 }
 
 export default function PortfolioPage() {
@@ -53,7 +64,9 @@ export default function PortfolioPage() {
   
   // For token claiming
   const { toast } = useToast();
-  const [claimedTokens, setClaimedTokens] = useState<{[key: number]: boolean}>({});
+  
+  // For claiming tokens - using ID instead of just projectId
+  const [claimedTokens, setClaimedTokens] = useState<{[key: string]: boolean}>({});
   
   // Mock token unlock data - in a real app this would come from the API
   const tokenUnlocks: TokenUnlock[] = [
@@ -62,24 +75,33 @@ export default function PortfolioPage() {
       amount: 40,
       cliffDate: new Date(2025, 5, 15), // June 15, 2025
       endDate: new Date(2026, 5, 15), // June 15, 2026
-      claimed: claimedTokens[1] || false,
-      claimable: new Date() >= new Date(2025, 5, 15) // Check if current date is after cliff date
+      claimed: claimedTokens['1-0'] || false,
+      claimable: new Date() >= new Date(2025, 5, 15), // Check if current date is after cliff date
+      id: '1-0',
+      transactionHash: "0x1234...5678",
+      round: 1
     },
     {
       projectId: 2,
       amount: 80,
       cliffDate: new Date(2025, 8, 1), // September 1, 2025
       endDate: new Date(2026, 8, 1), // September 1, 2026
-      claimed: claimedTokens[2] || false,
-      claimable: new Date() >= new Date(2025, 8, 1) // Check if current date is after cliff date
+      claimed: claimedTokens['2-0'] || false,
+      claimable: new Date() >= new Date(2025, 8, 1), // Check if current date is after cliff date
+      id: '2-0',
+      transactionHash: "0x8765...4321",
+      round: 1
     },
     {
       projectId: 3,
       amount: 120,
       cliffDate: new Date(2023, 2, 15), // March 15, 2023 (already passed)
       endDate: new Date(2024, 2, 15), // March 15, 2024
-      claimed: claimedTokens[3] || false,
-      claimable: true // This one is claimable
+      claimed: claimedTokens['3-0'] || false,
+      claimable: true, // This one is claimable
+      id: '3-0',
+      transactionHash: "0xabcd...ef01",
+      round: 1
     },
     // Adding 5 more tokens with different cliff and end dates
     {
@@ -87,53 +109,105 @@ export default function PortfolioPage() {
       amount: 150,
       cliffDate: new Date(2024, 7, 10), // August 10, 2024
       endDate: new Date(2025, 7, 10), // August 10, 2025
-      claimed: claimedTokens[4] || false,
-      claimable: true // This one is claimable (date is in the past)
+      claimed: claimedTokens['4-0'] || false,
+      claimable: true, // This one is claimable (date is in the past)
+      id: '4-0',
+      transactionHash: "0xdef0...1234",
+      round: 1
     },
     {
       projectId: 5,
       amount: 200,
       cliffDate: new Date(2024, 11, 25), // December 25, 2024
       endDate: new Date(2025, 11, 25), // December 25, 2025
-      claimed: claimedTokens[5] || false,
-      claimable: true // This one is claimable (date is in the past)
+      claimed: claimedTokens['5-0'] || false,
+      claimable: true, // This one is claimable (date is in the past)
+      id: '5-0',
+      transactionHash: "0x5678...9abc",
+      round: 1
     },
     {
       projectId: 6,
       amount: 75,
       cliffDate: new Date(2025, 1, 14), // February 14, 2025
       endDate: new Date(2026, 1, 14), // February 14, 2026
-      claimed: claimedTokens[6] || false,
-      claimable: false // Not yet claimable
+      claimed: claimedTokens['6-0'] || false,
+      claimable: false, // Not yet claimable
+      id: '6-0',
+      transactionHash: "0xfedc...ba98",
+      round: 1
     },
     {
       projectId: 7,
       amount: 320,
       cliffDate: new Date(2025, 3, 30), // April 30, 2025
       endDate: new Date(2026, 9, 30), // October 30, 2026 (longer vesting period)
-      claimed: claimedTokens[7] || false,
-      claimable: false // Not yet claimable
+      claimed: claimedTokens['7-0'] || false,
+      claimable: false, // Not yet claimable
+      id: '7-0',
+      transactionHash: "0x7654...3210",
+      round: 1
     },
     {
       projectId: 8,
       amount: 90,
       cliffDate: new Date(2023, 11, 31), // December 31, 2023 (already passed)
       endDate: new Date(2025, 0, 31), // January 31, 2025
-      claimed: claimedTokens[8] || false,
-      claimable: true // This one is claimable
+      claimed: claimedTokens['8-0'] || false,
+      claimable: true, // This one is claimable
+      id: '8-0',
+      transactionHash: "0xcba9...8765",
+      round: 1
+    },
+    // X23 Round 1 - First purchase: $1200 spent on 583 tokens
+    // Sep 1, 2025 to Mar 1, 2026 (as per user request)
+    {
+      projectId: 0, // X23 has ID 0
+      amount: 583,
+      cliffDate: new Date(2025, 8, 1), // September 1, 2025
+      endDate: new Date(2026, 2, 1), // March 1, 2026
+      claimed: claimedTokens['0-1'] || false,
+      claimable: false, // Not yet claimable
+      id: '0-1',
+      transactionHash: "0x3456...7890",
+      round: 1
+    },
+    // X23 Round 2 - Second purchase
+    // Feb 15, 2025 to Aug 15, 2025 (as per user request)
+    {
+      projectId: 0, // X23 has ID 0
+      amount: 350,
+      cliffDate: new Date(2025, 1, 15), // February 15, 2025
+      endDate: new Date(2025, 7, 15), // August 15, 2025
+      claimed: claimedTokens['0-2'] || false,
+      claimable: false, // Not yet claimable
+      id: '0-2',
+      transactionHash: "0x9012...3456",
+      round: 2
     }
   ];
   
-  // Combine transaction data with project details
-  const portfolioItems = userData?.transactions.map(transaction => {
+  // Combine transaction data with project details and all relevant token unlocks
+  const portfolioItems: PortfolioItem[] | undefined = userData?.transactions.flatMap(transaction => {
     const project = projects?.find(p => p.id === transaction.projectId);
-    const unlock = tokenUnlocks.find(t => t.projectId === transaction.projectId);
+    // Get all unlocks for this project - support multiple rounds
+    const unlocks = tokenUnlocks.filter(t => t.projectId === transaction.projectId);
     
-    return {
+    // If no unlocks found, return one item with just the transaction and project
+    if (unlocks.length === 0) {
+      return [{
+        transaction,
+        project,
+        unlock: undefined
+      }] as PortfolioItem[];
+    }
+    
+    // Otherwise, return an item for each unlock
+    return unlocks.map(unlock => ({
       transaction,
       project,
       unlock
-    };
+    } as PortfolioItem));
   });
   
   // Calculate totals
@@ -143,42 +217,44 @@ export default function PortfolioPage() {
   
   const projectsCount = new Set(portfolioItems?.map(item => item.transaction.projectId)).size || 0;
   
-  // Handle claiming tokens for a specific project
-  const handleClaimTokens = (projectId: number) => {
-    if (!tokenUnlocks.find(t => t.projectId === projectId)?.claimable) return;
+  // Handle claiming tokens for a specific unlock
+  const handleClaimTokens = (tokenId: string) => {
+    const unlock = tokenUnlocks.find(t => t.id === tokenId);
+    if (!unlock?.claimable) return;
     
     // In a real app, this would be an API call
     setClaimedTokens(prev => ({
       ...prev,
-      [projectId]: true
+      [tokenId]: true
     }));
     
-    const project = projects?.find(p => p.id === projectId);
+    const project = projects?.find(p => p.id === unlock.projectId);
+    const roundInfo = unlock.round ? ` (Round ${unlock.round})` : '';
+    
     toast({
       title: "Tokens Claimed!",
-      description: `Successfully claimed tokens for ${project?.name || `Project #${projectId}`}`,
+      description: `Successfully claimed tokens for ${project?.name || `Project #${unlock.projectId}`}${roundInfo}`,
     });
   };
   
   // Handle claiming all available tokens
   const handleClaimAllTokens = () => {
-    const claimableProjectIds = tokenUnlocks
-      .filter(t => t.claimable && !t.claimed)
-      .map(t => t.projectId);
+    const claimableTokens = tokenUnlocks
+      .filter(t => t.claimable && !t.claimed);
       
-    if (claimableProjectIds.length === 0) return;
+    if (claimableTokens.length === 0) return;
     
     // In a real app, this would be an API call
     const newClaimedTokens = { ...claimedTokens };
-    claimableProjectIds.forEach(id => {
-      newClaimedTokens[id] = true;
+    claimableTokens.forEach(unlock => {
+      newClaimedTokens[unlock.id] = true;
     });
     
     setClaimedTokens(newClaimedTokens);
     
     toast({
       title: "All Tokens Claimed!",
-      description: `Successfully claimed tokens for ${claimableProjectIds.length} projects`,
+      description: `Successfully claimed tokens for ${claimableTokens.length} token unlocks`,
     });
   };
   
@@ -367,7 +443,7 @@ export default function PortfolioPage() {
                           </Button>
                         ) : item.unlock.claimable ? (
                           <Button 
-                            onClick={() => handleClaimTokens(item.transaction.projectId)}
+                            onClick={() => handleClaimTokens(item.unlock.id)}
                             variant="default"
                             className="font-['IBM_Plex_Mono'] text-sm"
                           >
