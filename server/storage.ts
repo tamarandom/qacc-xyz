@@ -555,8 +555,8 @@ export class MemStorage implements IStorage {
   private async initializeSampleData() {
     // Project X23: Real Market Data
     const x23 = await this.createProject({
-      name: "X23",
-      description: "X23 is a cutting-edge decentralized AI protocol that combines advanced machine learning with blockchain technology to create intelligent and adaptive decentralized applications. By leveraging neural networks and robust data processing capabilities, X23 enables smarter, more responsive DeFi platforms and Web3 services.",
+      name: "x23.ai",
+      description: "x23.ai is a cutting-edge decentralized AI protocol that combines advanced machine learning with blockchain technology to create intelligent and adaptive decentralized applications. By leveraging neural networks and robust data processing capabilities, x23.ai enables smarter, more responsive DeFi platforms and Web3 services.",
       tokenSymbol: "X23",
       tokenName: "X23 Token",
       price: 1.15,
@@ -599,12 +599,12 @@ export class MemStorage implements IStorage {
     // Real historical X23 price data (simulated based on real market patterns)
     await this.generateRealX23PriceHistory(x23.id);
     
-    // Project 1: SafeStake
+    // Project 1: Akarun
     const safeStake = await this.createProject({
-      name: "SafeStake",
-      description: "SafeStake is a decentralized staking protocol that enables secure, non-custodial staking for proof-of-stake blockchains. Our innovative approach solves key challenges in the staking ecosystem by distributing validator responsibilities across multiple nodes, reducing the risk of slashing while maintaining high yields.",
-      tokenSymbol: "SAFE",
-      tokenName: "SafeStake Token",
+      name: "Akarun",
+      description: "Akarun is a decentralized staking protocol that enables secure, non-custodial staking for proof-of-stake blockchains. Our innovative approach solves key challenges in the staking ecosystem by distributing validator responsibilities across multiple nodes, reducing the risk of slashing while maintaining high yields.",
+      tokenSymbol: "AKA",
+      tokenName: "Akarun Token",
       price: 1.3,
       marketCap: 10000000,
       volume24h: 1250000,
@@ -629,12 +629,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/safe-stake.svg"
     });
 
-    // Project 2: LiquidSwap
+    // Project 2: Ancient Beast
     const liquidSwap = await this.createProject({
-      name: "LiquidSwap",
-      description: "LiquidSwap is an innovative cross-chain liquidity protocol that enables seamless asset swaps across multiple blockchains. Our protocol leverages advanced bridges and liquidity pools to provide users with the best rates and minimal slippage.",
-      tokenSymbol: "LSWP",
-      tokenName: "LiquidSwap Token",
+      name: "Ancient Beast",
+      description: "Ancient Beast is an innovative cross-chain liquidity protocol that enables seamless asset swaps across multiple blockchains. Our protocol leverages advanced bridges and liquidity pools to provide users with the best rates and minimal slippage.",
+      tokenSymbol: "BEAST",
+      tokenName: "Ancient Beast Token",
       price: 1.04,
       marketCap: 8700000,
       volume24h: 930000,
@@ -659,12 +659,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/liquid-swap.svg"
     });
 
-    // Project 3: NexusFi
+    // Project 3: Citizen Wallet
     const nexusFi = await this.createProject({
-      name: "NexusFi",
-      description: "NexusFi is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
-      tokenSymbol: "NEXUS",
-      tokenName: "Nexus Finance Token",
+      name: "Citizen Wallet",
+      description: "Citizen Wallet is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
+      tokenSymbol: "CTZN",
+      tokenName: "Citizen Wallet Token",
       price: 0.92,
       marketCap: 7300000,
       volume24h: 720000,
@@ -689,12 +689,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/nexus-finance.svg"
     });
 
-    // Project 4: DecentLend
+    // Project 4: Melodex
     const decentLend = await this.createProject({
-      name: "DecentLend",
-      description: "DecentLend is a peer-to-peer lending platform that connects borrowers and lenders directly without intermediaries. The platform uses smart contracts to secure loans and enable transparent terms and conditions.",
-      tokenSymbol: "DLEND",
-      tokenName: "DecentLend Token",
+      name: "Melodex",
+      description: "Melodex is a peer-to-peer music platform that connects artists and listeners directly without intermediaries. The platform uses smart contracts to secure music licenses and enable transparent royalty distribution.",
+      tokenSymbol: "MELS",
+      tokenName: "Melodex Token",
       price: 0.78,
       marketCap: 6200000,
       volume24h: 650000,
@@ -719,12 +719,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/decent-lend.svg"
     });
 
-    // Project 5: QuantumYield
+    // Project 5: Grand Timeline
     const quantumYield = await this.createProject({
-      name: "QuantumYield",
-      description: "QuantumYield is an advanced yield optimization protocol that automatically allocates assets to the highest-yielding opportunities across multiple DeFi platforms. Our proprietary algorithm analyzes risk-reward ratios to maximize returns.",
-      tokenSymbol: "QYLD",
-      tokenName: "QuantumYield Token",
+      name: "Grand Timeline",
+      description: "Grand Timeline is an advanced decentralized storage solution that provides secure, encrypted file storage on the blockchain. Users can store their data with complete privacy, while also being able to share access with specific parties when needed.",
+      tokenSymbol: "GRNDT",
+      tokenName: "Grand Timeline Token",
       price: 0.65,
       marketCap: 5100000,
       volume24h: 580000,
@@ -749,12 +749,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/quantum-dao.svg"
     });
     
-    // Project 6: ChainGuard
+    // Project 6: Prismo Technology
     const chainGuard = await this.createProject({
-      name: "ChainGuard",
-      description: "ChainGuard is a next-generation security protocol that provides real-time monitoring and protection for blockchain assets and smart contracts. Our platform uses AI-powered anomaly detection to identify and prevent security breaches before they can impact your assets.",
-      tokenSymbol: "GUARD",
-      tokenName: "ChainGuard Token",
+      name: "Prismo Technology",
+      description: "Prismo Technology is a next-generation security protocol that provides real-time monitoring and protection for blockchain assets and smart contracts. Our platform uses AI-powered anomaly detection to identify and prevent security breaches before they can impact your assets.",
+      tokenSymbol: "PRSM",
+      tokenName: "Prismo Technology Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
@@ -780,12 +780,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/chain-guard.svg"
     });
     
-    // Project 7: MetaverseDAO
+    // Project 7: Xade Finance
     const metaverseDAO = await this.createProject({
-      name: "MetaverseDAO",
-      description: "MetaverseDAO is a community-driven platform for building, governing, and monetizing virtual worlds. Our protocol enables creators to develop interoperable assets and experiences across different metaverse platforms while offering governance rights to token holders.",
-      tokenSymbol: "MVDAO",
-      tokenName: "Metaverse DAO Token",
+      name: "Xade Finance",
+      description: "Xade Finance is a next-generation decentralized finance platform focusing on providing banking and financial services to the unbanked population globally through blockchain technology.",
+      tokenSymbol: "ACHAD",
+      tokenName: "Xade Finance Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
