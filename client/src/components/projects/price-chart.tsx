@@ -132,9 +132,9 @@ export function PriceChart({ projectId }: PriceChartProps) {
   };
   
   return (
-    <Card className={theme === 'dark' 
+    <Card className={`chart-container ${theme === 'dark' 
       ? "bg-[color:var(--color-black)] text-white border-none" 
-      : "bg-white border-[color:var(--color-gray-200)]"
+      : "bg-white border-[color:var(--color-gray-200)]"}`
     }>
       <CardHeader className="pb-2">
         <div className="flex flex-col space-y-3">

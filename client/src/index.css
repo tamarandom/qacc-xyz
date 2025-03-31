@@ -184,8 +184,13 @@
     border-color: #2A2A2A;
   }
   
-  /* Fix chart container background */
+  /* Fix backgrounds in dark mode */
   [data-theme='dark'] .bg-white {
+    background-color: #101010;
+  }
+  
+  /* Fix chart container background */
+  [data-theme='dark'] .chart-container {
     background-color: #1E1E1E;
   }
   
