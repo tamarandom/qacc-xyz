@@ -30,6 +30,8 @@ interface PortfolioItem {
   transaction: PointTransaction;
   project: Project | undefined;
   unlock: TokenUnlock | undefined;
+  allUnlocks: TokenUnlock[]; // All unlocks for this project
+  totalTokenAmount: number; // Total tokens across all purchases
 }
 
 export default function PortfolioPage() {
@@ -187,27 +189,50 @@ export default function PortfolioPage() {
     }
   ];
   
-  // Combine transaction data with project details and all relevant token unlocks
-  const portfolioItems: PortfolioItem[] | undefined = userData?.transactions.flatMap(transaction => {
-    const project = projects?.find(p => p.id === transaction.projectId);
-    // Get all unlocks for this project - support multiple rounds
-    const unlocks = tokenUnlocks.filter(t => t.projectId === transaction.projectId);
-    
-    // If no unlocks found, return one item with just the transaction and project
-    if (unlocks.length === 0) {
-      return [{
-        transaction,
-        project,
-        unlock: undefined
-      }] as PortfolioItem[];
+  // First group all transactions by project ID
+  const transactionsByProject = userData?.transactions.reduce<Record<number, PointTransaction[]>>((acc, transaction) => {
+    if (!acc[transaction.projectId]) {
+      acc[transaction.projectId] = [];
     }
+    acc[transaction.projectId].push(transaction);
+    return acc;
+  }, {}) || {};
+  
+  // Create a unified list of portfolio items with projects and their unlocks
+  const portfolioItems: PortfolioItem[] = [];
+  
+  // For each project, create a single portfolio item with all its unlocks
+  Object.entries(transactionsByProject).forEach(([projectIdStr, transactions]) => {
+    const projectId = parseInt(projectIdStr);
+    const project = projects?.find(p => p.id === projectId);
     
-    // Otherwise, return an item for each unlock
-    return unlocks.map(unlock => ({
-      transaction,
+    // Find all unlocks for this project
+    const unlocks = tokenUnlocks.filter(t => t.projectId === projectId);
+    
+    // Calculate total token amount across all transactions for this project
+    const totalTokens = transactions.reduce((sum, tx) => sum + tx.tokenAmount, 0);
+    
+    // Calculate total spent across all transactions for this project
+    const totalSpent = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+    
+    // Use the most recent transaction data as a base, but override with calculated totals
+    const latestTransaction = {
+      ...transactions.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )[0],
+      // Override with total values
+      amount: totalSpent,
+      tokenAmount: totalTokens
+    };
+    
+    // For this project, create one item with the aggregated transaction data and all unlocks
+    portfolioItems.push({
+      transaction: latestTransaction,
       project,
-      unlock
-    } as PortfolioItem));
+      unlock: unlocks.length > 0 ? unlocks[0] : undefined,
+      allUnlocks: unlocks,
+      totalTokenAmount: totalTokens
+    });
   });
   
   // Calculate totals
@@ -386,11 +411,12 @@ export default function PortfolioPage() {
                     </Link>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* Summary row with totals */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                     <div>
                       <div className="flex items-center text-[color:var(--color-gray)] mb-1">
                         <Briefcase size={16} className="mr-2" />
-                        <span className="text-xs font-['IBM_Plex_Mono']">SPENT</span>
+                        <span className="text-xs font-['IBM_Plex_Mono']">TOTAL SPENT</span>
                       </div>
                       <p className="font-bold text-lg text-[color:var(--color-black)]">
                         {formatCurrency(item.transaction.amount, true)}
@@ -400,66 +426,78 @@ export default function PortfolioPage() {
                     <div>
                       <div className="flex items-center text-[color:var(--color-gray)] mb-1">
                         <Coins size={16} className="mr-2" />
-                        <span className="text-xs font-['IBM_Plex_Mono']">TOKENS</span>
+                        <span className="text-xs font-['IBM_Plex_Mono']">TOTAL TOKENS</span>
                       </div>
                       <p className="font-bold text-lg text-[color:var(--color-black)]">
                         {item.transaction.tokenAmount} {item.project?.tokenSymbol || "tokens"}
                       </p>
                     </div>
-                    
-                    <div>
-                      <div className="flex items-center text-[color:var(--color-gray)] mb-1">
-                        <Calendar size={16} className="mr-2" />
-                        <span className="text-xs font-['IBM_Plex_Mono']">CLIFF DATE</span>
-                      </div>
-                      <p className="font-bold text-lg text-[color:var(--color-black)]">
-                        {item.unlock ? formatDate(item.unlock.cliffDate) : "TBD"}
-                      </p>
-                    </div>
-                    
-                    <div>
-                      <div className="flex items-center text-[color:var(--color-gray)] mb-1">
-                        <Calendar size={16} className="mr-2" />
-                        <span className="text-xs font-['IBM_Plex_Mono']">END DATE</span>
-                      </div>
-                      <p className="font-bold text-lg text-[color:var(--color-black)]">
-                        {item.unlock ? formatDate(item.unlock.endDate) : "TBD"}
-                      </p>
-                    </div>
                   </div>
                   
-                  {/* Claim Token Button */}
-                  {item.unlock && (
-                    <div className="mt-4 pt-4 border-t border-[color:var(--color-light-gray)]">
-                      <div className="flex justify-end">
-                        {item.unlock.claimed ? (
-                          <Button 
-                            disabled
-                            variant="outline"
-                            className="font-['IBM_Plex_Mono'] text-sm opacity-50"
-                          >
-                            <Check className="mr-2 h-4 w-4" />
-                            Tokens Claimed
-                          </Button>
-                        ) : item.unlock.claimable ? (
-                          <Button 
-                            onClick={() => handleClaimTokens(item.unlock.id)}
-                            variant="default"
-                            className="font-['IBM_Plex_Mono'] text-sm"
-                          >
-                            <LockOpen className="mr-2 h-4 w-4" />
-                            Claim Tokens
-                          </Button>
-                        ) : (
-                          <Button 
-                            disabled
-                            variant="outline"
-                            className="font-['IBM_Plex_Mono'] text-sm opacity-50"
-                          >
-                            <Calendar className="mr-2 h-4 w-4" />
-                            Not Claimable Yet
-                          </Button>
-                        )}
+                  {/* Multiple token unlock rows */}
+                  {item.allUnlocks && item.allUnlocks.length > 0 && (
+                    <div className="mt-4 border-t border-[color:var(--color-light-gray)] pt-4">
+                      <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-3">TOKEN UNLOCKS</h4>
+                      
+                      <div className="space-y-4">
+                        {item.allUnlocks.map((unlock) => (
+                          <div key={unlock.id} className="bg-[color:var(--color-light-gray)] p-4 rounded-lg">
+                            <div className="flex flex-wrap justify-between mb-2">
+                              <div className="font-['IBM_Plex_Mono'] text-sm mb-2">
+                                <span className="text-[color:var(--color-black)] font-bold mr-2">
+                                  {unlock.amount} {item.project?.tokenSymbol || "tokens"}
+                                </span>
+                                {unlock.round && <span className="text-[color:var(--color-gray)]">Round {unlock.round}</span>}
+                              </div>
+                              
+                              {/* Claim button per unlock */}
+                              <div>
+                                {unlock.claimed ? (
+                                  <Button 
+                                    disabled
+                                    variant="outline"
+                                    size="sm"
+                                    className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                  >
+                                    <Check className="mr-1 h-3 w-3" />
+                                    Claimed
+                                  </Button>
+                                ) : unlock.claimable ? (
+                                  <Button 
+                                    onClick={() => handleClaimTokens(unlock.id)}
+                                    variant="default"
+                                    size="sm"
+                                    className="font-['IBM_Plex_Mono'] text-xs"
+                                  >
+                                    <LockOpen className="mr-1 h-3 w-3" />
+                                    Claim
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    disabled
+                                    variant="outline"
+                                    size="sm"
+                                    className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                  >
+                                    <Calendar className="mr-1 h-3 w-3" />
+                                    Not Claimable
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 text-sm gap-2">
+                              <div>
+                                <span className="text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono']">CLIFF DATE:</span>
+                                <span className="ml-2 text-[color:var(--color-black)]">{formatDate(unlock.cliffDate)}</span>
+                              </div>
+                              <div>
+                                <span className="text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono']">END DATE:</span>
+                                <span className="ml-2 text-[color:var(--color-black)]">{formatDate(unlock.endDate)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
