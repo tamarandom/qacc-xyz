@@ -11,7 +11,7 @@ import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { ArrowLeft } from "lucide-react";
 import { PriceChart } from "@/components/projects/price-chart";
-import { VolumeChart } from "@/components/projects/volume-chart";
+
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
 
 export default function ProjectDetail() {
@@ -160,12 +160,8 @@ export default function ProjectDetail() {
             </div>
             
             <div className="mb-6">
-              <div className="grid grid-cols-1 gap-4 mb-6">
-                <PriceChart projectId={parseInt(id || "0")} />
-              </div>
-              
               <div className="grid grid-cols-1 gap-4">
-                <VolumeChart projectId={parseInt(id || "0")} />
+                <PriceChart projectId={parseInt(id || "0")} />
               </div>
             </div>
             
