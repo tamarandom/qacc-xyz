@@ -76,8 +76,8 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                 <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">$400,000</p>
               </div>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-1 dark:text-white">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Status</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">DEX listing after this round</p>
+                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Ticker</p>
+                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
               </div>
             </>
           ) : (
