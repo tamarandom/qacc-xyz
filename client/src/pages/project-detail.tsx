@@ -128,16 +128,16 @@ export default function ProjectDetail() {
                       <div className="flex items-center">
                         <Calendar className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Token Supply</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{formatNumber(project.totalSupply)} {project.tokenSymbol}</p>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Supply</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">6.4M {project.tokenSymbol}</p>
                         </div>
                       </div>
                       
                       <div className="flex items-center">
                         <Timer className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
                         <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Standard</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{project.tokenStandard}</p>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Chain</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">Polygon</p>
                         </div>
                       </div>
                     </div>
@@ -310,12 +310,8 @@ export default function ProjectDetail() {
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.tokenSymbol}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Blockchain</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">{project.blockchain}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Standard</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">{project.tokenStandard}</dd>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Chain</dt>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">Polygon</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Total Supply</dt>
