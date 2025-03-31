@@ -241,13 +241,20 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                 >
                   <TableCell className="pl-4">
                     <div className="flex items-center">
-                      <ProjectAvatar
-                        name={project.name}
-                        bgColor={project.avatarBg || "#FBBA80"}
-                        textColor={project.avatarColor || "#101010"}
-                        initials={project.avatarText || project.name.substring(0, 2)}
-                        imageUrl={project.imageUrl || undefined}
-                      />
+                      <div className="relative">
+                        <ProjectAvatar
+                          name={project.name}
+                          bgColor={project.avatarBg || "#FBBA80"}
+                          textColor={project.avatarColor || "#101010"}
+                          initials={project.avatarText || project.name.substring(0, 2)}
+                          imageUrl={project.imageUrl || undefined}
+                        />
+                        {project.isNew && (
+                          <div className="absolute -top-1 -left-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                            New
+                          </div>
+                        )}
+                      </div>
                       <div className="ml-4">
                         <div className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{project.name}</div>
                         <div className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono']">{project.shortDescription}</div>
