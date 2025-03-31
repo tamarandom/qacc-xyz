@@ -129,7 +129,7 @@ export default function ProjectDetail() {
                         <Calendar className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
                         <div>
                           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Supply</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">6.4M {project.tokenSymbol}</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">6.4M</p>
                         </div>
                       </div>
                       
@@ -225,16 +225,16 @@ export default function ProjectDetail() {
                       Overview
                     </TabsTrigger>
                     <TabsTrigger 
-                      value="tokenomics" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
-                    >
-                      Tokenomics
-                    </TabsTrigger>
-                    <TabsTrigger 
                       value="team" 
                       className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       Team
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="tokenomics" 
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
+                    >
+                      Tokenomics
                     </TabsTrigger>
                     <TabsTrigger 
                       value="roadmap" 
@@ -315,7 +315,7 @@ export default function ProjectDetail() {
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Total Supply</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{formatNumber(project.totalSupply)} {project.tokenSymbol}</dd>
+                    <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.isNew ? "6.4M" : `${formatNumber(project.totalSupply)} ${project.tokenSymbol}`}</dd>
                   </div>
                   <div>
                     <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Contract Address</dt>
