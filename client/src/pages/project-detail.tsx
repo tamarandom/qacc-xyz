@@ -73,6 +73,11 @@ export default function ProjectDetail() {
       <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg shadow-sm overflow-hidden">
         <div className="px-4 py-5 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
           <div className="flex items-center">
+            {project.isNew && (
+              <Badge className="mr-4 bg-black text-white hover:bg-black dark:bg-zinc-800 text-sm py-1 px-3 self-center">
+                NEW
+              </Badge>
+            )}
             <ProjectAvatar
               name={project.name}
               bgColor={project.avatarBg}
