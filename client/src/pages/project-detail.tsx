@@ -93,28 +93,19 @@ export default function ProjectDetail() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            {project.isNew ? (
-              <div className="inline-flex items-center px-4 py-2 rounded-md bg-black text-white font-medium">
-                <Rocket size={18} className="mr-2" />
-                <span>Coming Soon</span>
-              </div>
-            ) : (
-              <>
-                <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
-                  Buy {project.tokenSymbol}
-                </Button>
-                {project.price > 0 && (
-                  <a 
-                    href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
-                  >
-                    <img src={quickswapLogo} alt="QuickSwap" className="h-5 w-5 rounded-full" />
-                    <span>Buy on QuickSwap</span>
-                  </a>
-                )}
-              </>
+            <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
+              Buy {project.tokenSymbol}
+            </Button>
+            {!project.isNew && project.price > 0 && (
+              <a 
+                href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
+              >
+                <img src={quickswapLogo} alt="QuickSwap" className="h-5 w-5 rounded-full" />
+                <span>Buy on QuickSwap</span>
+              </a>
             )}
           </div>
         </div>
