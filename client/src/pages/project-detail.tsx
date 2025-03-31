@@ -274,7 +274,7 @@ export default function ProjectDetail() {
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{formatNumber(project.totalSupply)} {project.tokenSymbol}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Contract</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Contract Address</dt>
                     <dd className="mt-1 text-sm truncate font-mono">
                       <a 
                         href="https://polygonscan.com/token/0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
@@ -312,6 +312,14 @@ export default function ProjectDetail() {
               </CardHeader>
               <CardContent className="pt-0">
                 <ul className="divide-y divide-gray-200 dark:divide-[color:var(--color-black-200)]">
+                  {project.price > 0 && (
+                    <li className="py-3 flex justify-between">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Buy Token</span>
+                      <a href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)] font-semibold">
+                        Buy on QuickSwap
+                      </a>
+                    </li>
+                  )}
                   <li className="py-3 flex justify-between">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Website</span>
                     <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
