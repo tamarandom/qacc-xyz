@@ -168,29 +168,29 @@ export default function ProjectDetail() {
             <div className="mb-6">
               <Tabs defaultValue="overview">
                 {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
-                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)]">
-                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-transparent dark:bg-[color:var(--color-black)]">
+                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)] bg-white">
+                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-white dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="overview" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       Overview
                     </TabsTrigger>
                     <TabsTrigger 
                       value="tokenomics" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       Tokenomics
                     </TabsTrigger>
                     <TabsTrigger 
                       value="team" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       Team
                     </TabsTrigger>
                     <TabsTrigger 
                       value="roadmap" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300"
                     >
                       Roadmap
                     </TabsTrigger>
@@ -217,7 +217,7 @@ export default function ProjectDetail() {
                 </TabsContent>
                 
                 <TabsContent value="tokenomics" className="dark:bg-[color:var(--color-black)]">
-                  <div className="py-4">
+                  <div className="py-4 dark:bg-[color:var(--color-black)]">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Token Distribution</h3>
                     <p className="text-gray-600 dark:text-gray-300">
                       Information about token distribution will be available soon.
@@ -226,7 +226,7 @@ export default function ProjectDetail() {
                 </TabsContent>
                 
                 <TabsContent value="team" className="dark:bg-[color:var(--color-black)]">
-                  <div className="py-4">
+                  <div className="py-4 dark:bg-[color:var(--color-black)]">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Team Members</h3>
                     <p className="text-gray-600 dark:text-gray-300">
                       Information about the team will be available soon.
@@ -235,7 +235,7 @@ export default function ProjectDetail() {
                 </TabsContent>
                 
                 <TabsContent value="roadmap" className="dark:bg-[color:var(--color-black)]">
-                  <div className="py-4">
+                  <div className="py-4 dark:bg-[color:var(--color-black)]">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Development Roadmap</h3>
                     <p className="text-gray-600 dark:text-gray-300">
                       Information about the project roadmap will be available soon.

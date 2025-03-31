@@ -203,6 +203,16 @@
   [data-theme='dark'] .bg-card {
     background-color: #101010 !important;
   }
+  
+  /* Force dark background on tab panels */
+  [data-theme='dark'] [role="tabpanel"] {
+    background-color: #101010 !important;
+  }
+  
+  /* Force dark background on tab container */
+  [data-theme='dark'] [role="tablist"] {
+    background-color: #101010 !important;
+  }
 }
 
 @layer utilities {
