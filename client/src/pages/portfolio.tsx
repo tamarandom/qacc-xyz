@@ -80,6 +80,47 @@ export default function PortfolioPage() {
       endDate: new Date(2024, 2, 15), // March 15, 2024
       claimed: claimedTokens[3] || false,
       claimable: true // This one is claimable
+    },
+    // Adding 5 more tokens with different cliff and end dates
+    {
+      projectId: 4,
+      amount: 150,
+      cliffDate: new Date(2024, 7, 10), // August 10, 2024
+      endDate: new Date(2025, 7, 10), // August 10, 2025
+      claimed: claimedTokens[4] || false,
+      claimable: true // This one is claimable (date is in the past)
+    },
+    {
+      projectId: 5,
+      amount: 200,
+      cliffDate: new Date(2024, 11, 25), // December 25, 2024
+      endDate: new Date(2025, 11, 25), // December 25, 2025
+      claimed: claimedTokens[5] || false,
+      claimable: true // This one is claimable (date is in the past)
+    },
+    {
+      projectId: 6,
+      amount: 75,
+      cliffDate: new Date(2025, 1, 14), // February 14, 2025
+      endDate: new Date(2026, 1, 14), // February 14, 2026
+      claimed: claimedTokens[6] || false,
+      claimable: false // Not yet claimable
+    },
+    {
+      projectId: 7,
+      amount: 320,
+      cliffDate: new Date(2025, 3, 30), // April 30, 2025
+      endDate: new Date(2026, 9, 30), // October 30, 2026 (longer vesting period)
+      claimed: claimedTokens[7] || false,
+      claimable: false // Not yet claimable
+    },
+    {
+      projectId: 8,
+      amount: 90,
+      cliffDate: new Date(2023, 11, 31), // December 31, 2023 (already passed)
+      endDate: new Date(2025, 0, 31), // January 31, 2025
+      claimed: claimedTokens[8] || false,
+      claimable: true // This one is claimable
     }
   ];
   

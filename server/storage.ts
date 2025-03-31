@@ -1192,6 +1192,62 @@ export class MemStorage implements IStorage {
     });
     
     await this.addPointTransaction({
+      userId: 1,
+      projectId: 3,
+      amount: 450,
+      tokenAmount: 120,
+      transactionHash: "0xabcd...ef01",
+      description: "Purchased NEXUS tokens"
+    });
+    
+    // Add transactions for the 5 additional tokens in portfolio
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 4,
+      amount: 600,
+      tokenAmount: 150,
+      transactionHash: "0xdef0...1234",
+      description: "Purchased DLEND tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 5,
+      amount: 750,
+      tokenAmount: 200,
+      transactionHash: "0x5678...9abc",
+      description: "Purchased QYIELD tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 6,
+      amount: 325,
+      tokenAmount: 75,
+      transactionHash: "0xfedc...ba98",
+      description: "Purchased CHAIN tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 7,
+      amount: 920,
+      tokenAmount: 320,
+      transactionHash: "0x7654...3210",
+      description: "Purchased GUARD tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 8,
+      amount: 375,
+      tokenAmount: 90,
+      transactionHash: "0xcba9...8765",
+      description: "Purchased META tokens"
+    });
+    
+    // Add transaction for user 2
+    await this.addPointTransaction({
       userId: 2,
       projectId: 3,
       amount: 450,
