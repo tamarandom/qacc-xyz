@@ -404,7 +404,7 @@ export default function Home() {
                     <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.marketCap.toLocaleString('en-US')}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.volume24h.toLocaleString('en-US')}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.volume24h.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>
                   </tr>
                 ))}
               </tbody>

@@ -362,7 +362,7 @@ export default function Home() {
                       <PercentageChange value={project.change24h} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h, true)}</td>
                   </tr>
                 ))}
               </tbody>

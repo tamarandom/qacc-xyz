@@ -6,7 +6,7 @@
 export function formatCurrency(value: number, noDecimals = false): string {
   // For large numbers (millions)
   if (value >= 1000000) {
-    return `$${(value / 1000000).toFixed(1)}M`;
+    return `$${(value / 1000000).toFixed(noDecimals ? 0 : 1)}M`;
   }
   // For smaller numbers
   return new Intl.NumberFormat('en-US', {
