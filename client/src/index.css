@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  /* QACC Primary Colors */
+  /* QACC Primary Colors - Light Mode */
   --color-black: #101010;
   --color-light-gray: #F6F6F6;
   --color-peach: #FBBA80;
@@ -27,6 +27,27 @@
   /* Status colors */
   --color-positive: #59B287; /* Green for positive changes */
   --color-negative: #E25C5C; /* Red for negative changes */
+  
+  /* Background & Text colors */
+  --background: var(--color-light-gray);
+  --card-background: #FFFFFF;
+  --text-primary: var(--color-black);
+  --text-secondary: var(--color-black-100);
+  --border-color: var(--color-gray-200);
+}
+
+[data-theme='dark'] {
+  /* QACC Primary Colors - Dark Mode */
+  --background: #121212;
+  --card-background: #1E1E1E;
+  --text-primary: #F6F6F6;
+  --text-secondary: #B0B0B0;
+  --border-color: #2A2A2A;
+  
+  /* Adjusted colors for dark mode */
+  --color-light-gray: #1E1E1E;
+  --color-gray-100: #2A2A2A;
+  --color-gray-200: #333333;
 }
 
 @font-face {
@@ -53,8 +74,9 @@
   body {
     @apply antialiased bg-background text-foreground;
     font-family: 'IBM Plex Mono', monospace;
-    color: var(--color-black);
-    background-color: var(--color-light-gray);
+    color: var(--text-primary);
+    background-color: var(--background);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -74,7 +96,27 @@
   }
   
   .card-highlight {
-    @apply border-[color:var(--color-peach)] bg-white shadow-sm;
+    border-color: var(--color-peach);
+    background-color: var(--card-background);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Dark mode specific styles */
+  [data-theme='dark'] .card {
+    background-color: var(--card-background);
+    border-color: var(--border-color);
+  }
+  
+  [data-theme='dark'] .text-[color\:var\(--color-black\)] {
+    color: var(--text-primary);
+  }
+  
+  [data-theme='dark'] .bg-white {
+    background-color: var(--card-background);
+  }
+  
+  [data-theme='dark'] .border-[color\:var\(--color-gray-200\)] {
+    border-color: var(--border-color);
   }
 }
 

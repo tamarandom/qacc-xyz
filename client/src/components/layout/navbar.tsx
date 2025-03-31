@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu, LogOut } from "lucide-react";
+import { X, Menu, LogOut, Moon, Sun } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
+import { useTheme } from "@/contexts/theme-context";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
+  const { theme, toggleTheme } = useTheme();
 
   // Mock authentication functions
   const handleLogin = () => {
@@ -71,6 +73,20 @@ export default function Navbar() {
           
           {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              className="rounded-full text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+            
             {isAuthenticated ? (
               <>                
                 <div className="flex items-center space-x-3">
@@ -140,7 +156,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="sm:hidden bg-white border-t border-gray-200 pt-2 pb-3">
+        <div className="sm:hidden bg-[color:var(--card-background)] border-t border-[color:var(--border-color)] pt-2 pb-3">
           <div className="space-y-1 px-4">
             <Link 
               href="/" 
@@ -178,7 +194,7 @@ export default function Navbar() {
           </div>
           
           {/* Auth area - Mobile */}
-          <div className="border-t border-gray-200 pt-4 pb-3 px-4">
+          <div className="border-t border-[color:var(--border-color)] pt-4 pb-3 px-4">
             {isAuthenticated ? (
               <>
                 <div className="flex items-center">
@@ -193,7 +209,26 @@ export default function Navbar() {
                   </div>
                 </div>
                 
-                <div className="mt-3">
+                <div className="mt-3 space-y-3">
+                  <div className="flex items-center mb-3 justify-between">
+                    <span className="text-sm font-medium text-[color:var(--color-black)]">
+                      Toggle Theme
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={toggleTheme}
+                      aria-label="Toggle theme"
+                      className="rounded-full text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-5 w-5" />
+                      ) : (
+                        <Moon className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </div>
+                
                   <Button 
                     variant="outline" 
                     className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center"
@@ -209,6 +244,25 @@ export default function Navbar() {
               </>
             ) : (
               <div className="space-y-3">
+                <div className="flex items-center mb-3 justify-between">
+                  <span className="text-sm font-medium text-[color:var(--color-black)]">
+                    Toggle Theme
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleTheme}
+                    aria-label="Toggle theme"
+                    className="rounded-full text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]"
+                  >
+                    {theme === 'dark' ? (
+                      <Sun className="h-5 w-5" />
+                    ) : (
+                      <Moon className="h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
+                
                 <Button 
                   variant="outline" 
                   className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] border-[color:var(--color-gray-200)] hover:bg-[color:var(--color-gray-200)] hover:text-[color:var(--color-black)]"
