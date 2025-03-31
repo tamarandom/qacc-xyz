@@ -308,10 +308,35 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     
-    // Generate a starting price between $0.06 and $0.2
-    // We'll make it gradually increase to simulate a bullish trend
-    const startPriceRange = Math.random() * 0.14 + 0.06;
+    // Generate a unique starting price between $0.02 and $0.1
+    // We'll make it fluctuate based on project ID to ensure diversity
+    const startPriceRange = (0.02 + ((projectId % 5) * 0.02)) + (Math.random() * 0.02);
     let currentPrice = startPriceRange;
+    
+    // Different projects have different patterns
+    // Project ID determines pattern type:
+    // 1, 5, 9 = Steady rise with dips
+    // 2, 6, 10 = Choppy uptrend
+    // 3, 7, 11 = Rapid early rise, correction, then steady
+    // 4, 8, 12 = Slow start, then acceleration upward
+    const patternType = projectId % 4;
+    
+    // Create cycles of price movement (to simulate market cycles)
+    const cycles = [
+      { length: Math.floor(days * 0.3), trend: patternType === 3 ? 'flat' : 'up' },
+      { length: Math.floor(days * 0.2), trend: patternType === 0 ? 'correction' : patternType === 1 ? 'down' : 'up' },
+      { length: Math.floor(days * 0.3), trend: patternType === 2 ? 'correction' : 'up' },
+      { length: days - (Math.floor(days * 0.8)), trend: 'up' } // Remaining days
+    ];
+    
+    // Calculate when major price swings will occur (for more realistic charts)
+    const swingDays = [];
+    for (let i = 0; i < 5; i++) {
+      swingDays.push(Math.floor(Math.random() * days));
+    }
+    
+    let cycleStartDay = 0;
+    let dayInCycle = 0;
     
     // Generate a data point for each day
     for (let i = days; i >= 0; i--) {
@@ -321,30 +346,114 @@ export class MemStorage implements IStorage {
       // More recent days have more data points
       const dataPointsPerDay = i < 7 ? 24 : i < 30 ? 8 : 1;
       
+      // Determine which cycle we're in
+      let currentCycle = cycles[0];
+      let cycleIndex = 0;
+      let tempDay = 0;
+      
+      for (let c = 0; c < cycles.length; c++) {
+        tempDay += cycles[c].length;
+        if (days - i <= tempDay) {
+          currentCycle = cycles[c];
+          cycleIndex = c;
+          break;
+        }
+      }
+      
+      // Calculate day position in current cycle (for trend calculation)
+      dayInCycle = (days - i) - cycleStartDay;
+      if (dayInCycle >= currentCycle.length) {
+        cycleStartDay += currentCycle.length;
+        dayInCycle = 0;
+      }
+      
+      // Cycle progress factor (0 to 1)
+      const cycleProgress = dayInCycle / currentCycle.length;
+      
+      // Progress factor for entire history (0 to 1)
+      const totalProgress = 1 - (i / days);
+      
+      // Check if this is a swing day for more dramatic price movement
+      const isSwingDay = swingDays.includes(i);
+      
       for (let j = 0; j < dataPointsPerDay; j++) {
         // Add some hours to the timestamp
         const pointTimestamp = new Date(timestamp.getTime() + (j * millisecondsPerDay / dataPointsPerDay));
         
-        // For a bullish trend, we'll use a formula that tends to increase prices over time
-        // with some randomness to make it look realistic
-        // The closer we get to the present, the higher the price gets
-        const progressFactor = 1 - (i / days); // 0 (oldest) to 1 (newest)
-        const targetPrice = startPriceRange + (progressFactor * (basePrice - startPriceRange));
+        // Base volatility adjusted by time and cycle
+        let adjustedVolatility = volatility;
         
-        // Add some randomness but with an upward bias
-        const upwardBias = 0.6; // 60% chance to go up
-        const randomFactor = (Math.random() > upwardBias ? -1 : 1) * Math.random() * volatility;
-        const change = (randomFactor * (1 - 0.8 * progressFactor)) + (progressFactor * 1.2);
+        // Increase volatility for the past week
+        if (i < 7) adjustedVolatility *= 1.5;
         
-        // Apply change but keep increasing trend
-        currentPrice = Math.max(startPriceRange * 0.95, currentPrice * (1 + (change / 100)));
+        // Calculate price change based on current trend
+        let trendFactor = 0;
+        switch (currentCycle.trend) {
+          case 'up':
+            // Strong uptrend
+            trendFactor = 0.5 + (cycleProgress * 0.5);
+            break;
+          case 'down':
+            // Downtrend
+            trendFactor = -0.3 - (cycleProgress * 0.3);
+            break;
+          case 'correction':
+            // Correction (drops then recovers)
+            trendFactor = cycleProgress < 0.4 ? -0.5 : 0.3;
+            break;
+          case 'flat':
+            // Sideways movement
+            trendFactor = 0.05;
+            break;
+        }
         
-        // Cap at maximum price (target end prices between $0.8 and $1.3)
-        currentPrice = Math.min(currentPrice, basePrice);
+        // Apply more randomness to early datapoints
+        const randomAdjustment = (Math.random() * 2 - 1) * adjustedVolatility * (1 - (totalProgress * 0.7));
         
-        // Calculate volume based on price and some randomness
-        // Higher volumes for higher prices
-        const volume = currentPrice * 5000000 * (0.7 + Math.random() * 0.6);
+        // Calculate actual change percentage
+        let changePercent = trendFactor + (randomAdjustment / 100);
+        
+        // Make swing days more dramatic
+        if (isSwingDay) {
+          // Exaggerate the existing trend on swing days
+          changePercent *= 2 + (Math.random());
+        }
+        
+        // Apply change with pattern-specific adjustments
+        switch (patternType) {
+          case 0: // Steady rise with dips
+            if (i % 14 === 0) changePercent *= -2; // Create periodic dips
+            break;
+          case 1: // Choppy uptrend
+            changePercent += (Math.sin(i * 0.8) * volatility * 0.1); // Add sine wave pattern
+            break;
+          case 2: // Rapid early rise
+            if (i > days * 0.7) changePercent *= 1.5; // Early boost
+            break;
+          case 3: // Slow start, acceleration
+            if (i < days * 0.4) changePercent *= 1.5; // Late boost
+            break;
+        }
+        
+        // Apply change to current price
+        currentPrice = Math.max(startPriceRange * 0.5, currentPrice * (1 + changePercent));
+        
+        // Target a specific end price near basePrice, but with some variation
+        if (i < 5) {
+          const targetEndPrice = basePrice * (0.9 + (Math.random() * 0.2));
+          const distanceToTarget = targetEndPrice - currentPrice;
+          const adjustment = distanceToTarget * (1 - (i / 5)) * 0.4;
+          currentPrice += adjustment;
+        }
+        
+        // Ensure we don't exceed base price by too much
+        currentPrice = Math.min(currentPrice, basePrice * 1.1);
+        
+        // Calculate volume based on price and volatility
+        // Higher volume during price movements and for higher marketcap projects
+        const volumeMultiplier = Math.abs(changePercent) > 0.01 ? 2.0 : 1.0;
+        const baseVolume = 400000 + ((projectId % 4) * 100000); // Different base volumes per project
+        const volume = currentPrice * baseVolume * volumeMultiplier * (0.7 + Math.random() * 0.6);
         
         this.addPriceHistoryEntry({
           projectId,
@@ -450,9 +559,9 @@ export class MemStorage implements IStorage {
       description: "X23 is a cutting-edge decentralized AI protocol that combines advanced machine learning with blockchain technology to create intelligent and adaptive decentralized applications. By leveraging neural networks and robust data processing capabilities, X23 enables smarter, more responsive DeFi platforms and Web3 services.",
       tokenSymbol: "X23",
       tokenName: "X23 Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 1.15,
+      marketCap: 9200000,
+      volume24h: 1100000,
       change24h: 3.12,
       totalSupply: 10000000,
       circulatingSupply: 6340000,
@@ -496,9 +605,9 @@ export class MemStorage implements IStorage {
       description: "SafeStake is a decentralized staking protocol that enables secure, non-custodial staking for proof-of-stake blockchains. Our innovative approach solves key challenges in the staking ecosystem by distributing validator responsibilities across multiple nodes, reducing the risk of slashing while maintaining high yields.",
       tokenSymbol: "SAFE",
       tokenName: "SafeStake Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 1.3,
+      marketCap: 10000000,
+      volume24h: 1250000,
       change24h: 5.67,
       totalSupply: 20000000,
       circulatingSupply: 10300000,
@@ -526,9 +635,9 @@ export class MemStorage implements IStorage {
       description: "LiquidSwap is an innovative cross-chain liquidity protocol that enables seamless asset swaps across multiple blockchains. Our protocol leverages advanced bridges and liquidity pools to provide users with the best rates and minimal slippage.",
       tokenSymbol: "LSWP",
       tokenName: "LiquidSwap Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 1.04,
+      marketCap: 8700000,
+      volume24h: 930000,
       change24h: -2.34,
       totalSupply: 100000000,
       circulatingSupply: 35000000,
@@ -556,9 +665,9 @@ export class MemStorage implements IStorage {
       description: "NexusFi is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
       tokenSymbol: "NEXUS",
       tokenName: "Nexus Finance Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.92,
+      marketCap: 7300000,
+      volume24h: 720000,
       change24h: 1.23,
       totalSupply: 50000000,
       circulatingSupply: 22500000,
@@ -586,9 +695,9 @@ export class MemStorage implements IStorage {
       description: "DecentLend is a peer-to-peer lending platform that connects borrowers and lenders directly without intermediaries. The platform uses smart contracts to secure loans and enable transparent terms and conditions.",
       tokenSymbol: "DLEND",
       tokenName: "DecentLend Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.78,
+      marketCap: 6200000,
+      volume24h: 650000,
       change24h: 7.82,
       totalSupply: 200000000,
       circulatingSupply: 45000000,
@@ -616,9 +725,9 @@ export class MemStorage implements IStorage {
       description: "QuantumYield is an advanced yield optimization protocol that automatically allocates assets to the highest-yielding opportunities across multiple DeFi platforms. Our proprietary algorithm analyzes risk-reward ratios to maximize returns.",
       tokenSymbol: "QYLD",
       tokenName: "QuantumYield Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.65,
+      marketCap: 5100000,
+      volume24h: 580000,
       change24h: -0.89,
       totalSupply: 75000000,
       circulatingSupply: 18000000,
@@ -770,9 +879,9 @@ export class MemStorage implements IStorage {
       description: "DeFi Pulse offers real-time analytics and tracking of all major decentralized finance protocols. Our platform provides comprehensive data visualizations, risk assessments, and yield comparisons to help users make informed decisions. We've expanded to include tools for portfolio management and automated yield optimization.",
       tokenSymbol: "PULSE",
       tokenName: "DeFi Pulse Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.45,
+      marketCap: 3500000,
+      volume24h: 420000,
       change24h: 7.8,
       totalSupply: 100000000,
       circulatingSupply: 20000000,
@@ -801,9 +910,9 @@ export class MemStorage implements IStorage {
       description: "NFT Marketplace provides a cutting-edge platform for creating, buying, and selling digital collectibles, art, and virtual real estate. Our protocol features zero gas fees, cross-chain compatibility, and advanced royalty management for creators, making it the most artist-friendly marketplace in the Web3 space.",
       tokenSymbol: "NFTM",
       tokenName: "NFT Marketplace Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.32,
+      marketCap: 2200000,
+      volume24h: 310000,
       change24h: -2.3,
       totalSupply: 150000000,
       circulatingSupply: 20000000,
@@ -1093,14 +1202,14 @@ export class MemStorage implements IStorage {
     
     // Generate price history for launched projects 
     // (excluding new projects that don't have price data yet)
-    await this.generateSamplePriceHistory(1, 1.30, 3.0, 90); // SafeStake (highest price)
-    await this.generateSamplePriceHistory(2, 1.04, 3.5, 90); // LiquidSwap
-    await this.generateSamplePriceHistory(3, 0.92, 2.5, 90); // NexusFi
-    await this.generateSamplePriceHistory(4, 0.78, 4.0, 90); // DecentLend
-    await this.generateSamplePriceHistory(5, 0.65, 3.5, 90); // QuantumYield
-    await this.generateSamplePriceHistory(10, 0.45, 4.5, 90); // DeFi Pulse
-    await this.generateSamplePriceHistory(11, 0.32, 5.0, 90); // NFT Marketplace
-    await this.generateSamplePriceHistory(12, 0.18, 5.5, 90); // Web3 Social (lowest price)
+    await this.generateSamplePriceHistory(1, 1.30, 4.5, 90); // SafeStake (highest price)
+    await this.generateSamplePriceHistory(2, 1.04, 5.2, 90); // LiquidSwap
+    await this.generateSamplePriceHistory(3, 0.92, 3.8, 90); // NexusFi
+    await this.generateSamplePriceHistory(4, 0.78, 6.0, 90); // DecentLend
+    await this.generateSamplePriceHistory(5, 0.65, 4.3, 90); // QuantumYield
+    await this.generateSamplePriceHistory(10, 0.45, 7.5, 90); // DeFi Pulse
+    await this.generateSamplePriceHistory(11, 0.32, 8.0, 90); // NFT Marketplace
+    await this.generateSamplePriceHistory(12, 0.18, 9.5, 90); // Web3 Social (lowest price)
     // Note: Project 13 (Oracle Finance) has been removed
   }
 }
