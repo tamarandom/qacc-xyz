@@ -249,18 +249,31 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                         imageUrl={project.imageUrl || undefined}
                       />
                       <div className="ml-4">
-                        <div className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{project.name}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="font-medium text-[color:var(--color-black)] font-['IBM_Plex_Mono']">{project.name}</div>
+                          {project.isNew && (
+                            <div className="bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                              New
+                            </div>
+                          )}
+                        </div>
                         <div className="text-[color:var(--color-black-100)] text-xs font-['IBM_Plex_Mono']">{project.shortDescription}</div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.tokenSymbol}</TableCell>
-                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.price)}</TableCell>
-                  <TableCell className="text-right">
-                    <PercentageChange value={project.change24h} />
+                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                    {project.isNew ? "-" : formatCurrency(project.price)}
                   </TableCell>
-                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</TableCell>
-                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h, true)}</TableCell>
+                  <TableCell className="text-right">
+                    {project.isNew ? "-" : <PercentageChange value={project.change24h} />}
+                  </TableCell>
+                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                    {project.isNew ? "$400,000" : formatCurrency(project.marketCap)}
+                  </TableCell>
+                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
+                    {project.isNew ? "-" : formatCurrency(project.volume24h, true)}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (

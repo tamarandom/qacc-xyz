@@ -37,19 +37,22 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                 <span className="text-[7px] text-[color:var(--color-black)] font-bold">⭐</span>
               </div>
             )}
-            {project.isNew && (
-              <div className="absolute -top-1 -left-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                New
-              </div>
-            )}
+            {/* New tag moved out of avatar */}
           </div>
           
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-start flex-wrap gap-2">
               <div>
-                <h3 className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] group-hover:text-[color:var(--color-peach)] transition-colors truncate">
-                  {project.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] group-hover:text-[color:var(--color-peach)] transition-colors truncate">
+                    {project.name}
+                  </h3>
+                  {project.isNew && (
+                    <div className="bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                      New
+                    </div>
+                  )}
+                </div>
                 <p className="text-xs text-[color:var(--text-secondary)] font-['IBM_Plex_Mono'] line-clamp-2">
                   {project.shortDescription}
                 </p>
@@ -67,10 +70,16 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         {/* Project metrics */}
         <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3 text-sm">
           {project.isNew ? (
-            <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-full dark:text-white">
-              <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Token Launch Status</p>
-              <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">DEX listing after this round</p>
-            </div>
+            <>
+              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors dark:text-white">
+                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">$400,000</p>
+              </div>
+              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-1 dark:text-white">
+                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Status</p>
+                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">DEX listing after this round</p>
+              </div>
+            </>
           ) : (
             <>
               <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors dark:text-white">
