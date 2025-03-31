@@ -54,6 +54,9 @@
   /* Override text colors for dark mode */
   --color-black: #F6F6F6; 
   --color-black-100: #B0B0B0;
+  
+  /* Additional dark theme overrides */
+  color-scheme: dark;
 }
 
 @font-face {
@@ -154,6 +157,41 @@
   [data-theme='dark'] .bg-\[color\:var\(--color-gray-100\)\].px-2\.5.py-1\.5.rounded-md.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].uppercase.tracking-wide.text-\[color\:var\(--color-black-100\)\] {
     background-color: var(--color-gray-100);
     color: white;
+  }
+  
+  /* Fix text colors for project details page in dark mode */
+  [data-theme='dark'] .text-gray-900 {
+    color: white;
+  }
+  
+  [data-theme='dark'] .text-gray-600 {
+    color: #cccccc;
+  }
+  
+  [data-theme='dark'] .text-gray-500 {
+    color: #a0a0a0;
+  }
+  
+  [data-theme='dark'] .bg-gray-50 {
+    background-color: #1E1E1E;
+  }
+  
+  [data-theme='dark'] .border-gray-200 {
+    border-color: #2A2A2A;
+  }
+  
+  [data-theme='dark'] .divide-gray-200 > * + * {
+    border-color: #2A2A2A;
+  }
+  
+  /* Fix chart container background */
+  [data-theme='dark'] .bg-white {
+    background-color: #1E1E1E;
+  }
+  
+  /* Fix "No chart data available" text */
+  [data-theme='dark'] .text-gray-400 {
+    color: #a0a0a0;
   }
 }
 
