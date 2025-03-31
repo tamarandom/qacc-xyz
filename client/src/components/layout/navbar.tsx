@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu, BellIcon, LogOut } from "lucide-react";
+import { X, Menu, LogOut } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
 
 export default function Navbar() {
@@ -72,14 +72,7 @@ export default function Navbar() {
           {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
             {isAuthenticated ? (
-              <>
-                <div className="ml-3 relative">
-                  <Button size="icon" variant="ghost" className="text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-5 w-5" />
-                  </Button>
-                </div>
-                
+              <>                
                 <div className="flex items-center space-x-3">
                   <div className="flex flex-col items-end">
                     <span className="text-sm font-medium text-[color:var(--color-black)]">
@@ -198,11 +191,6 @@ export default function Navbar() {
                     <div className="text-base font-medium text-[color:var(--color-black)]">{user.username}</div>
                     <div className="text-sm font-medium text-[color:var(--color-gray)]">{user.email}</div>
                   </div>
-                  
-                  <Button size="icon" variant="ghost" className="ml-auto text-[color:var(--color-gray)]">
-                    <span className="sr-only">View notifications</span>
-                    <BellIcon className="h-6 w-6" />
-                  </Button>
                 </div>
                 
                 <div className="mt-3">
