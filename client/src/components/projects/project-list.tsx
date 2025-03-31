@@ -250,8 +250,8 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                           imageUrl={project.imageUrl || undefined}
                         />
                         {project.isNew && (
-                          <div className="absolute -top-1 -left-1 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                            New
+                          <div className="absolute top-0 left-0 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                            NEW
                           </div>
                         )}
                       </div>
