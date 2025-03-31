@@ -474,88 +474,73 @@ export default function PortfolioPage() {
                     <div className="mt-4 border-t border-[color:var(--color-light-gray)] pt-4">
                       <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-3">TOKEN UNLOCKS</h4>
                       
-                      <div className="space-y-4">
-                        {item.allUnlocks.map((unlock) => (
-                          <div key={unlock.id} className="bg-[color:var(--color-light-gray)] p-4 rounded-lg">
-                            <div className="flex flex-wrap justify-between items-center mb-2">
-                              <div className="font-['IBM_Plex_Mono'] text-sm">
-                                <span className="text-[color:var(--color-black)] font-bold mr-2">
-                                  {unlock.amount} {item.project?.tokenSymbol || "tokens"}
-                                </span>
-                                {unlock.round && <span className="text-[color:var(--color-gray)]">Round {unlock.round}</span>}
-                              </div>
-                              
-                              {/* Claim button per unlock - aligned to the right */}
-                              <div>
-                                {unlock.claimed ? (
-                                  <Button 
-                                    disabled
-                                    variant="outline"
-                                    size="sm"
-                                    className="font-['IBM_Plex_Mono'] text-xs opacity-50"
-                                  >
-                                    <Check className="mr-1 h-3 w-3" />
-                                    Claimed
-                                  </Button>
-                                ) : unlock.claimable ? (
-                                  <Button 
-                                    onClick={() => handleClaimTokens(unlock.id)}
-                                    variant="default"
-                                    size="sm"
-                                    className="font-['IBM_Plex_Mono'] text-xs"
-                                  >
-                                    <LockOpen className="mr-1 h-3 w-3" />
-                                    Claim
-                                  </Button>
-                                ) : (
-                                  <Button 
-                                    disabled
-                                    variant="outline"
-                                    size="sm"
-                                    className="font-['IBM_Plex_Mono'] text-xs opacity-50"
-                                  >
-                                    <Calendar className="mr-1 h-3 w-3" />
-                                    Not Claimable
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                            
-                            {/* Expanded token details in a table-like format */}
-                            <div className="w-full overflow-x-auto">
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr>
-                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">BUY DATE</th>
-                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">SPENT</th>
-                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal"># TOKENS</th>
-                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">CLIFF DATE</th>
-                                    <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">END DATE</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td className="pr-4 text-[color:var(--color-black)]">
-                                      {unlock.buyDate ? formatDate(unlock.buyDate) : 'N/A'}
-                                    </td>
-                                    <td className="pr-4 text-[color:var(--color-black)]">
-                                      {unlock.spent ? formatCurrency(unlock.spent, true) : 'N/A'}
-                                    </td>
-                                    <td className="pr-4 text-[color:var(--color-black)]">
-                                      {unlock.amount}
-                                    </td>
-                                    <td className="pr-4 text-[color:var(--color-black)]">
-                                      {formatDate(unlock.cliffDate)}
-                                    </td>
-                                    <td className="pr-4 text-[color:var(--color-black)]">
-                                      {formatDate(unlock.endDate)}
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="w-full overflow-x-auto">
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr>
+                              <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">BUY DATE</th>
+                              <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">SPENT</th>
+                              <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal"># TOKENS</th>
+                              <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">CLIFF DATE</th>
+                              <th className="text-left pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal">END DATE</th>
+                              <th className="text-right pb-2 text-[color:var(--color-gray)] text-xs font-['IBM_Plex_Mono'] font-normal"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {item.allUnlocks.map((unlock) => (
+                              <tr key={unlock.id} className="border-b border-[color:var(--color-gray-200)] last:border-b-0">
+                                <td className="py-2 pl-0 text-[color:var(--color-black)]">
+                                  {unlock.buyDate ? formatDate(unlock.buyDate) : 'N/A'}
+                                </td>
+                                <td className="py-2 text-[color:var(--color-black)]">
+                                  {unlock.spent ? formatCurrency(unlock.spent, true) : 'N/A'}
+                                </td>
+                                <td className="py-2 text-[color:var(--color-black)]">
+                                  {unlock.amount}
+                                </td>
+                                <td className="py-2 text-[color:var(--color-black)]">
+                                  {formatDate(unlock.cliffDate)}
+                                </td>
+                                <td className="py-2 text-[color:var(--color-black)]">
+                                  {formatDate(unlock.endDate)}
+                                </td>
+                                <td className="py-2 pr-0 text-right">
+                                  {unlock.claimed ? (
+                                    <Button 
+                                      disabled
+                                      variant="outline"
+                                      size="sm"
+                                      className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                    >
+                                      <Check className="mr-1 h-3 w-3" />
+                                      Claimed
+                                    </Button>
+                                  ) : unlock.claimable ? (
+                                    <Button 
+                                      onClick={() => handleClaimTokens(unlock.id)}
+                                      variant="default"
+                                      size="sm"
+                                      className="font-['IBM_Plex_Mono'] text-xs"
+                                    >
+                                      <LockOpen className="mr-1 h-3 w-3" />
+                                      Claim
+                                    </Button>
+                                  ) : (
+                                    <Button 
+                                      disabled
+                                      variant="outline"
+                                      size="sm"
+                                      className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                    >
+                                      <Calendar className="mr-1 h-3 w-3" />
+                                      Not Claimable
+                                    </Button>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   )}
