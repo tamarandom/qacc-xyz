@@ -130,14 +130,14 @@ export function PriceChart({ projectId }: PriceChartProps) {
   };
   
   return (
-    <Card className="bg-[#131722] text-white border-none">
+    <Card className="bg-[color:var(--color-black)] text-white border-none">
       <CardHeader className="pb-2">
         <div className="flex flex-col space-y-3">
           <div className="flex justify-between items-center">
             <div className="flex space-x-4 items-center">
               <span className="font-mono text-xs">5m</span>
               <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeFrame)}>
-                <TabsList className="grid grid-cols-5 bg-[#1E222D] h-8">
+                <TabsList className="grid grid-cols-5 bg-[color:var(--color-black-300)] h-8">
                   <TabsTrigger value="24h" className="text-xs">24H</TabsTrigger>
                   <TabsTrigger value="7d" className="text-xs">7D</TabsTrigger>
                   <TabsTrigger value="30d" className="text-xs">30D</TabsTrigger>
@@ -149,14 +149,14 @@ export function PriceChart({ projectId }: PriceChartProps) {
             
             <div className="flex space-x-4">
               <Tabs value={chartType} onValueChange={(value) => setChartType(value as ChartType)}>
-                <TabsList className="bg-[#1E222D] h-8">
+                <TabsList className="bg-[color:var(--color-black-300)] h-8">
                   <TabsTrigger value="PRICE" className="text-xs">PRICE</TabsTrigger>
                   <TabsTrigger value="MCAP" className="text-xs">MCAP</TabsTrigger>
                 </TabsList>
               </Tabs>
               
               <Tabs value={pricePair} onValueChange={(value) => setPricePair(value as PricePair)}>
-                <TabsList className="bg-[#1E222D] h-8">
+                <TabsList className="bg-[color:var(--color-black-300)] h-8">
                   <TabsTrigger value="USD" className="text-xs">X23/USD</TabsTrigger>
                   <TabsTrigger value="ETH" className="text-xs">X23/ETH</TabsTrigger>
                 </TabsList>
@@ -165,23 +165,23 @@ export function PriceChart({ projectId }: PriceChartProps) {
           </div>
           
           {/* Price details line */}
-          <div className="border-t border-[#2A2E39] pt-2">
+          <div className="border-t border-[color:var(--color-black-200)] pt-2">
             <div className="flex flex-col">
               <div className="flex items-center space-x-2">
-                <span className="text-[#4CAADC] font-mono text-xl">
+                <span className="text-[color:var(--color-peach)] font-mono text-xl">
                   {pricePair === "USD" 
                     ? `$${chartData[chartData.length - 1]?.price.toFixed(2)}` 
                     : `${chartData[chartData.length - 1]?.ethPrice.toFixed(8)}`}
                 </span>
-                <span className="text-green-500 text-xs">
+                <span className="text-[color:var(--color-positive)] text-xs">
                   {pricePair === "USD" 
                     ? `+$${(chartData[chartData.length - 1]?.price * 0.005).toFixed(4)}` 
                     : `+${(chartData[chartData.length - 1]?.ethPrice * 0.005).toFixed(8)}`} 
                   (+0.50%)
                 </span>
               </div>
-              <div className="text-gray-500 text-xs">
-                Volume <span className="text-gray-400">0</span>
+              <div className="text-[color:var(--color-gray)] text-xs">
+                Volume <span className="text-[color:var(--color-gray-300)]">0</span>
               </div>
             </div>
           </div>
@@ -194,19 +194,19 @@ export function PriceChart({ projectId }: PriceChartProps) {
               data={chartData}
               margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#2A2E39" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-black-200)" />
               <XAxis 
                 dataKey="timestamp" 
                 tickFormatter={formatDate}
-                tick={{ fontSize: 12, fill: '#6B7280' }}
-                axisLine={{ stroke: '#2A2E39' }}
+                tick={{ fontSize: 12, fill: 'var(--color-gray)' }}
+                axisLine={{ stroke: 'var(--color-black-200)' }}
                 tickLine={false}
               />
               <YAxis 
                 domain={[minValue, maxValue]}
                 tickFormatter={formatYAxisLabel}
-                tick={{ fontSize: 12, fill: '#6B7280' }}
-                axisLine={{ stroke: '#2A2E39' }}
+                tick={{ fontSize: 12, fill: 'var(--color-gray)' }}
+                axisLine={{ stroke: 'var(--color-black-200)' }}
                 tickLine={false}
                 width={75}
                 orientation="right"
@@ -215,8 +215,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
                 formatter={(value) => formatTooltipValue(Number(value))}
                 labelFormatter={(label) => new Date(label).toLocaleString()}
                 contentStyle={{
-                  backgroundColor: '#1E222D',
-                  border: '1px solid #2A2E39',
+                  backgroundColor: 'var(--color-black-300)',
+                  border: '1px solid var(--color-black-200)',
                   borderRadius: '6px',
                   color: 'white',
                 }}
@@ -224,10 +224,10 @@ export function PriceChart({ projectId }: PriceChartProps) {
               <Line 
                 type="monotone" 
                 dataKey={dataKey} 
-                stroke="#4CAADC" 
+                stroke="var(--color-peach)" 
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 6, stroke: '#4CAADC', strokeWidth: 1, fill: '#1E222D' }}
+                activeDot={{ r: 6, stroke: 'var(--color-peach)', strokeWidth: 1, fill: 'var(--color-black)' }}
               />
             </LineChart>
           </ResponsiveContainer>
