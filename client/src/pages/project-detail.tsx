@@ -160,6 +160,16 @@ export default function ProjectDetail() {
             </div>
             
             <div className="mb-6">
+              <div className="grid grid-cols-1 gap-4 mb-6">
+                <PriceChart projectId={parseInt(id || "0")} />
+              </div>
+              
+              <div className="grid grid-cols-1 gap-4">
+                <VolumeChart projectId={parseInt(id || "0")} />
+              </div>
+            </div>
+            
+            <div className="mb-6">
               <Tabs defaultValue="overview">
                 {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
                 <div className="overflow-x-auto no-scrollbar border-b border-gray-200">
@@ -212,17 +222,7 @@ export default function ProjectDetail() {
                 
                 <TabsContent value="tokenomics">
                   <div className="py-4">
-                    <h3 className="text-lg font-medium mb-4">Token Price & Volume Analytics</h3>
-                    
-                    <div className="grid grid-cols-1 gap-4 mb-6">
-                      <PriceChart projectId={parseInt(id || "0")} />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-4 mb-6">
-                      <VolumeChart projectId={parseInt(id || "0")} />
-                    </div>
-                    
-                    <h3 className="text-lg font-medium mb-4 mt-8">Token Distribution</h3>
+                    <h3 className="text-lg font-medium mb-4">Token Distribution</h3>
                     <p className="text-gray-600">
                       Information about token distribution will be available soon.
                     </p>
