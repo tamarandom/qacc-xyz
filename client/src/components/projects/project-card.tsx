@@ -20,6 +20,11 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       className="relative overflow-hidden hover:shadow-lg border-[color:var(--border-color)] bg-[color:var(--card-background)] group cursor-pointer transition-all duration-300 ease-in-out hover:border-[color:var(--color-peach)] hover:scale-[1.02] hover:-translate-y-1 touch-manipulation"
       onClick={onClick}
     >
+      {project.isNew && (
+        <div className="absolute top-2 left-2 z-10 bg-black text-white text-xs px-2.5 py-0.5 rounded-full uppercase font-bold shadow-sm">
+          New
+        </div>
+      )}
       <CardContent className="p-3 sm:p-5">
         {/* Project header */}
         <div className="flex items-start gap-3 flex-wrap sm:flex-nowrap">
@@ -37,7 +42,6 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                 <span className="text-[7px] text-[color:var(--color-black)] font-bold">⭐</span>
               </div>
             )}
-            {/* New tag moved out of avatar */}
           </div>
           
           <div className="flex-1 min-w-0">
@@ -47,11 +51,6 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                   <h3 className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] group-hover:text-[color:var(--color-peach)] transition-colors truncate">
                     {project.name}
                   </h3>
-                  {project.isNew && (
-                    <div className="bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                      New
-                    </div>
-                  )}
                 </div>
                 <p className="text-xs text-[color:var(--text-secondary)] font-['IBM_Plex_Mono'] line-clamp-2">
                   {project.shortDescription}
