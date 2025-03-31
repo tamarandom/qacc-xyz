@@ -454,7 +454,8 @@ export class MemStorage implements IStorage {
       avatarText: "X23",
       avatarColor: "#101010",
       isFeatured: true,
-      isNew: true
+      isNew: false,
+      imageUrl: "/project-logos/x23.svg"
     });
     
     // Add project features
@@ -470,7 +471,7 @@ export class MemStorage implements IStorage {
     await await this.addProjectTechnicalDetail({ projectId: x23.id, label: "Security Audits", value: "Certik, Trail of Bits, Consensys Diligence" });
     
     // Real historical X23 price data (simulated based on real market patterns)
-    await this.generateSamplePriceHistory(x23.id, 115.46, 5.0, 90);
+    await this.generateRealX23PriceHistory(x23.id);
     
     // Project 1: SafeStake
     const safeStake = await this.createProject({
@@ -839,36 +840,7 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/web3-social.svg"
     });
     
-    // Project 13: Oracle Finance
-    const oracleFinance = await this.createProject({
-      name: "Oracle Finance",
-      description: "Oracle Finance creates a secure and decentralized oracle network for DeFi and smart contract applications. Our protocol aggregates data from multiple sources, applies robust verification mechanisms, and delivers reliable real-world data to blockchain applications with unparalleled accuracy and speed.",
-      tokenSymbol: "ORCL",
-      tokenName: "Oracle Finance Token",
-      price: 9.76,
-      marketCap: 195200000,
-      volume24h: 12500000,
-      change24h: -1.8,
-      totalSupply: 100000000,
-      circulatingSupply: 20000000,
-      category: "Oracle",
-      shortDescription: "Decentralized Data Oracle Network",
-      blockchain: "Ethereum, Polygon, Avalanche",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 13,
-      websiteUrl: "https://oraclefinance.io",
-      whitePaperUrl: "https://oraclefinance.io/whitepaper.pdf",
-      githubUrl: "https://github.com/oraclefinance",
-      twitterUrl: "https://twitter.com/OracleFinance",
-      discordUrl: "https://discord.gg/oraclefinance",
-      avatarBg: "#FBBA80",
-      avatarText: "OF",
-      avatarColor: "#101010",
-      isFeatured: true,
-      isNew: false,
-      imageUrl: "/project-logos/oracle-finance.svg"
-    });
+
 
     // Add features for SafeStake
     await await this.addProjectFeature({ projectId: 1, feature: "Distributed validator technology for enhanced security" });
@@ -998,18 +970,7 @@ export class MemStorage implements IStorage {
     await this.addProjectTechnicalDetail({ projectId: 12, label: "Communities", value: "2,800" });
     await this.addProjectTechnicalDetail({ projectId: 12, label: "Storage Protocol", value: "IPFS/Arweave" });
     
-    // Add features for Oracle Finance
-    await this.addProjectFeature({ projectId: 13, feature: "Multi-source data aggregation for enhanced reliability" });
-    await this.addProjectFeature({ projectId: 13, feature: "Verifiable random function for tamper-proof randomness" });
-    await this.addProjectFeature({ projectId: 13, feature: "Weather, sports, and financial data feeds" });
-    await this.addProjectFeature({ projectId: 13, feature: "Autonomous smart contract triggering" });
-    await this.addProjectFeature({ projectId: 13, feature: "Decentralized node operator network" });
-    
-    // Add technical details for Oracle Finance
-    await this.addProjectTechnicalDetail({ projectId: 13, label: "Node Operators", value: "350+" });
-    await this.addProjectTechnicalDetail({ projectId: 13, label: "Data Sources", value: "85" });
-    await this.addProjectTechnicalDetail({ projectId: 13, label: "Accuracy", value: "99.99%" });
-    await this.addProjectTechnicalDetail({ projectId: 13, label: "Response Time", value: "<200ms" });
+
     
     // Create sample users
     await this.createUser({
@@ -1123,6 +1084,7 @@ export class MemStorage implements IStorage {
     await this.generateSamplePriceHistory(10, 4.25, 4.5, 90); // DeFi Pulse
     await this.generateSamplePriceHistory(11, 2.87, 6.0, 90); // NFT Marketplace
     await this.generateSamplePriceHistory(12, 5.12, 5.5, 90); // Web3 Social
+    // Note: Project 13 (Oracle Finance) has been removed
   }
 }
 
