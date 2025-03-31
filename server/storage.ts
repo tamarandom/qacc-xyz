@@ -811,12 +811,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/metaverse-dao.svg"
     });
     
-    // Project 8: ZK Vault
+    // Project 8: Gridlock
     const zkVault = await this.createProject({
-      name: "ZK Vault",
-      description: "ZK Vault provides a secure, private way to store and manage crypto assets using zero-knowledge cryptography. Our advanced privacy solutions ensure users can protect their financial information while maintaining full ownership of their assets. ZK Vault combines security, compliance, and convenience for both individual and institutional users.",
-      tokenSymbol: "ZKV",
-      tokenName: "ZK Vault Token",
+      name: "Gridlock",
+      description: "Gridlock is a next-generation blockchain infrastructure that enhances network security and scalability through innovative grid-based node architecture. Our solution enables parallel transaction processing for improved throughput while maintaining decentralization.",
+      tokenSymbol: "GRID",
+      tokenName: "Gridlock Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
@@ -842,12 +842,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/zk-vault.svg"
     });
     
-    // Project 9: Cosmos Bridge
+    // Project 9: To Da Moon
     const cosmosBridge = await this.createProject({
-      name: "Cosmos Bridge",
-      description: "Cosmos Bridge enables seamless cross-chain interoperability between Cosmos and EVM-compatible blockchains. Our protocol allows for secure asset transfers, cross-chain smart contract execution, and unified liquidity across multiple blockchain ecosystems, solving the fragmentation problem in the crypto ecosystem.",
-      tokenSymbol: "CBRIDGE",
-      tokenName: "Cosmos Bridge Token",
+      name: "To Da Moon",
+      description: "To Da Moon is a community-driven DeFi project focused on innovative staking solutions and yield optimization strategies. Our protocol aims to maximize returns for token holders while maintaining robust security and governance controls.",
+      tokenSymbol: "2MOON",
+      tokenName: "To Da Moon Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
@@ -904,12 +904,12 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/defi-pulse.svg"
     });
     
-    // Project 11: NFT Marketplace
+    // Project 11: How to DAO
     const nftMarketplace = await this.createProject({
-      name: "NFT Marketplace",
-      description: "NFT Marketplace provides a cutting-edge platform for creating, buying, and selling digital collectibles, art, and virtual real estate. Our protocol features zero gas fees, cross-chain compatibility, and advanced royalty management for creators, making it the most artist-friendly marketplace in the Web3 space.",
-      tokenSymbol: "NFTM",
-      tokenName: "NFT Marketplace Token",
+      name: "How to DAO",
+      description: "How to DAO provides educational resources, governance frameworks, and tooling for creating and managing decentralized autonomous organizations. Our platform offers templates, best practices, and community support to help projects launch and maintain effective DAOs.",
+      tokenSymbol: "H2D",
+      tokenName: "How to DAO Token",
       price: 0.32,
       marketCap: 2200000,
       volume24h: 310000,
@@ -931,16 +931,16 @@ export class MemStorage implements IStorage {
       avatarText: "NM",
       avatarColor: "#101010",
       isFeatured: false,
-      isNew: false,
+      isNew: true,
       imageUrl: "/project-logos/nft-marketplace.svg"
     });
     
-    // Project 12: Web3 Social
+    // Project 12: Web3 Packs
     const web3Social = await this.createProject({
-      name: "Web3 Social",
-      description: "Web3 Social is building a decentralized social media protocol that gives users complete ownership of their data and content. Our platform combines familiar social features with blockchain-powered innovations like token-gated communities, creator monetization tools, and decentralized content moderation systems.",
-      tokenSymbol: "W3S",
-      tokenName: "Web3 Social Token",
+      name: "Web3 Packs",
+      description: "Web3 Packs delivers curated collections of digital assets that introduce users to different blockchain ecosystems. Our platform provides educational resources and starter assets to help onboard new users into web3 with confidence and knowledge.",
+      tokenSymbol: "WPACK",
+      tokenName: "Web3 Packs Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
@@ -962,7 +962,7 @@ export class MemStorage implements IStorage {
       avatarText: "W3",
       avatarColor: "#101010",
       isFeatured: false,
-      isNew: false,
+      isNew: true,
       imageUrl: "/project-logos/web3-social.svg"
     });
     
