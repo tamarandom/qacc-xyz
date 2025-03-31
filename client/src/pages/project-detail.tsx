@@ -99,7 +99,7 @@ export default function ProjectDetail() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)]">
-          <div className="bg-gray-50 dark:bg-[color:var(--color-black-300)] rounded-lg p-4 md:col-span-2">
+          <div className="bg-gray-50 dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
             <div className="mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
@@ -168,8 +168,8 @@ export default function ProjectDetail() {
             <div className="mb-6">
               <Tabs defaultValue="overview">
                 {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
-                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)]">
-                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-transparent">
+                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)]">
+                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-transparent dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="overview" 
                       className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap"
@@ -197,7 +197,7 @@ export default function ProjectDetail() {
                   </TabsList>
                 </div>
                 
-                <TabsContent value="overview" className="pt-4">
+                <TabsContent value="overview" className="pt-4 dark:bg-[color:var(--color-black)]">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">About {project.name}</h3>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">{project.description}</p>
                   
@@ -216,7 +216,7 @@ export default function ProjectDetail() {
                   </p>
                 </TabsContent>
                 
-                <TabsContent value="tokenomics">
+                <TabsContent value="tokenomics" className="dark:bg-[color:var(--color-black)]">
                   <div className="py-4">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Token Distribution</h3>
                     <p className="text-gray-600 dark:text-gray-300">
@@ -225,7 +225,7 @@ export default function ProjectDetail() {
                   </div>
                 </TabsContent>
                 
-                <TabsContent value="team">
+                <TabsContent value="team" className="dark:bg-[color:var(--color-black)]">
                   <div className="py-4">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Team Members</h3>
                     <p className="text-gray-600 dark:text-gray-300">
@@ -234,7 +234,7 @@ export default function ProjectDetail() {
                   </div>
                 </TabsContent>
                 
-                <TabsContent value="roadmap">
+                <TabsContent value="roadmap" className="dark:bg-[color:var(--color-black)]">
                   <div className="py-4">
                     <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Development Roadmap</h3>
                     <p className="text-gray-600 dark:text-gray-300">
