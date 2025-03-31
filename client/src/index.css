@@ -213,11 +213,6 @@
   [data-theme='dark'] [role="tablist"] {
     background-color: #101010 !important;
   }
-  
-  /* Force white background on container divs in light mode */
-  .px-4.py-5.sm\:px-6.flex.items-center.justify-between {
-    background-color: white;
-  }
 }
 
 @layer utilities {
