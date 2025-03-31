@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Rocket, Calendar, Timer } from "lucide-react";
 import { PriceChart } from "@/components/projects/price-chart";
+import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
 
@@ -92,89 +93,134 @@ export default function ProjectDetail() {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
-              Buy {project.tokenSymbol}
-            </Button>
-            {project.price > 0 && (
-              <a 
-                href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
-              >
-                <img src="/logos/quickswap-logo.jpg" alt="QuickSwap" className="h-5 w-5 rounded-full" />
-                <span>Buy on QuickSwap</span>
-              </a>
+            {project.isNew ? (
+              <div className="inline-flex items-center px-4 py-2 rounded-md bg-black text-white font-medium">
+                <Rocket size={18} className="mr-2" />
+                <span>Coming Soon</span>
+              </div>
+            ) : (
+              <>
+                <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
+                  Buy {project.tokenSymbol}
+                </Button>
+                {project.price > 0 && (
+                  <a 
+                    href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
+                  >
+                    <img src={quickswapLogo} alt="QuickSwap" className="h-5 w-5 rounded-full" />
+                    <span>Buy on QuickSwap</span>
+                  </a>
+                )}
+              </>
             )}
           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)]">
           <div className="bg-gray-50 dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
-            <div className="mb-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {project.isNew ? (
+              <div className="mb-6">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                  <CardContent className="pt-6">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Price</p>
-                    <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                      {formatCurrency(project.price)}
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <PercentageChange value={project.change24h} />
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(24h)</span>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                  <CardContent className="pt-6">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Market Cap</p>
-                    <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                      {formatCurrency(project.marketCap)}
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        Fully Diluted: {formatCurrency(project.totalSupply * project.price)}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                  <CardContent className="pt-6">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Volume (24h)</p>
-                    <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                      {formatCurrency(project.volume24h)}
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {((project.volume24h / project.marketCap) * 100).toFixed(1)}% of market cap
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                  <CardContent className="pt-6">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Circulating Supply</p>
-                    <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                      {formatNumber(project.circulatingSupply)}
-                    </p>
-                    <div className="flex items-center mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        Total: {formatNumber(project.totalSupply)} {project.tokenSymbol}
-                      </span>
+                  <CardContent className="py-6">
+                    <div className="flex items-center justify-center flex-col sm:flex-row gap-6 sm:gap-12">
+                      <div className="flex items-center">
+                        <Rocket className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Launch Status</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">DEX listing after this round</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <Calendar className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Token Supply</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{formatNumber(project.totalSupply)} {project.tokenSymbol}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <Timer className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Standard</p>
+                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">{project.tokenStandard}</p>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-            </div>
-            
-            <div className="mb-6">
-              <div className="grid grid-cols-1 gap-4">
-                <PriceChart projectId={parseInt(id || "0")} />
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+                      <CardContent className="pt-6">
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Price</p>
+                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
+                          {formatCurrency(project.price)}
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <PercentageChange value={project.change24h} />
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(24h)</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+                      <CardContent className="pt-6">
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Market Cap</p>
+                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
+                          {formatCurrency(project.marketCap)}
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Fully Diluted: {formatCurrency(project.totalSupply * project.price)}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+                      <CardContent className="pt-6">
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Volume (24h)</p>
+                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
+                          {formatCurrency(project.volume24h)}
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {((project.volume24h / project.marketCap) * 100).toFixed(1)}% of market cap
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+                      <CardContent className="pt-6">
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Circulating Supply</p>
+                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
+                          {formatNumber(project.circulatingSupply)}
+                        </p>
+                        <div className="flex items-center mt-1">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            Total: {formatNumber(project.totalSupply)} {project.tokenSymbol}
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+                
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 gap-4">
+                    <PriceChart projectId={parseInt(id || "0")} />
+                  </div>
+                </div>
+              </>
+            )}
             
             <div className="mb-6">
               <Tabs defaultValue="overview">
