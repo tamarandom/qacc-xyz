@@ -17,19 +17,16 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
 
   return (
     <Card 
-      className={`relative overflow-hidden hover:shadow-lg ${project.isNew ? 'border-transparent p-[1px] new-project-gradient' : 'border-[color:var(--border-color)]'} bg-[color:var(--card-background)] group cursor-pointer transition-all duration-300 ease-in-out hover:border-[color:var(--color-peach)] hover:scale-[1.02] hover:-translate-y-1 touch-manipulation`}
+      className="relative overflow-hidden hover:shadow-lg border-[color:var(--border-color)] bg-[color:var(--card-background)] group cursor-pointer transition-all duration-300 ease-in-out hover:border-[color:var(--color-peach)] hover:scale-[1.02] hover:-translate-y-1 touch-manipulation"
       onClick={onClick}
     >
-      {project.isNew && (
-        <div className="absolute inset-0 bg-[color:var(--card-background)] rounded-md m-[1px] z-0"></div>
-      )}
       <CardContent className="p-3 sm:p-5">
         {/* Project header */}
         <div className="flex items-start gap-3 flex-wrap sm:flex-nowrap">
-          <div className={`relative shrink-0 ${project.isNew ? 'new-project-avatar' : ''}`}>
+          <div className="relative shrink-0">
             <ProjectAvatar
               name={project.name}
-              bgColor={project.avatarBg || (project.isNew ? "#FBBA80" : "#FBBA80")}
+              bgColor={project.avatarBg || "#FBBA80"}
               textColor={project.avatarColor || "#101010"}
               initials={project.avatarText || project.name.substring(0, 2)}
               imageUrl={project.imageUrl}
@@ -49,6 +46,11 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                   <h3 className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] group-hover:text-[color:var(--color-peach)] transition-colors truncate">
                     {project.name}
                   </h3>
+                  {project.isNew && (
+                    <div className="bg-black text-white text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                      New
+                    </div>
+                  )}
                 </div>
                 <p className="text-xs text-[color:var(--text-secondary)] font-['IBM_Plex_Mono'] line-clamp-2">
                   {project.shortDescription}
