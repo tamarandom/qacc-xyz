@@ -32,11 +32,6 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
               imageUrl={project.imageUrl}
               size="md"
             />
-            {project.isFeatured && (
-              <div className="absolute -top-1 -right-1 bg-[color:var(--color-peach)] rounded-full w-4 h-4 flex items-center justify-center">
-                <span className="text-[7px] text-[color:var(--color-black)] font-bold">⭐</span>
-              </div>
-            )}
           </div>
           
           <div className="flex-1 min-w-0">
