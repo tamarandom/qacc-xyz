@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,13 +47,34 @@ const RankBadge = ({ rank }: { rank: number }) => {
 
 export default function PointsPage() {
   // In a real app, this would come from authentication
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Initialize isAuthenticated from localStorage if available
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    // Check if the user logged in from navbar
+    if (typeof window !== 'undefined') {
+      const loggedIn = localStorage.getItem('isAuthenticated') === 'true';
+      return loggedIn;
+    }
+    return false;
+  });
   const currentUserId = 3; // Mock logged in user ID
   
-  // Mock authentication functions - just for demo purposes
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
+  // Update authentication status when navbar login changes
+  useEffect(() => {
+    // Listen for changes to localStorage from navbar login
+    const handleStorageChange = () => {
+      const isLoggedIn = localStorage.getItem('isAuthenticated') === 'true';
+      setIsAuthenticated(isLoggedIn);
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check on mount too
+    handleStorageChange();
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   // Fetch top users for the leaderboard
   const { data: users, isLoading, error } = useQuery({
@@ -73,20 +94,9 @@ export default function PointsPage() {
   return (
     <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
       <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
-            <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
-          </div>
-          
-          {!isAuthenticated && (
-            <Button 
-              onClick={handleLogin}
-              className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
-            >
-              Log In
-            </Button>
-          )}
+        <div>
+          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
+          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
         </div>
 
         {/* User standing section - Only show when authenticated */}

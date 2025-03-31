@@ -28,20 +28,37 @@ export default function Navbar() {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
+  // Initialize authentication state from localStorage on component mount
+  useEffect(() => {
+    const savedAuthState = localStorage.getItem('isAuthenticated') === 'true';
+    if (savedAuthState) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
   // Mock authentication functions
   const handleLogin = () => {
     console.log("Login clicked");
     setIsAuthenticated(true);
+    localStorage.setItem('isAuthenticated', 'true');
+    // Create a storage event for other components to detect
+    window.dispatchEvent(new Event('storage'));
   };
   
   const handleSignUp = () => {
     console.log("Sign up clicked");
     setIsAuthenticated(true);
+    localStorage.setItem('isAuthenticated', 'true');
+    // Create a storage event for other components to detect
+    window.dispatchEvent(new Event('storage'));
   };
   
   const handleLogout = () => {
     console.log("Logout clicked");
     setIsAuthenticated(false);
+    localStorage.setItem('isAuthenticated', 'false');
+    // Create a storage event for other components to detect
+    window.dispatchEvent(new Event('storage'));
   };
 
   const toggleMobileMenu = () => {
