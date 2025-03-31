@@ -254,27 +254,27 @@ export default function ProjectDetail() {
               <CardContent className="pt-0">
                 <dl className="grid grid-cols-1 gap-x-4 gap-y-6">
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Name</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Name</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.tokenName}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Symbol</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Symbol</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.tokenSymbol}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Blockchain</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Blockchain</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white">{project.blockchain}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Standard</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Standard</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white">{project.tokenStandard}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Supply</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Total Supply</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{formatNumber(project.totalSupply)} {project.tokenSymbol}</dd>
                   </div>
                   <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Contract</dt>
+                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Contract</dt>
                     <dd className="mt-1 text-sm text-gray-900 dark:text-white truncate font-mono">{project.contractAddress}</dd>
                   </div>
                 </dl>
@@ -289,7 +289,7 @@ export default function ProjectDetail() {
                 <dl className="grid grid-cols-1 gap-x-4 gap-y-6">
                   {project.technicalDetails?.map((detail) => (
                     <div key={detail.id}>
-                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{detail.label}</dt>
+                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">{detail.label}</dt>
                       <dd className="mt-1 text-sm text-gray-900 dark:text-white font-semibold">{detail.value}</dd>
                     </div>
                   ))}
@@ -304,31 +304,31 @@ export default function ProjectDetail() {
               <CardContent className="pt-0">
                 <ul className="divide-y divide-gray-200 dark:divide-[color:var(--color-black-200)]">
                   <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Website</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Website</span>
                     <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
                       {new URL(project.websiteUrl).hostname}
                     </a>
                   </li>
                   <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Whitepaper</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Whitepaper</span>
                     <a href={project.whitePaperUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
                       View PDF
                     </a>
                   </li>
                   <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">GitHub</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">GitHub</span>
                     <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
                       {new URL(project.githubUrl).pathname.substring(1)}
                     </a>
                   </li>
                   <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Twitter</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Twitter</span>
                     <a href={project.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
                       @{new URL(project.twitterUrl).pathname.substring(1)}
                     </a>
                   </li>
                   <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Discord</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Discord</span>
                     <a href={project.discordUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
                       discord.gg/{new URL(project.discordUrl).pathname.split('/').pop()}
                     </a>
