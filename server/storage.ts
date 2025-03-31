@@ -776,7 +776,7 @@ export class MemStorage implements IStorage {
       avatarText: "CG",
       avatarColor: "#101010",
       isFeatured: false,
-      isNew: true,
+      isNew: false,
       imageUrl: "/project-logos/chain-guard.svg"
     });
     
@@ -807,7 +807,7 @@ export class MemStorage implements IStorage {
       avatarText: "M",
       avatarColor: "#101010",
       isFeatured: false,
-      isNew: true,
+      isNew: false,
       imageUrl: "/project-logos/metaverse-dao.svg"
     });
     
