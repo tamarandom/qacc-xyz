@@ -225,7 +225,7 @@ export default function Home() {
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <span className="mr-2 px-1.5 py-0.5 bg-[color:var(--color-peach)] text-[color:var(--color-black)] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
+                            <span className="mr-2 px-1.5 py-0.5 bg-[color:var(--color-black)] text-[color:var(--color-light-gray)] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
                             <ProjectAvatar
                               name={project.name}
                               bgColor={project.avatarBg || "#FBBA80"}

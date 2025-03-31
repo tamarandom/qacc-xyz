@@ -12,7 +12,7 @@ export default function PercentageChange({ value, showIcon = true, className = '
   const textColor = isPositive ? 'text-[color:var(--color-positive)]' : 'text-[color:var(--color-negative)]';
   
   return (
-    <span className={`flex items-center ${textColor} ${className} font-['IBM_Plex_Mono'] font-medium`}>
+    <span className={`flex items-center justify-end ${textColor} ${className} font-['IBM_Plex_Mono'] font-medium w-full`}>
       {showIcon && (
         isPositive 
           ? <ArrowUpIcon className="mr-1 h-3 w-3" /> 
