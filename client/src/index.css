@@ -198,6 +198,11 @@
   [data-theme='dark'] .text-gray-400 {
     color: #a0a0a0;
   }
+  
+  /* Force dark background on cards in dark mode */
+  [data-theme='dark'] .bg-card {
+    background-color: #101010 !important;
+  }
 }
 
 @layer utilities {
