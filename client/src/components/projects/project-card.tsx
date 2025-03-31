@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import PercentageChange from "@/components/ui/percentage-change";
+import { NewTag } from "@/components/ui/new-tag";
 import { formatCurrency } from "@/lib/formatters";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
 import type { Project } from "@shared/schema";
@@ -38,9 +39,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
               </div>
             )}
             {project.isNew && (
-              <div className="absolute top-0 left-0 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                NEW
-              </div>
+              <NewTag />
             )}
           </div>
           

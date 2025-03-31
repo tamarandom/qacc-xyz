@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NewTag } from "@/components/ui/new-tag";
 import { ChevronDown, ChevronUp, Search, Filter, ArrowDownAZ, ArrowUpAZ, ArrowDownZA, ArrowUpZA } from "lucide-react";
 import { 
   Table, 
@@ -250,9 +251,7 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                           imageUrl={project.imageUrl || undefined}
                         />
                         {project.isNew && (
-                          <div className="absolute top-0 left-0 bg-black text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                            NEW
-                          </div>
+                          <NewTag />
                         )}
                       </div>
                       <div className="ml-4">

@@ -144,11 +144,7 @@
     border-color: var(--border-color);
   }
   
-  /* Fix for "NEW" tag in dark mode */
-  [data-theme='dark'] .absolute.top-0.left-0.bg-black.text-white.text-\[10px\].px-2.py-0\.5.rounded-full.uppercase.font-bold.shadow-sm {
-    background-color: white;
-    color: black;
-  }
+  /* Fix for "NEW" tag in dark mode - handled by the NewTag component now */
   
   /* Fix status text in dark mode */
   [data-theme='dark'] .bg-\[color\:var\(--color-gray-100\)\].px-2\.5.py-1\.5.rounded-md.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].uppercase.tracking-wide.text-\[color\:var\(--color-black-100\)\] {
