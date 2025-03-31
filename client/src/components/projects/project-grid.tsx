@@ -3,9 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronDown, ChevronUp, Search, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, ArrowDownAZ, ArrowUpAZ, X } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProjectBadge } from "@/components/ui/project-badge";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProjectCard } from "@/components/projects/project-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -126,26 +127,31 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
   return (
     <div>
       {/* Filter and sort controls */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
-        <div className="flex space-x-2 mb-4 sm:mb-0">
+      <div className="mb-6 space-y-4">
+        {/* Categories */}
+        <div className="flex flex-wrap gap-2">
           <Button
             variant={category === "all" ? "default" : "outline"}
+            size="sm"
             className={category === "all" 
-              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
-              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
+              ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium text-xs sm:text-sm" 
+              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium text-xs sm:text-sm"}
             onClick={() => setCategory("all")}
           >
-            All Projects
+            All
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
-                variant="outline" 
-                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"
+                variant="outline"
+                size="sm"
+                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium text-xs sm:text-sm"
               >
-                <span>{PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}</span>
-                <ChevronDown className="ml-2 h-4 w-4" />
+                <span className="truncate max-w-[100px] sm:max-w-none">
+                  {PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}
+                </span>
+                <ChevronDown className="ml-1 h-3 w-3 sm:ml-2 sm:h-4 sm:w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48">
@@ -163,10 +169,21 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          
+          {/* Show selected category as a pill for better mobile UX */}
+          {category !== 'all' && (
+            <Badge 
+              variant="outline"
+              className="border-[color:var(--color-peach)] text-[color:var(--color-black)] bg-[color:var(--color-peach-50)] font-['IBM_Plex_Mono'] uppercase text-xs"
+            >
+              {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name}
+            </Badge>
+          )}
         </div>
         
-        <div className="flex flex-col sm:flex-row gap-4 items-end sm:items-center">
-          <div className="relative w-full sm:w-auto">
+        {/* Search and sort */}
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="relative flex-grow max-w-full sm:max-w-[260px]">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
             </div>
@@ -175,17 +192,17 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
               placeholder="Search projects or tokens..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[200px] md:w-[260px]"
+              className="pl-10 pr-2 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full h-9"
             />
           </div>
           
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">Sort by:</span>
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <span className="text-xs sm:text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] whitespace-nowrap">Sort:</span>
             <Select 
               value={sortBy} 
               onValueChange={setSortBy}
             >
-              <SelectTrigger className="w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+              <SelectTrigger className="w-[120px] sm:w-[150px] font-['IBM_Plex_Mono'] text-xs sm:text-sm border-[color:var(--color-gray-300)] h-9">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent className="font-['IBM_Plex_Mono']">
@@ -200,7 +217,7 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
               variant="outline" 
               size="icon"
               onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-              className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] h-9 w-9"
               title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
             >
               {sortDirection === 'asc' ? (
@@ -215,7 +232,7 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
 
       {/* Project Grid View */}
       {filteredProjects.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredProjects.map((project) => (
             <ProjectCard
               key={project.id}
@@ -244,28 +261,37 @@ export default function ProjectGrid({ filterOutNew = false }: ProjectGridProps =
       
       {/* Results count */}
       {filteredProjects.length > 0 && (
-        <div className="mt-6 text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)]">
-          Showing <span className="font-medium text-[color:var(--color-black)]">{filteredProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{projects.length}</span> projects
-          {(searchQuery || category !== 'all') && (
-            <span className="ml-1">
-              {category !== 'all' && (
-                <ProjectBadge 
-                  variant="outline"
-                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono']"
+        <div className="mt-4 sm:mt-6 text-xs sm:text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] flex flex-wrap gap-2 items-center">
+          <div>
+            <span className="font-medium text-[color:var(--color-black)]">{filteredProjects.length}</span> of <span className="font-medium text-[color:var(--color-black)]">{projects.length}</span> projects
+          </div>
+          
+          {/* Active filters */}
+          <div className="flex flex-wrap gap-2">
+            {category !== 'all' && (
+              <ProjectBadge 
+                variant="outline"
+                className="text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono'] border-[color:var(--color-peach)] bg-[color:var(--color-peach-50)]"
+              >
+                {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name || category}
+              </ProjectBadge>
+            )}
+            {searchQuery && (
+              <ProjectBadge 
+                variant="outline"
+                className="text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono')] flex items-center gap-1"
+              >
+                <span className="truncate max-w-[100px]">"{searchQuery}"</span>
+                <button 
+                  onClick={() => setSearchQuery("")}
+                  className="hover:text-[color:var(--color-peach)]"
+                  aria-label="Clear search"
                 >
-                  {PROJECT_CATEGORIES.find(cat => cat.id === category)?.name || category}
-                </ProjectBadge>
-              )}
-              {searchQuery && (
-                <ProjectBadge 
-                  variant="outline"
-                  className="ml-2 text-[10px] py-0 h-5 px-1.5 font-['IBM_Plex_Mono']"
-                >
-                  "{searchQuery}"
-                </ProjectBadge>
-              )}
-            </span>
-          )}
+                  <X className="h-3 w-3" />
+                </button>
+              </ProjectBadge>
+            )}
+          </div>
         </div>
       )}
     </div>
