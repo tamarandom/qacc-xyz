@@ -170,7 +170,7 @@ export default function PointsPage() {
                     href={`/user-score?id=${user.id}`}
                     key={user.id}
                     className={`flex items-stretch bg-white rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity
-                    ${isCurrentUser ? "border-2 border-[color:var(--color-peach)]" : "border border-[color:var(--color-peach-100)]"}`}
+                    ${isAuthenticated && isCurrentUser ? "border-2 border-[color:var(--color-peach)]" : "border border-[color:var(--color-peach-100)]"}`}
                   >
                     <div className="w-16 bg-[color:var(--color-light-gray)] flex items-center justify-center">
                       <RankBadge rank={user.rank || 0} />
@@ -203,7 +203,7 @@ export default function PointsPage() {
                           <div>
                             <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{user.username}</div>
                             <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
-                              {isCurrentUser ? "You" : "q/acc member"}
+                              {isCurrentUser ? "You" : "project backer"}
                             </div>
                           </div>
                         </div>
