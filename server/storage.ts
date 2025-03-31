@@ -307,14 +307,17 @@ export class MemStorage implements IStorage {
   private generateSamplePriceHistory(projectId: number, basePrice: number, volatility: number, days: number): void {
     const now = new Date();
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
-    let currentPrice = basePrice;
+    
+    // Generate a starting price between $0.06 and $0.2
+    // We'll make it gradually increase to simulate a bullish trend
+    const startPriceRange = Math.random() * 0.14 + 0.06;
+    let currentPrice = startPriceRange;
     
     // Generate a data point for each day
     for (let i = days; i >= 0; i--) {
       // Calculate timestamp for this data point
       const timestamp = new Date(now.getTime() - (i * millisecondsPerDay));
       
-      // Add some randomness to create price fluctuations
       // More recent days have more data points
       const dataPointsPerDay = i < 7 ? 24 : i < 30 ? 8 : 1;
       
@@ -322,12 +325,26 @@ export class MemStorage implements IStorage {
         // Add some hours to the timestamp
         const pointTimestamp = new Date(timestamp.getTime() + (j * millisecondsPerDay / dataPointsPerDay));
         
-        // Calculate random price change (more volatile for older dates)
-        const change = (Math.random() * 2 - 1) * volatility * (1 + (i / days));
-        currentPrice = Math.max(0.1, currentPrice * (1 + (change / 100)));
+        // For a bullish trend, we'll use a formula that tends to increase prices over time
+        // with some randomness to make it look realistic
+        // The closer we get to the present, the higher the price gets
+        const progressFactor = 1 - (i / days); // 0 (oldest) to 1 (newest)
+        const targetPrice = startPriceRange + (progressFactor * (basePrice - startPriceRange));
+        
+        // Add some randomness but with an upward bias
+        const upwardBias = 0.6; // 60% chance to go up
+        const randomFactor = (Math.random() > upwardBias ? -1 : 1) * Math.random() * volatility;
+        const change = (randomFactor * (1 - 0.8 * progressFactor)) + (progressFactor * 1.2);
+        
+        // Apply change but keep increasing trend
+        currentPrice = Math.max(startPriceRange * 0.95, currentPrice * (1 + (change / 100)));
+        
+        // Cap at maximum price (target end prices between $0.8 and $1.3)
+        currentPrice = Math.min(currentPrice, basePrice);
         
         // Calculate volume based on price and some randomness
-        const volume = currentPrice * basePrice * 1000 * (0.5 + Math.random());
+        // Higher volumes for higher prices
+        const volume = currentPrice * 5000000 * (0.7 + Math.random() * 0.6);
         
         this.addPriceHistoryEntry({
           projectId,
@@ -433,9 +450,9 @@ export class MemStorage implements IStorage {
       description: "X23 is a cutting-edge decentralized AI protocol that combines advanced machine learning with blockchain technology to create intelligent and adaptive decentralized applications. By leveraging neural networks and robust data processing capabilities, X23 enables smarter, more responsive DeFi platforms and Web3 services.",
       tokenSymbol: "X23",
       tokenName: "X23 Token",
-      price: 115.46,
-      marketCap: 732000000,
-      volume24h: 89500000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 3.12,
       totalSupply: 10000000,
       circulatingSupply: 6340000,
@@ -479,9 +496,9 @@ export class MemStorage implements IStorage {
       description: "SafeStake is a decentralized staking protocol that enables secure, non-custodial staking for proof-of-stake blockchains. Our innovative approach solves key challenges in the staking ecosystem by distributing validator responsibilities across multiple nodes, reducing the risk of slashing while maintaining high yields.",
       tokenSymbol: "SAFE",
       tokenName: "SafeStake Token",
-      price: 12.45,
-      marketCap: 128500000,
-      volume24h: 24700000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 5.67,
       totalSupply: 20000000,
       circulatingSupply: 10300000,
@@ -509,9 +526,9 @@ export class MemStorage implements IStorage {
       description: "LiquidSwap is an innovative cross-chain liquidity protocol that enables seamless asset swaps across multiple blockchains. Our protocol leverages advanced bridges and liquidity pools to provide users with the best rates and minimal slippage.",
       tokenSymbol: "LSWP",
       tokenName: "LiquidSwap Token",
-      price: 3.78,
-      marketCap: 75200000,
-      volume24h: 18900000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: -2.34,
       totalSupply: 100000000,
       circulatingSupply: 35000000,
@@ -539,9 +556,9 @@ export class MemStorage implements IStorage {
       description: "NexusFi is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
       tokenSymbol: "NEXUS",
       tokenName: "Nexus Finance Token",
-      price: 8.21,
-      marketCap: 92700000,
-      volume24h: 15300000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 1.23,
       totalSupply: 50000000,
       circulatingSupply: 22500000,
@@ -569,9 +586,9 @@ export class MemStorage implements IStorage {
       description: "DecentLend is a peer-to-peer lending platform that connects borrowers and lenders directly without intermediaries. The platform uses smart contracts to secure loans and enable transparent terms and conditions.",
       tokenSymbol: "DLEND",
       tokenName: "DecentLend Token",
-      price: 2.15,
-      marketCap: 54300000,
-      volume24h: 11700000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 7.82,
       totalSupply: 200000000,
       circulatingSupply: 45000000,
@@ -599,9 +616,9 @@ export class MemStorage implements IStorage {
       description: "QuantumYield is an advanced yield optimization protocol that automatically allocates assets to the highest-yielding opportunities across multiple DeFi platforms. Our proprietary algorithm analyzes risk-reward ratios to maximize returns.",
       tokenSymbol: "QYLD",
       tokenName: "QuantumYield Token",
-      price: 5.67,
-      marketCap: 68100000,
-      volume24h: 9400000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: -0.89,
       totalSupply: 75000000,
       circulatingSupply: 18000000,
@@ -629,9 +646,9 @@ export class MemStorage implements IStorage {
       description: "ChainGuard is a next-generation security protocol that provides real-time monitoring and protection for blockchain assets and smart contracts. Our platform uses AI-powered anomaly detection to identify and prevent security breaches before they can impact your assets.",
       tokenSymbol: "GUARD",
       tokenName: "ChainGuard Token",
-      price: 0,
-      marketCap: 0,
-      volume24h: 0,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 0,
       totalSupply: 100000000,
       circulatingSupply: 0,
@@ -660,9 +677,9 @@ export class MemStorage implements IStorage {
       description: "MetaverseDAO is a community-driven platform for building, governing, and monetizing virtual worlds. Our protocol enables creators to develop interoperable assets and experiences across different metaverse platforms while offering governance rights to token holders.",
       tokenSymbol: "MVDAO",
       tokenName: "Metaverse DAO Token",
-      price: 0,
-      marketCap: 0,
-      volume24h: 0,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 0,
       totalSupply: 500000000,
       circulatingSupply: 0,
@@ -691,9 +708,9 @@ export class MemStorage implements IStorage {
       description: "ZK Vault provides a secure, private way to store and manage crypto assets using zero-knowledge cryptography. Our advanced privacy solutions ensure users can protect their financial information while maintaining full ownership of their assets. ZK Vault combines security, compliance, and convenience for both individual and institutional users.",
       tokenSymbol: "ZKV",
       tokenName: "ZK Vault Token",
-      price: 0,
-      marketCap: 0,
-      volume24h: 0,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 0,
       totalSupply: 250000000,
       circulatingSupply: 0,
@@ -722,9 +739,9 @@ export class MemStorage implements IStorage {
       description: "Cosmos Bridge enables seamless cross-chain interoperability between Cosmos and EVM-compatible blockchains. Our protocol allows for secure asset transfers, cross-chain smart contract execution, and unified liquidity across multiple blockchain ecosystems, solving the fragmentation problem in the crypto ecosystem.",
       tokenSymbol: "CBRIDGE",
       tokenName: "Cosmos Bridge Token",
-      price: 0,
-      marketCap: 0,
-      volume24h: 0,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 0,
       totalSupply: 200000000,
       circulatingSupply: 0,
@@ -753,9 +770,9 @@ export class MemStorage implements IStorage {
       description: "DeFi Pulse offers real-time analytics and tracking of all major decentralized finance protocols. Our platform provides comprehensive data visualizations, risk assessments, and yield comparisons to help users make informed decisions. We've expanded to include tools for portfolio management and automated yield optimization.",
       tokenSymbol: "PULSE",
       tokenName: "DeFi Pulse Token",
-      price: 4.25,
-      marketCap: 85000000,
-      volume24h: 5600000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 7.8,
       totalSupply: 100000000,
       circulatingSupply: 20000000,
@@ -784,9 +801,9 @@ export class MemStorage implements IStorage {
       description: "NFT Marketplace provides a cutting-edge platform for creating, buying, and selling digital collectibles, art, and virtual real estate. Our protocol features zero gas fees, cross-chain compatibility, and advanced royalty management for creators, making it the most artist-friendly marketplace in the Web3 space.",
       tokenSymbol: "NFTM",
       tokenName: "NFT Marketplace Token",
-      price: 2.87,
-      marketCap: 57400000,
-      volume24h: 3100000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: -2.3,
       totalSupply: 150000000,
       circulatingSupply: 20000000,
@@ -815,9 +832,9 @@ export class MemStorage implements IStorage {
       description: "Web3 Social is building a decentralized social media protocol that gives users complete ownership of their data and content. Our platform combines familiar social features with blockchain-powered innovations like token-gated communities, creator monetization tools, and decentralized content moderation systems.",
       tokenSymbol: "W3S",
       tokenName: "Web3 Social Token",
-      price: 5.12,
-      marketCap: 102400000,
-      volume24h: 8200000,
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 180000,
       change24h: 12.5,
       totalSupply: 200000000,
       circulatingSupply: 20000000,
@@ -1076,14 +1093,14 @@ export class MemStorage implements IStorage {
     
     // Generate price history for launched projects 
     // (excluding new projects that don't have price data yet)
-    await this.generateSamplePriceHistory(1, 12.45, 3.0, 90); // SafeStake
-    await this.generateSamplePriceHistory(2, 3.78, 5.0, 90); // LiquidSwap
-    await this.generateSamplePriceHistory(3, 8.21, 2.5, 90); // NexusFi
-    await this.generateSamplePriceHistory(4, 2.15, 4.0, 90); // DecentLend
-    await this.generateSamplePriceHistory(5, 5.67, 3.5, 90); // QuantumYield
-    await this.generateSamplePriceHistory(10, 4.25, 4.5, 90); // DeFi Pulse
-    await this.generateSamplePriceHistory(11, 2.87, 6.0, 90); // NFT Marketplace
-    await this.generateSamplePriceHistory(12, 5.12, 5.5, 90); // Web3 Social
+    await this.generateSamplePriceHistory(1, 1.30, 3.0, 90); // SafeStake (highest price)
+    await this.generateSamplePriceHistory(2, 1.04, 3.5, 90); // LiquidSwap
+    await this.generateSamplePriceHistory(3, 0.92, 2.5, 90); // NexusFi
+    await this.generateSamplePriceHistory(4, 0.78, 4.0, 90); // DecentLend
+    await this.generateSamplePriceHistory(5, 0.65, 3.5, 90); // QuantumYield
+    await this.generateSamplePriceHistory(10, 0.45, 4.5, 90); // DeFi Pulse
+    await this.generateSamplePriceHistory(11, 0.32, 5.0, 90); // NFT Marketplace
+    await this.generateSamplePriceHistory(12, 0.18, 5.5, 90); // Web3 Social (lowest price)
     // Note: Project 13 (Oracle Finance) has been removed
   }
 }
