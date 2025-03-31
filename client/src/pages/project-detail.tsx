@@ -70,7 +70,7 @@ export default function ProjectDetail() {
       </div>
       
       <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg shadow-sm overflow-hidden">
-        <div className="px-4 py-5 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-[color:var(--color-black-200)]">
+        <div className="px-4 py-5 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
           <div className="flex items-center">
             <ProjectAvatar
               name={project.name}
