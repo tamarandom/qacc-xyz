@@ -145,9 +145,9 @@
   }
   
   /* Fix for "NEW" tag in dark mode */
-  [data-theme='dark'] .absolute.top-2.left-2.px-1\.5.py-0\.5.bg-\[color\:var\(--color-black\)\].text-white.rounded.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].font-bold.uppercase.tracking-wide {
+  [data-theme='dark'] .absolute.top-0.left-0.bg-black.text-white.text-\[10px\].px-2.py-0\.5.rounded-full.uppercase.font-bold.shadow-sm {
     background-color: white;
-    color: var(--color-black-300);
+    color: black;
   }
   
   /* Fix status text in dark mode */
