@@ -166,7 +166,7 @@ export default function PortfolioPage() {
           <div className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">TOTAL SPENT</h3>
             <div className="text-3xl font-bold text-[color:var(--color-black)]">
-              {isLoading ? <Skeleton className="h-8 w-24" /> : formatCurrency(totalUsdSpent)}
+              {isLoading ? <Skeleton className="h-8 w-24" /> : formatCurrency(totalUsdSpent, true)}
             </div>
           </div>
           
@@ -276,7 +276,7 @@ export default function PortfolioPage() {
                         <span className="text-xs font-['IBM_Plex_Mono']">SPENT</span>
                       </div>
                       <p className="font-bold text-lg text-[color:var(--color-black)]">
-                        {formatCurrency(item.transaction.amount)}
+                        {formatCurrency(item.transaction.amount, true)}
                       </p>
                     </div>
                     

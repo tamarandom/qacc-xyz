@@ -124,7 +124,7 @@ export function VolumeChart({ projectId }: VolumeChartProps) {
                 width={60}
               />
               <Tooltip 
-                formatter={(value) => formatCurrency(Number(value))}
+                formatter={(value) => formatCurrency(Number(value), true)}
                 labelFormatter={(label) => new Date(label).toLocaleDateString()}
                 contentStyle={{
                   backgroundColor: 'white',

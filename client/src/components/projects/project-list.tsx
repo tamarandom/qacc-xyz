@@ -260,7 +260,7 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                     <PercentageChange value={project.change24h} />
                   </TableCell>
                   <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap)}</TableCell>
-                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h)}</TableCell>
+                  <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.volume24h, true)}</TableCell>
                 </TableRow>
               ))
             ) : (

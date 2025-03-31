@@ -179,7 +179,7 @@ export default function ProjectDetail() {
                       <CardContent className="pt-6">
                         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Volume (24h)</p>
                         <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                          {formatCurrency(project.volume24h)}
+                          {formatCurrency(project.volume24h, true)}
                         </p>
                         <div className="flex items-center mt-1">
                           <span className="text-xs text-gray-500 dark:text-gray-400">
