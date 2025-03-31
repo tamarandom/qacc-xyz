@@ -229,6 +229,11 @@ export default function Home() {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
+                          <div className="flex-shrink-0 mr-3">
+                            <div className="bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
+                              New
+                            </div>
+                          </div>
                           <div className="relative">
                             <ProjectAvatar
                               name={project.name}
@@ -238,11 +243,8 @@ export default function Home() {
                               size="md"
                             />
                           </div>
-                          <div className="ml-3 flex items-center">
+                          <div className="ml-3">
                             <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
-                            <div className="ml-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
-                              New
-                            </div>
                           </div>
                         </div>
                       </td>
@@ -333,20 +335,24 @@ export default function Home() {
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <ProjectAvatar
-                          name={project.name}
-                          tokenSymbol={project.tokenSymbol}
-                          bgColor="#FBBA80"
-                          textColor="#101010"
-                          size="md"
-                        />
-                        <div className="ml-3 flex items-center">
-                          <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
-                          {project.isNew && (
-                            <div className="ml-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
+                        {project.isNew && (
+                          <div className="flex-shrink-0 mr-3">
+                            <div className="bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
                               New
                             </div>
-                          )}
+                          </div>
+                        )}
+                        <div className="relative">
+                          <ProjectAvatar
+                            name={project.name}
+                            tokenSymbol={project.tokenSymbol}
+                            bgColor="#FBBA80"
+                            textColor="#101010"
+                            size="md"
+                          />
+                        </div>
+                        <div className="ml-3">
+                          <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
                         </div>
                       </div>
                     </td>
