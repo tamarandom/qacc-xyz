@@ -20,14 +20,14 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
       className="relative overflow-hidden hover:shadow-lg border-[color:var(--border-color)] bg-[color:var(--card-background)] group cursor-pointer transition-all duration-300 ease-in-out hover:border-[color:var(--color-peach)] hover:scale-[1.02] hover:-translate-y-1 touch-manipulation"
       onClick={onClick}
     >
-      {project.isNew && (
-        <div className="absolute top-2 left-2 z-10 bg-black text-white text-xs px-2.5 py-0.5 rounded-full uppercase font-bold shadow-sm">
-          New
-        </div>
-      )}
       <CardContent className="p-3 sm:p-5">
         {/* Project header */}
         <div className="flex items-start gap-3 flex-wrap sm:flex-nowrap">
+          {project.isNew && (
+            <div className="bg-black text-white text-xs px-2.5 py-0.5 rounded-full uppercase font-bold shadow-sm self-center mr-1">
+              New
+            </div>
+          )}
           <div className="relative shrink-0">
             <ProjectAvatar
               name={project.name}
