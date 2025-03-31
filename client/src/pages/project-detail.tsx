@@ -98,8 +98,8 @@ export default function ProjectDetail() {
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)]">
-          <div className="bg-gray-50 dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)] bg-white">
+          <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
             <div className="mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
