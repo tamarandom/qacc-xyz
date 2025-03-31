@@ -1,20 +1,29 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu } from "lucide-react";
+import { X, Menu, BellIcon, LogOut } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
 
-  // Mock functions for when the real authentication is implemented
+  // Mock authentication functions
   const handleLogin = () => {
     console.log("Login clicked");
+    setIsAuthenticated(true);
   };
   
   const handleSignUp = () => {
     console.log("Sign up clicked");
+    setIsAuthenticated(true);
+  };
+  
+  const handleLogout = () => {
+    console.log("Logout clicked");
+    setIsAuthenticated(false);
   };
 
   const toggleMobileMenu = () => {
@@ -60,25 +69,62 @@ export default function Navbar() {
             </div>
           </div>
           
-          {/* Auth Buttons - Desktop */}
+          {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleLogin}
-              className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] border-[color:var(--color-gray-200)] hover:bg-[color:var(--color-gray-200)] hover:text-[color:var(--color-black)]"
-            >
-              Log In
-            </Button>
-            
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={handleSignUp}
-              className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
-            >
-              Sign Up
-            </Button>
+            {isAuthenticated ? (
+              <>
+                <div className="ml-3 relative">
+                  <Button size="icon" variant="ghost" className="text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-5 w-5" />
+                  </Button>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <div className="flex flex-col items-end">
+                    <span className="text-sm font-medium text-[color:var(--color-black)]">
+                      {user.username}
+                    </span>
+                    <span className="text-xs text-[color:var(--color-gray)]">
+                      {user.email}
+                    </span>
+                  </div>
+                  
+                  <div className="relative">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="p-1 rounded-full focus:outline-none"
+                      onClick={handleLogout}
+                    >
+                      <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
+                        <span className="font-['IBM_Plex_Mono'] font-medium">SF</span>
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleLogin}
+                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] border-[color:var(--color-gray-200)] hover:bg-[color:var(--color-gray-200)] hover:text-[color:var(--color-black)]"
+                >
+                  Log In
+                </Button>
+                
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={handleSignUp}
+                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
+                >
+                  Sign Up
+                </Button>
+              </>
+            )}
           </div>
           
           <div className="-mr-2 flex items-center sm:hidden">
@@ -138,29 +184,66 @@ export default function Navbar() {
             </Link>
           </div>
           
-          {/* Auth buttons - Mobile */}
-          <div className="border-t border-gray-200 pt-4 pb-3 px-4 space-y-3">
-            <Button 
-              variant="outline" 
-              className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] border-[color:var(--color-gray-200)] hover:bg-[color:var(--color-gray-200)] hover:text-[color:var(--color-black)]"
-              onClick={() => {
-                handleLogin();
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              Log In
-            </Button>
-            
-            <Button 
-              variant="default" 
-              className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
-              onClick={() => {
-                handleSignUp();
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              Sign Up
-            </Button>
+          {/* Auth area - Mobile */}
+          <div className="border-t border-gray-200 pt-4 pb-3 px-4">
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="h-10 w-10 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
+                      <span className="font-['IBM_Plex_Mono'] font-medium">SF</span>
+                    </div>
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium text-[color:var(--color-black)]">{user.username}</div>
+                    <div className="text-sm font-medium text-[color:var(--color-gray)]">{user.email}</div>
+                  </div>
+                  
+                  <Button size="icon" variant="ghost" className="ml-auto text-[color:var(--color-gray)]">
+                    <span className="sr-only">View notifications</span>
+                    <BellIcon className="h-6 w-6" />
+                  </Button>
+                </div>
+                
+                <div className="mt-3">
+                  <Button 
+                    variant="outline" 
+                    className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" /> 
+                    Sign Out
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-light-gray)] text-[color:var(--color-black)] border-[color:var(--color-gray-200)] hover:bg-[color:var(--color-gray-200)] hover:text-[color:var(--color-black)]"
+                  onClick={() => {
+                    handleLogin();
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Log In
+                </Button>
+                
+                <Button 
+                  variant="default" 
+                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
+                  onClick={() => {
+                    handleSignUp();
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
