@@ -215,7 +215,6 @@ export default function Home() {
               <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
                 <thead className="bg-[color:var(--color-light-gray)]">
                   <tr>
-                    <th className="w-20 px-3 py-3 text-center text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                     <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Ticker</th>
                     <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
@@ -228,21 +227,23 @@ export default function Home() {
                       className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                       onClick={() => navigate(`/projects/${project.id}`)}
                     >
-                      <td className="px-3 py-4 whitespace-nowrap text-center">
-                        <div className="bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
-                          New
-                        </div>
-                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <ProjectAvatar
-                            name={project.name}
-                            tokenSymbol={project.tokenSymbol}
-                            bgColor="#FBBA80"
-                            textColor="#101010" 
-                            size="md"
-                          />
-                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          <div className="relative">
+                            <ProjectAvatar
+                              name={project.name}
+                              tokenSymbol={project.tokenSymbol}
+                              bgColor="#FBBA80"
+                              textColor="#101010" 
+                              size="md"
+                            />
+                          </div>
+                          <div className="ml-3 flex items-center">
+                            <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                            <div className="ml-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
+                              New
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
@@ -315,7 +316,6 @@ export default function Home() {
             <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
               <thead className="bg-[color:var(--color-light-gray)]">
                 <tr>
-                  <th className="w-20 px-3 py-3 text-center text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Status</th>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
                   <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Ticker</th>
                   <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
@@ -331,13 +331,6 @@ export default function Home() {
                     className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
                     onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    <td className="px-3 py-4 whitespace-nowrap text-center">
-                      {project.isNew && (
-                        <div className="bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
-                          New
-                        </div>
-                      )}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <ProjectAvatar
@@ -347,7 +340,14 @@ export default function Home() {
                           textColor="#101010"
                           size="md"
                         />
-                        <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                        <div className="ml-3 flex items-center">
+                          <span className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          {project.isNew && (
+                            <div className="ml-2 bg-[color:var(--color-black)] text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold inline-block">
+                              New
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
