@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BellIcon } from "lucide-react";
+import { BellIcon, X, Menu } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
 
 export default function Navbar() {
   const [location] = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
   
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-10">
@@ -64,15 +70,81 @@ export default function Navbar() {
           </div>
           
           <div className="-mr-2 flex items-center sm:hidden">
-            <Button variant="ghost" size="sm" className="inline-flex items-center justify-center p-2 rounded-md text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleMobileMenu}
+              className="inline-flex items-center justify-center p-2 rounded-md text-[color:var(--color-gray)] hover:text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)]"
+            >
               <span className="sr-only">Open main menu</span>
-              <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {isMobileMenuOpen && (
+        <div className="sm:hidden bg-white border-t border-gray-200 pt-2 pb-3">
+          <div className="space-y-1 px-4">
+            <Link 
+              href="/" 
+              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
+                location === "/"
+                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              PROJECTS
+            </Link>
+            <Link 
+              href="/portfolio" 
+              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
+                location === "/portfolio"
+                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              PORTFOLIO
+            </Link>
+            <Link 
+              href="/points" 
+              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
+                location === "/points"
+                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--color-black)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              POINTS
+            </Link>
+          </div>
+          
+          <div className="border-t border-gray-200 pt-4 pb-2">
+            <div className="flex items-center px-4">
+              <div className="flex-shrink-0">
+                <div className="h-10 w-10 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
+                  <span className="font-['IBM_Plex_Mono'] font-medium">JD</span>
+                </div>
+              </div>
+              <div className="ml-3">
+                <div className="text-base font-medium text-[color:var(--color-black)]">John Doe</div>
+                <div className="text-sm font-medium text-[color:var(--color-gray)]">john@example.com</div>
+              </div>
+              <Button size="icon" variant="ghost" className="ml-auto text-[color:var(--color-gray)]">
+                <span className="sr-only">View notifications</span>
+                <BellIcon className="h-6 w-6" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 }
