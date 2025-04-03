@@ -599,68 +599,8 @@ export class MemStorage implements IStorage {
     // Real historical X23 price data (simulated based on real market patterns)
     await this.generateRealX23PriceHistory(x23.id);
     
-    // Project 1: Akarun
-    const safeStake = await this.createProject({
-      name: "Akarun",
-      description: "Akarun is a decentralized staking protocol that enables secure, non-custodial staking for proof-of-stake blockchains. Our innovative approach solves key challenges in the staking ecosystem by distributing validator responsibilities across multiple nodes, reducing the risk of slashing while maintaining high yields.",
-      tokenSymbol: "AKA",
-      tokenName: "Akarun Token",
-      price: 1.3,
-      marketCap: 10000000,
-      volume24h: 1250000,
-      change24h: 5.67,
-      totalSupply: 20000000,
-      circulatingSupply: 10300000,
-      category: "DeFi Staking",
-      shortDescription: "Decentralized Staking Protocol",
-      blockchain: "Ethereum, BSC",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 1,
-      websiteUrl: "https://safestake.io",
-      whitePaperUrl: "https://safestake.io/whitepaper.pdf",
-      githubUrl: "https://github.com/safestake",
-      twitterUrl: "https://twitter.com/SafeStake",
-      discordUrl: "https://discord.gg/safestake",
-      avatarBg: "#FBBA80",
-      avatarText: "SS",
-      avatarColor: "#101010",
-      isFeatured: true,
-      imageUrl: "/project-logos/safe-stake.svg"
-    });
-
-    // Project 2: Ancient Beast
-    const liquidSwap = await this.createProject({
-      name: "Ancient Beast",
-      description: "Ancient Beast is an innovative cross-chain liquidity protocol that enables seamless asset swaps across multiple blockchains. Our protocol leverages advanced bridges and liquidity pools to provide users with the best rates and minimal slippage.",
-      tokenSymbol: "BEAST",
-      tokenName: "Ancient Beast Token",
-      price: 1.04,
-      marketCap: 8700000,
-      volume24h: 930000,
-      change24h: -2.34,
-      totalSupply: 100000000,
-      circulatingSupply: 35000000,
-      category: "DeFi Exchange",
-      shortDescription: "Cross-chain Liquidity Protocol",
-      blockchain: "Ethereum, Solana, Polygon",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 2,
-      websiteUrl: "https://liquidswap.io",
-      whitePaperUrl: "https://liquidswap.io/whitepaper.pdf",
-      githubUrl: "https://github.com/liquidswap",
-      twitterUrl: "https://twitter.com/LiquidSwap",
-      discordUrl: "https://discord.gg/liquidswap",
-      avatarBg: "#FBBA80",
-      avatarText: "LS",
-      avatarColor: "#101010",
-      isFeatured: true,
-      imageUrl: "/project-logos/liquid-swap.svg"
-    });
-
     // Project 3: Citizen Wallet
-    const nexusFi = await this.createProject({
+    const citizenWallet = await this.createProject({
       name: "Citizen Wallet",
       description: "Citizen Wallet is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
       tokenSymbol: "CTZN",
@@ -676,7 +616,7 @@ export class MemStorage implements IStorage {
       blockchain: "Polygon",
       tokenStandard: "ERC-20",
       contractAddress: "0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B",
-      rank: 3,
+      rank: 2, // Updated rank
       websiteUrl: "https://nexusfi.io",
       whitePaperUrl: "https://nexusfi.io/whitepaper.pdf",
       githubUrl: "https://github.com/nexusfi",
@@ -689,38 +629,8 @@ export class MemStorage implements IStorage {
       imageUrl: "/project-logos/nexus-finance.svg"
     });
 
-    // Project 4: Melodex
-    const decentLend = await this.createProject({
-      name: "Melodex",
-      description: "Melodex is a peer-to-peer music platform that connects artists and listeners directly without intermediaries. The platform uses smart contracts to secure music licenses and enable transparent royalty distribution.",
-      tokenSymbol: "MELS",
-      tokenName: "Melodex Token",
-      price: 0.78,
-      marketCap: 6200000,
-      volume24h: 650000,
-      change24h: 7.82,
-      totalSupply: 200000000,
-      circulatingSupply: 45000000,
-      category: "DeFi Lending",
-      shortDescription: "P2P Lending Platform",
-      blockchain: "Ethereum, Polygon",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 4,
-      websiteUrl: "https://decentlend.io",
-      whitePaperUrl: "https://decentlend.io/whitepaper.pdf",
-      githubUrl: "https://github.com/decentlend",
-      twitterUrl: "https://twitter.com/DecentLend",
-      discordUrl: "https://discord.gg/decentlend",
-      avatarBg: "#FBBA80",
-      avatarText: "DL",
-      avatarColor: "#101010",
-      isFeatured: false,
-      imageUrl: "/project-logos/decent-lend.svg"
-    });
-
     // Project 5: Grand Timeline
-    const quantumYield = await this.createProject({
+    const grandTimeline = await this.createProject({
       name: "Grand Timeline",
       description: "Grand Timeline is an advanced decentralized storage solution that provides secure, encrypted file storage on the blockchain. Users can store their data with complete privacy, while also being able to share access with specific parties when needed.",
       tokenSymbol: "GRNDT",
@@ -736,7 +646,7 @@ export class MemStorage implements IStorage {
       blockchain: "Ethereum, BSC, Solana",
       tokenStandard: "ERC-20",
       contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 5,
+      rank: 3, // Updated rank
       websiteUrl: "https://quantumyield.finance",
       whitePaperUrl: "https://quantumyield.finance/whitepaper.pdf",
       githubUrl: "https://github.com/quantumyield",
@@ -750,7 +660,7 @@ export class MemStorage implements IStorage {
     });
     
     // Project 6: Prismo Technology
-    const chainGuard = await this.createProject({
+    const prismoTechnology = await this.createProject({
       name: "Prismo Technology",
       description: "Prismo Technology is a next-generation security protocol that provides real-time monitoring and protection for blockchain assets and smart contracts. Our platform uses AI-powered anomaly detection to identify and prevent security breaches before they can impact your assets.",
       tokenSymbol: "PRSM",
@@ -766,7 +676,7 @@ export class MemStorage implements IStorage {
       blockchain: "Ethereum, Polygon",
       tokenStandard: "ERC-20",
       contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 6,
+      rank: 4, // Updated rank
       websiteUrl: "https://chainguard.io",
       whitePaperUrl: "https://chainguard.io/whitepaper.pdf",
       githubUrl: "https://github.com/chainguard",
@@ -778,37 +688,6 @@ export class MemStorage implements IStorage {
       isFeatured: false,
       isNew: false,
       imageUrl: "/project-logos/chain-guard.svg"
-    });
-    
-    // Project 7: Xade Finance
-    const metaverseDAO = await this.createProject({
-      name: "Xade Finance",
-      description: "Xade Finance is a next-generation decentralized finance platform focusing on providing banking and financial services to the unbanked population globally through blockchain technology.",
-      tokenSymbol: "ACHAD",
-      tokenName: "Xade Finance Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
-      change24h: 0,
-      totalSupply: 500000000,
-      circulatingSupply: 0,
-      category: "Metaverse",
-      shortDescription: "Community-Driven Metaverse Building Platform",
-      blockchain: "Ethereum, Solana",
-      tokenStandard: "ERC-20",
-      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
-      rank: 7,
-      websiteUrl: "https://metaversedao.io",
-      whitePaperUrl: "https://metaversedao.io/whitepaper.pdf",
-      githubUrl: "https://github.com/metaversedao",
-      twitterUrl: "https://twitter.com/MetaverseDAO",
-      discordUrl: "https://discord.gg/metaversedao",
-      avatarBg: "#FBBA80",
-      avatarText: "M",
-      avatarColor: "#101010",
-      isFeatured: false,
-      isNew: false,
-      imageUrl: "/project-logos/metaverse-dao.svg"
     });
     
     // Project 8: Gridlock
@@ -939,55 +818,44 @@ export class MemStorage implements IStorage {
     
 
 
-    // Add features for SafeStake
-    await await this.addProjectFeature({ projectId: 1, feature: "Distributed validator technology for enhanced security" });
-    await await this.addProjectFeature({ projectId: 1, feature: "Non-custodial staking with competitive APY rates" });
-    await await this.addProjectFeature({ projectId: 1, feature: "Slashing protection insurance mechanism" });
-    await await this.addProjectFeature({ projectId: 1, feature: "Multi-chain support (Ethereum, Solana, Polkadot)" });
-    await await this.addProjectFeature({ projectId: 1, feature: "Liquid staking derivatives for capital efficiency" });
-
-    // Add technical details for SafeStake
-    await await this.addProjectTechnicalDetail({ projectId: 1, label: "Total Value Locked", value: "$87.2M" });
-    await await this.addProjectTechnicalDetail({ projectId: 1, label: "Current APY", value: "9.2% - 15.8%" });
-    await await this.addProjectTechnicalDetail({ projectId: 1, label: "Active Validators", value: "254" });
-    await await this.addProjectTechnicalDetail({ projectId: 1, label: "Staking Pools", value: "17" });
-
-    // Add features for LiquidSwap
-    await await this.addProjectFeature({ projectId: 2, feature: "Cross-chain swaps with minimal slippage" });
-    await await this.addProjectFeature({ projectId: 2, feature: "Unified liquidity pools across multiple blockchains" });
-    await await this.addProjectFeature({ projectId: 2, feature: "Automated bridging technology" });
-    await await this.addProjectFeature({ projectId: 2, feature: "Fee-sharing mechanism for liquidity providers" });
-    await await this.addProjectFeature({ projectId: 2, feature: "Flash loan functionality for advanced traders" });
-
-    // Add technical details for LiquidSwap
-    await await this.addProjectTechnicalDetail({ projectId: 2, label: "Total Value Locked", value: "$64.5M" });
-    await await this.addProjectTechnicalDetail({ projectId: 2, label: "Trading Volume (30d)", value: "$152.3M" });
-    await await this.addProjectTechnicalDetail({ projectId: 2, label: "Active Liquidity Pools", value: "48" });
-    await await this.addProjectTechnicalDetail({ projectId: 2, label: "Supported Blockchains", value: "5" });
-
-    // Add features for other projects with similar pattern
-    await this.addProjectFeature({ projectId: 3, feature: "Integrated lending and borrowing markets" });
-    await this.addProjectFeature({ projectId: 3, feature: "Automated yield farming strategies" });
-    await this.addProjectFeature({ projectId: 3, feature: "Cross-chain asset management" });
-    await this.addProjectFeature({ projectId: 3, feature: "Risk assessment scoring for all protocols" });
-
-    // Add technical details for other projects
-    await this.addProjectTechnicalDetail({ projectId: 3, label: "Total Value Locked", value: "$73.9M" });
-    await this.addProjectTechnicalDetail({ projectId: 3, label: "Average Yield", value: "7.4%" });
-    await this.addProjectTechnicalDetail({ projectId: 3, label: "Integrated Protocols", value: "12" });
+    // Add features for X23.ai
+    // These are already added above by specific calls for x23.id
     
-    // Add features for ChainGuard
-    await this.addProjectFeature({ projectId: 6, feature: "Real-time monitoring of smart contract vulnerabilities" });
-    await this.addProjectFeature({ projectId: 6, feature: "AI-powered threat detection and prevention" });
-    await this.addProjectFeature({ projectId: 6, feature: "Automated audit reports for developers" });
-    await this.addProjectFeature({ projectId: 6, feature: "Insurance coverage for protected assets" });
-    await this.addProjectFeature({ projectId: 6, feature: "Cross-chain security solutions" });
+    // Add features for Citizen Wallet
+    await this.addProjectFeature({ projectId: 2, feature: "Integrated lending and borrowing markets" });
+    await this.addProjectFeature({ projectId: 2, feature: "Automated yield farming strategies" });
+    await this.addProjectFeature({ projectId: 2, feature: "Cross-chain asset management" });
+    await this.addProjectFeature({ projectId: 2, feature: "Risk assessment scoring for all protocols" });
+
+    // Add technical details for Citizen Wallet
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Total Value Locked", value: "$73.9M" });
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Average Yield", value: "7.4%" });
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Integrated Protocols", value: "12" });
     
-    // Add technical details for ChainGuard
-    await this.addProjectTechnicalDetail({ projectId: 6, label: "Protected Assets", value: "$0" });
-    await this.addProjectTechnicalDetail({ projectId: 6, label: "Vulnerability Detection Rate", value: "97.8%" });
-    await this.addProjectTechnicalDetail({ projectId: 6, label: "AI Model Accuracy", value: "99.2%" });
-    await this.addProjectTechnicalDetail({ projectId: 6, label: "Response Time", value: "<500ms" });
+    // Add features for Grand Timeline
+    await this.addProjectFeature({ projectId: 3, feature: "Secure encrypted file storage on the blockchain" });
+    await this.addProjectFeature({ projectId: 3, feature: "Distributed storage across multiple nodes" });
+    await this.addProjectFeature({ projectId: 3, feature: "File sharing with granular access control" });
+    await this.addProjectFeature({ projectId: 3, feature: "Immutable audit trail of file modifications" });
+    
+    // Add technical details for Grand Timeline
+    await this.addProjectTechnicalDetail({ projectId: 3, label: "Storage Capacity", value: "45 PB" });
+    await this.addProjectTechnicalDetail({ projectId: 3, label: "Average Storage Cost", value: "$0.005/GB/month" });
+    await this.addProjectTechnicalDetail({ projectId: 3, label: "Active Users", value: "42,650" });
+    await this.addProjectTechnicalDetail({ projectId: 3, label: "Network Uptime", value: "99.995%" });
+    
+    // Add features for Prismo Technology
+    await this.addProjectFeature({ projectId: 4, feature: "Real-time monitoring of smart contract vulnerabilities" });
+    await this.addProjectFeature({ projectId: 4, feature: "AI-powered threat detection and prevention" });
+    await this.addProjectFeature({ projectId: 4, feature: "Automated audit reports for developers" });
+    await this.addProjectFeature({ projectId: 4, feature: "Insurance coverage for protected assets" });
+    await this.addProjectFeature({ projectId: 4, feature: "Cross-chain security solutions" });
+    
+    // Add technical details for Prismo Technology
+    await this.addProjectTechnicalDetail({ projectId: 4, label: "Protected Assets", value: "$0" });
+    await this.addProjectTechnicalDetail({ projectId: 4, label: "Vulnerability Detection Rate", value: "97.8%" });
+    await this.addProjectTechnicalDetail({ projectId: 4, label: "AI Model Accuracy", value: "99.2%" });
+    await this.addProjectTechnicalDetail({ projectId: 4, label: "Response Time", value: "<500ms" });
     
     // Add features for MetaverseDAO
     await this.addProjectFeature({ projectId: 7, feature: "Community governance of virtual world assets" });
@@ -1150,7 +1018,7 @@ export class MemStorage implements IStorage {
       amount: 500,
       tokenAmount: 40,
       transactionHash: "0x1234...5678",
-      description: "Purchased SAFE tokens"
+      description: "Purchased X23 tokens"
     });
     
     await this.addPointTransaction({
@@ -1159,7 +1027,7 @@ export class MemStorage implements IStorage {
       amount: 300,
       tokenAmount: 80,
       transactionHash: "0x8765...4321",
-      description: "Purchased LSWP tokens"
+      description: "Purchased CTZN tokens"
     });
     
     await this.addPointTransaction({
@@ -1168,59 +1036,59 @@ export class MemStorage implements IStorage {
       amount: 450,
       tokenAmount: 120,
       transactionHash: "0xabcd...ef01",
-      description: "Purchased NEXUS tokens"
+      description: "Purchased GRNDT tokens"
     });
     
-    // Add transactions for the 5 additional tokens in portfolio
+    // Add transactions for the additional tokens in portfolio
     await this.addPointTransaction({
       userId: 1,
       projectId: 4,
       amount: 600,
       tokenAmount: 150,
       transactionHash: "0xdef0...1234",
-      description: "Purchased DLEND tokens"
-    });
-    
-    await this.addPointTransaction({
-      userId: 1,
-      projectId: 5,
-      amount: 750,
-      tokenAmount: 200,
-      transactionHash: "0x5678...9abc",
-      description: "Purchased QYIELD tokens"
-    });
-    
-    await this.addPointTransaction({
-      userId: 1,
-      projectId: 6,
-      amount: 325,
-      tokenAmount: 75,
-      transactionHash: "0xfedc...ba98",
-      description: "Purchased CHAIN tokens"
-    });
-    
-    await this.addPointTransaction({
-      userId: 1,
-      projectId: 7,
-      amount: 920,
-      tokenAmount: 320,
-      transactionHash: "0x7654...3210",
-      description: "Purchased GUARD tokens"
+      description: "Purchased PRSM tokens"
     });
     
     await this.addPointTransaction({
       userId: 1,
       projectId: 8,
+      amount: 750,
+      tokenAmount: 200,
+      transactionHash: "0x5678...9abc",
+      description: "Purchased GRID tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 9,
+      amount: 325,
+      tokenAmount: 75,
+      transactionHash: "0xfedc...ba98",
+      description: "Purchased 2MOON tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 11,
+      amount: 920,
+      tokenAmount: 320,
+      transactionHash: "0x7654...3210",
+      description: "Purchased H2D tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: 1,
+      projectId: 12,
       amount: 375,
       tokenAmount: 90,
       transactionHash: "0xcba9...8765",
-      description: "Purchased META tokens"
+      description: "Purchased WPACK tokens"
     });
     
     // Add X23 transactions for user 1 (multiple rounds with different cliff and end dates)
     await this.addPointTransaction({
       userId: 1,
-      projectId: 0, // X23 has ID 0 based on the update_project_data.js
+      projectId: 1, // X23 now has ID 1
       amount: 850,
       tokenAmount: 350,
       transactionHash: "0x3456...7890",
@@ -1229,7 +1097,7 @@ export class MemStorage implements IStorage {
     
     await this.addPointTransaction({
       userId: 1,
-      projectId: 0, // X23 has ID 0 based on the update_project_data.js
+      projectId: 1, // X23 now has ID 1
       amount: 1200,
       tokenAmount: 583,
       transactionHash: "0x9012...3456",
@@ -1239,23 +1107,23 @@ export class MemStorage implements IStorage {
     // Add transaction for user 2
     await this.addPointTransaction({
       userId: 2,
-      projectId: 3,
+      projectId: 2,
       amount: 450,
       tokenAmount: 55,
       transactionHash: "0xabcd...ef01",
-      description: "Purchased NEXUS tokens"
+      description: "Purchased CTZN tokens"
     });
     
     // Generate price history for launched projects 
     // (excluding new projects that don't have price data yet)
-    await this.generateSamplePriceHistory(1, 1.30, 4.5, 90); // SafeStake (highest price)
-    await this.generateSamplePriceHistory(2, 1.04, 5.2, 90); // LiquidSwap
-    await this.generateSamplePriceHistory(3, 0.92, 3.8, 90); // NexusFi
-    await this.generateSamplePriceHistory(4, 0.78, 6.0, 90); // DecentLend
-    await this.generateSamplePriceHistory(5, 0.65, 4.3, 90); // QuantumYield
-    await this.generateSamplePriceHistory(11, 0.32, 8.0, 90); // NFT Marketplace
-    await this.generateSamplePriceHistory(12, 0.18, 9.5, 90); // Web3 Social (lowest price)
-    // Note: Project 13 (Oracle Finance) has been removed
+    await this.generateSamplePriceHistory(1, 1.15, 4.5, 90); // X23.ai 
+    await this.generateSamplePriceHistory(2, 0.92, 3.8, 90); // Citizen Wallet
+    await this.generateSamplePriceHistory(3, 0.65, 4.3, 90); // Grand Timeline
+    await this.generateSamplePriceHistory(4, 0.18, 5.0, 90); // Prismo Technology
+    await this.generateSamplePriceHistory(8, 0.18, 8.0, 90); // Gridlock 
+    await this.generateSamplePriceHistory(9, 0.18, 7.0, 90); // To Da Moon
+    await this.generateSamplePriceHistory(11, 0.32, 8.0, 90); // How to DAO
+    await this.generateSamplePriceHistory(12, 0.18, 9.5, 90); // Web3 Packs
   }
 }
 
