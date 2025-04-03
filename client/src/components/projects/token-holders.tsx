@@ -55,14 +55,11 @@ export function TokenHolders({ projectId }: { projectId: number }) {
 
   return (
     <div className="pt-2">
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-        Showing the top addresses holding this token
-      </p>
       <Table>
-        <TableHeader>
+        <TableHeader className="hidden">
           <TableRow>
-            <TableHead className="text-sm font-medium text-gray-500 dark:text-gray-200">Holder</TableHead>
-            <TableHead className="text-right hidden"></TableHead>
+            <TableHead></TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
