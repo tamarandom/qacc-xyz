@@ -8,6 +8,7 @@ import {
 } from "@shared/schema";
 import { fetchDexScreenerPriceHistory, getTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
 import { generateRealisticX23Data } from "./services/sample-data";
+import { fetchTopTokenHolders } from "./services/token-holders";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -233,6 +234,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // PRICE HISTORY ENDPOINTS
+  
+  // Get token holders for a project
+  app.get('/api/projects/:id/token-holders', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // Fetch token holders
+      const tokenHolders = await fetchTopTokenHolders(project.contractAddress);
+      res.json(tokenHolders);
+    } catch (error) {
+      console.error('Error fetching token holders:', error);
+      res.status(500).json({ error: 'Failed to fetch token holders' });
+    }
+  });
   
   // Get price history for a project
   app.get('/api/projects/:id/price-history', async (req, res) => {

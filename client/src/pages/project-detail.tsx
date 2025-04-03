@@ -11,6 +11,7 @@ import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { ArrowLeft, Rocket, Calendar, Timer } from "lucide-react";
 import { PriceChart } from "@/components/projects/price-chart";
+import { TokenHolders } from "@/components/projects/token-holders";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
@@ -341,17 +342,10 @@ export default function ProjectDetail() {
             
             <Card className="mb-4 dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg dark:text-white">STAKING STATISTICS</CardTitle>
+                <CardTitle className="text-lg dark:text-white">TOP TOKEN HOLDERS</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-6">
-                  {project.technicalDetails?.map((detail) => (
-                    <div key={detail.id}>
-                      <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">{detail.label}</dt>
-                      <dd className="mt-1 text-sm text-gray-900 dark:text-white font-semibold">{detail.value}</dd>
-                    </div>
-                  ))}
-                </dl>
+                <TokenHolders projectId={parseInt(id || "0")} />
               </CardContent>
             </Card>
             
