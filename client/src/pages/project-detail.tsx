@@ -195,9 +195,9 @@ export default function ProjectDetail() {
         
         {/* Special X23 GeckoTerminal Chart - In Card Container */}
         {project.id === 1 && !project.isNew && (
-          <div className="px-4 py-4 dark:bg-[color:var(--color-black)]">
-            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] shadow-sm mx-auto max-w-5xl overflow-hidden">
-              <CardContent className="p-2">
+          <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)]">
+            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)] shadow-sm mx-auto max-w-5xl overflow-hidden">
+              <CardContent className="p-2 dark:bg-[color:var(--color-black)]">
                 <div className="h-[450px] w-full">
                   <iframe 
                     height="100%" 
@@ -216,8 +216,8 @@ export default function ProjectDetail() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)]">
-          <div className="bg-gray-50 dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
+          <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
             {project.isNew ? (
               <div className="mb-6">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
@@ -264,9 +264,9 @@ export default function ProjectDetail() {
             )}
             
             <div className="mb-6">
-              <Tabs defaultValue="overview">
+              <Tabs defaultValue="overview" className="dark:bg-[color:var(--color-black)]">
                 {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
-                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)] bg-white">
+                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
                   <TabsList className="w-max min-w-full flex justify-start pb-0 bg-white dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="overview" 
