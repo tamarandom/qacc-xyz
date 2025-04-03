@@ -252,14 +252,12 @@ export default function ProjectDetail() {
               </div>
             ) : (
               <>
-                {/* Only show PriceChart for non-X23 projects */}
-                {project.id !== 1 && (
-                  <div className="mb-6">
-                    <div className="grid grid-cols-1 gap-4">
-                      <PriceChart projectId={parseInt(id || "0")} />
-                    </div>
+                {/* Show PriceChart for non-X23 projects and specifically include CTZN */}
+                <div className="mb-6">
+                  <div className="grid grid-cols-1 gap-4">
+                    <PriceChart projectId={parseInt(id || "0")} />
                   </div>
-                )}
+                </div>
               </>
             )}
             

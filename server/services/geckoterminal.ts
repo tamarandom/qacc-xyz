@@ -3,9 +3,14 @@ import fetch from 'node-fetch';
 // GeckoTerminal API base URL
 const GECKO_TERMINAL_API_BASE = 'https://api.geckoterminal.com/api/v2';
 
-// X23 pool address on Polygon
+// Project pool addresses on Polygon
 export const X23_POOL_ADDRESS = '0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838';
+export const CTZN_POOL_ADDRESS = '0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8';
 export const NETWORK_ID = 'polygon_pos';
+
+// Token contract addresses on Polygon
+export const X23_TOKEN_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860';
+export const CTZN_TOKEN_ADDRESS = '0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B';
 
 /**
  * Interface for pool information from GeckoTerminal
@@ -241,8 +246,8 @@ export async function fetchTopTokenHolders(
     // This is a placeholder for future implementation
     
     // For now, return sample data for X23 token
-    if (tokenAddress.toLowerCase() === '0xc530b75465ce3c6286e718110a7b2e2b64bdc860') {
-      // Sample data (same as before)
+    if (tokenAddress.toLowerCase() === X23_TOKEN_ADDRESS.toLowerCase()) {
+      // Sample data for X23 token
       return [
         { address: '0x35CBa0A3B9480571F83B8904F8c684218E5C7eC8', percentage: 13.23 },
         { address: '0x8a0b040ce5bd98F33d425745d60c8Ef0f2f61503', percentage: 11.65 },
@@ -254,6 +259,21 @@ export async function fetchTopTokenHolders(
         { address: '0x1B323824b1F9AE547c913e611facD67Ff6B5B233', percentage: 4.12 },
         { address: '0x62F8dc5412A18Ce67D3f1e1f9f4eD98E5d21BE9F', percentage: 3.75 },
         { address: '0xD08c7A7a471CDDe21e8Bf03e5c047E02cfF0c49C', percentage: 3.28 }
+      ];
+    }
+    // Return sample data for CTZN token
+    else if (tokenAddress.toLowerCase() === CTZN_TOKEN_ADDRESS.toLowerCase()) {
+      return [
+        { address: '0x48C5D7C9B49A0D239A93BD98A901dd3F4C7c6414', percentage: 14.75 },
+        { address: '0xA91F34de933F21e71C8058ff62Ac5D05Ef6105B2', percentage: 12.38 },
+        { address: '0xE23DD859A56A0424c0aF1c22b045E563Cd5f74D0', percentage: 8.91 },
+        { address: '0x3D63B916C43D4B21f2a7390c75ec11947Ec3F853', percentage: 7.53 },
+        { address: '0x9BD27Ac50E7714A841458268c64D44B0Ec944168', percentage: 6.42 },
+        { address: '0x68473ccAD7C74DDb9A23a62F7a0DDeBf1DAc588b', percentage: 5.71 },
+        { address: '0x04F124e5A070150691c490C94D401cE7E9d15974', percentage: 4.59 },
+        { address: '0xfD88ceC0392a0c566110b45F83C82C4B34E37D05', percentage: 3.85 },
+        { address: '0x01a7389D1Bf65fC90d439218C66D32A62c8BAB16', percentage: 3.52 },
+        { address: '0xeE9562438C7fa923d2Ca818f01EC7e0E89731922', percentage: 3.17 }
       ];
     }
     

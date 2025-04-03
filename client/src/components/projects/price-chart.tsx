@@ -41,12 +41,20 @@ export function PriceChart({ projectId }: PriceChartProps) {
   const [chartType, setChartType] = useState<ChartType>("PRICE");
   const [pricePair, setPricePair] = useState<PricePair>("USD");
   
-  // Is this the X23 token?
+  // Check if this is a special token that needs a GeckoTerminal embed
   const isX23 = projectId === 1;
+  const isCTZN = projectId === 4;
+  const usesGeckoEmbed = isX23 || isCTZN;
   
-  // For X23 token, construct the GeckoTerminal embed URL
-  const geckoTerminalUrl = isX23 
-    ? `https://www.geckoterminal.com/polygon_pos/pools/0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838?embed=1&info=1&swaps=1&grayscale=0&light_chart=${theme === 'light' ? '1' : '0'}&chart_type=${chartType === 'MCAP' ? 'market_cap' : 'price'}&resolution=${geckoTerminalResolutions[timeframe]}`
+  // Define pool addresses for GeckoTerminal embeds
+  const geckoPoolAddresses: Record<number, string> = {
+    1: '0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838', // X23 pool address
+    4: '0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8'  // CTZN pool address
+  };
+  
+  // Construct the GeckoTerminal embed URL
+  const geckoTerminalUrl = usesGeckoEmbed 
+    ? `https://www.geckoterminal.com/polygon_pos/pools/${geckoPoolAddresses[projectId]}?embed=1&info=1&swaps=1&grayscale=0&light_chart=${theme === 'light' ? '1' : '0'}&chart_type=${chartType === 'MCAP' ? 'market_cap' : 'price'}&resolution=${geckoTerminalResolutions[timeframe]}`
     : '';
   
   const { data: priceHistory, isLoading, isError } = useQuery<PriceHistory[]>({
@@ -77,8 +85,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
     };
   });
   
-  // Special handling for X23 token - don't show loading state since we're using the iframe
-  if (!isX23) {
+  // Special handling for tokens with GeckoTerminal embed - don't show loading state since we're using the iframe
+  if (!usesGeckoEmbed) {
     if (isLoading) {
       return (
         <Card>
@@ -161,8 +169,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
     }
   };
   
-  // Special styling for X23 with GeckoTerminal embed vs. standard chart for other tokens
-  if (isX23) {
+  // Special styling for tokens with GeckoTerminal embed vs. standard chart for other tokens
+  if (usesGeckoEmbed) {
     return (
       // Minimal card for X23 with GeckoTerminal embed - full width, no padding
       <Card className={`chart-container ${theme === 'dark' 
@@ -226,7 +234,7 @@ export function PriceChart({ projectId }: PriceChartProps) {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          {/* GeckoTerminal iframe embed for X23 token */}
+          {/* GeckoTerminal iframe embed for tokens with real-time data */}
           <div className="h-[600px] w-full rounded-md overflow-hidden">
             <iframe 
               height="100%" 

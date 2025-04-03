@@ -9,7 +9,20 @@ import {
 import { fetchDexScreenerPriceHistory, getTokenStats as getDexScreenerTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
 import { generateRealisticX23Data } from "./services/sample-data";
 import { fetchTopTokenHolders as fetchOriginalTokenHolders } from "./services/token-holders";
-import { getTokenStats as getGeckoTerminalTokenStats, fetchPriceHistory as fetchGeckoTerminalPriceHistory, fetchTopTokenHolders as fetchGeckoTokenHolders, X23_POOL_ADDRESS } from "./services/geckoterminal";
+import { 
+  getTokenStats as getGeckoTerminalTokenStats, 
+  fetchPriceHistory as fetchGeckoTerminalPriceHistory, 
+  fetchTopTokenHolders as fetchGeckoTokenHolders, 
+  X23_POOL_ADDRESS,
+  CTZN_POOL_ADDRESS,
+  X23_TOKEN_ADDRESS,
+  CTZN_TOKEN_ADDRESS 
+} from "./services/geckoterminal";
+import {
+  getTokenDistribution,
+  getTokenUnlockSchedule,
+  getTokenTradingActivity
+} from "./services/dune";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -111,7 +124,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
         } catch (err) {
-          console.error('Error fetching real-time token stats:', err);
+          console.error('Error fetching real-time token stats for X23:', err);
+          // Continue with stored data if real-time fetch fails
+        }
+      }
+      
+      // For Citizen Wallet (CTZN), get real-time data from GeckoTerminal
+      else if (id === 4) {
+        try {
+          console.log('Fetching real-time data for Citizen Wallet (CTZN) from GeckoTerminal');
+          const tokenStats = await getGeckoTerminalTokenStats(CTZN_POOL_ADDRESS);
+          
+          if (tokenStats) {
+            console.log('Retrieved real-time stats for CTZN from GeckoTerminal:', tokenStats);
+            updatedProject = {
+              ...updatedProject,
+              price: tokenStats.priceUsd,
+              change24h: tokenStats.priceChange24h,
+              volume24h: tokenStats.volume24h,
+              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              // Update more fields if available
+              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
+              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
+              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
+            };
+          }
+        } catch (err) {
+          console.error('Error fetching real-time token stats for CTZN:', err);
           // Continue with stored data if real-time fetch fails
         }
       }
@@ -270,10 +309,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Project not found' });
       }
       
-      // Fetch token holders - use project ID 1 for X23
-      const tokenHolders = id === 1 
-        ? await fetchGeckoTokenHolders(project.contractAddress)
-        : await fetchOriginalTokenHolders(project.contractAddress);
+      // Fetch token holders - use different methods based on project ID
+      let tokenHolders = [];
+      
+      if (id === 1) {
+        // X23 token holders
+        tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
+      } else if (id === 4) {
+        // CTZN token holders
+        try {
+          console.log('Fetching token holders for CTZN from GeckoTerminal');
+          tokenHolders = await fetchGeckoTokenHolders(CTZN_TOKEN_ADDRESS);
+          
+          // If Gecko returns empty, fall back to sample data
+          if (tokenHolders.length === 0) {
+            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+          }
+        } catch (err) {
+          console.error('Error fetching CTZN token holders:', err);
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } else {
+        // Other projects
+        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      }
       res.json(tokenHolders);
     } catch (error) {
       console.error('Error fetching token holders:', error);
@@ -366,8 +425,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           console.warn('Failed to get any real price data, falling back to stored data');
         } catch (error) {
-          console.error('Error fetching real price data:', error);
+          console.error('Error fetching real price data for X23:', error);
           console.warn('Error occurred while fetching real price data, falling back to stored data');
+        }
+      }
+      
+      // For Citizen Wallet (CTZN) project (ID 4), try to fetch real data
+      else if (id === 4) {
+        console.log(`Fetching price data for Citizen Wallet (CTZN) (timeframe: ${timeframe || 'all'})`);
+        
+        try {
+          // Try GeckoTerminal for historical data
+          console.log('Attempting to fetch historical data from GeckoTerminal for CTZN');
+          const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(CTZN_POOL_ADDRESS, timeframe);
+          
+          if (geckoTerminalHistory.length > 0) {
+            // Need to update the projectId from the default value (1) to CTZN's project ID
+            const updatedHistory = geckoTerminalHistory.map(entry => ({
+              ...entry,
+              projectId: 4 // CTZN project ID
+            }));
+            
+            console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for CTZN`);
+            return res.json(updatedHistory);
+          }
+          
+          // If GeckoTerminal fails, fall back to stored data
+          console.log('GeckoTerminal data not available for CTZN, falling back to stored data');
+        } catch (error) {
+          console.error('Error fetching real price data for CTZN:', error);
+          console.warn('Error occurred while fetching real price data for CTZN, falling back to stored data');
         }
       }
       
@@ -380,6 +467,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // DUNE ANALYTICS ENDPOINTS
+  
+  // Get token distribution from Dune Analytics
+  app.get('/api/projects/:id/token-distribution', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // Get the token contract address
+      let tokenAddress = project.contractAddress;
+      
+      // Use specific token addresses for known projects
+      if (id === 1) {
+        tokenAddress = X23_TOKEN_ADDRESS;
+      } else if (id === 4) {
+        tokenAddress = CTZN_TOKEN_ADDRESS;
+      }
+      
+      console.log(`Fetching token distribution from Dune for ${project.name} (${tokenAddress})`);
+      
+      const distribution = await getTokenDistribution(tokenAddress);
+      res.json(distribution);
+    } catch (error) {
+      console.error('Error fetching token distribution:', error);
+      res.status(500).json({ error: 'Failed to fetch token distribution data' });
+    }
+  });
+  
+  // Get token unlock schedule from Dune Analytics
+  app.get('/api/projects/:id/token-unlocks', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // Get the token contract address
+      let tokenAddress = project.contractAddress;
+      
+      // Use specific token addresses for known projects
+      if (id === 1) {
+        tokenAddress = X23_TOKEN_ADDRESS;
+      } else if (id === 4) {
+        tokenAddress = CTZN_TOKEN_ADDRESS;
+      }
+      
+      console.log(`Fetching token unlock schedule from Dune for ${project.name} (${tokenAddress})`);
+      
+      const unlocks = await getTokenUnlockSchedule(tokenAddress);
+      res.json(unlocks);
+    } catch (error) {
+      console.error('Error fetching token unlock schedule:', error);
+      res.status(500).json({ error: 'Failed to fetch token unlock data' });
+    }
+  });
+  
+  // Get token trading activity from Dune Analytics
+  app.get('/api/projects/:id/trading-activity', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const days = req.query.days ? parseInt(req.query.days as string) : 30;
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // Get the token contract address
+      let tokenAddress = project.contractAddress;
+      
+      // Use specific token addresses for known projects
+      if (id === 1) {
+        tokenAddress = X23_TOKEN_ADDRESS;
+      } else if (id === 4) {
+        tokenAddress = CTZN_TOKEN_ADDRESS;
+      }
+      
+      console.log(`Fetching trading activity from Dune for ${project.name} (${tokenAddress}) over ${days} days`);
+      
+      const activity = await getTokenTradingActivity(tokenAddress, 'polygon', days);
+      res.json(activity);
+    } catch (error) {
+      console.error('Error fetching trading activity:', error);
+      res.status(500).json({ error: 'Failed to fetch trading activity data' });
+    }
+  });
+  
   const httpServer = createServer(app);
 
   return httpServer;
