@@ -207,25 +207,25 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div className="overflow-hidden shadow-sm border border-[color:var(--border-color)] md:rounded-lg mb-8 bg-[color:var(--card-background)]">
-                <table className="min-w-full divide-y divide-[color:var(--border-color)]">
-                  <thead className="bg-[color:var(--color-gray-100)]">
+              <div className="overflow-hidden shadow-sm border border-[#333333] md:rounded-lg mb-8 bg-[#121212]">
+                <table className="min-w-full divide-y divide-[#333333]">
+                  <thead className="bg-[#1e1e1e]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Token</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Market Cap</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Project</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Token</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Market Cap</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
+                  <tbody className="bg-[#121212] divide-y divide-[#333333]">
                     {filteredNewProjects.map((project) => (
                       <tr 
                         key={project.id} 
-                        className="hover:bg-[color:var(--color-gray-100)] cursor-pointer"
+                        className="hover:bg-[#282828] cursor-pointer"
                         onClick={() => navigate(`/projects/${project.id}`)}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <span className="mr-2 px-1.5 py-0.5 bg-[color:var(--text-primary)] text-[color:var(--card-background)] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
+                            <span className="mr-2 px-1.5 py-0.5 bg-[#FBBA80] text-[#101010] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
                             <ProjectAvatar
                               name={project.name}
                               bgColor={project.avatarBg || "#FBBA80"}
@@ -234,11 +234,11 @@ export default function Home() {
                               imageUrl={project.imageUrl}
                               size="sm"
                             />
-                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{project.name}</span>
+                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-white">{project.name}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">${project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(400000, true)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-white">${project.tokenSymbol}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-white">{formatCurrency(400000, true)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -282,7 +282,7 @@ export default function Home() {
                 variant="outline" 
                 size="icon"
                 onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-                className="border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)]"
+                className="border-[#333333] hover:bg-[#282828] text-white hover:text-white"
                 title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
               >
                 {sortDirection === 'asc' ? 
@@ -304,22 +304,22 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="overflow-hidden shadow-sm border border-[color:var(--border-color)] md:rounded-lg mb-8 bg-[color:var(--card-background)]">
-              <table className="min-w-full divide-y divide-[color:var(--border-color)]">
-                <thead className="bg-[color:var(--color-gray-100)]">
+            <div className="overflow-hidden shadow-sm border border-[#333333] md:rounded-lg mb-8 bg-[#121212]">
+              <table className="min-w-full divide-y divide-[#333333]">
+                <thead className="bg-[#1e1e1e]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Project</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Token</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Price</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">24h %</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Market Cap</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Project</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Token</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Price</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">24h %</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[#a0a0a0]">Market Cap</th>
                   </tr>
                 </thead>
-                <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
+                <tbody className="bg-[#121212] divide-y divide-[#333333]">
                   {filteredLaunchedProjects.map((project) => (
                     <tr 
                       key={project.id} 
-                      className="hover:bg-[color:var(--color-gray-100)] cursor-pointer"
+                      className="hover:bg-[#282828] cursor-pointer"
                       onClick={() => navigate(`/projects/${project.id}`)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -332,15 +332,15 @@ export default function Home() {
                             imageUrl={project.imageUrl}
                             size="sm"
                           />
-                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{project.name}</span>
+                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-white">{project.name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">${project.tokenSymbol}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(project.price)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-white">${project.tokenSymbol}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-white">{formatCurrency(project.price)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <PercentageChange value={project.change24h} />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(project.marketCap, true)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-white">{formatCurrency(project.marketCap, true)}</td>
                     </tr>
                   ))}
                 </tbody>
