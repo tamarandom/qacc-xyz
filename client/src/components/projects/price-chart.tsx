@@ -151,41 +151,80 @@ export function PriceChart({ projectId }: PriceChartProps) {
         <div className="flex flex-col space-y-3">
           <div className="flex justify-between items-center">
             <div className="flex space-x-4 items-center">
-              <span className={`font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>5m</span>
-              <Tabs value={timeframe} onValueChange={(value) => setTimeframe(value as TimeFrame)}>
-                <TabsList className={`grid grid-cols-5 h-8 ${theme === 'dark' 
-                  ? 'bg-[color:var(--color-black-300)]' 
-                  : 'bg-[color:var(--color-gray-200)]'}`
-                }>
-                  <TabsTrigger value="24h" className="text-xs">24H</TabsTrigger>
-                  <TabsTrigger value="7d" className="text-xs">7D</TabsTrigger>
-                  <TabsTrigger value="30d" className="text-xs">30D</TabsTrigger>
-                  <TabsTrigger value="90d" className="text-xs">90D</TabsTrigger>
-                  <TabsTrigger value="1y" className="text-xs">1Y</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                ? 'bg-[color:var(--color-black-300)]' 
+                : 'bg-[color:var(--color-gray-200)]'}`
+              }>
+                {["24h", "7d", "30d", "90d", "1y"].map((period) => (
+                  <button 
+                    key={period}
+                    onClick={() => setTimeframe(period as TimeFrame)} 
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                      timeframe === period 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    {period.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
             
             <div className="flex space-x-4">
-              <Tabs value={chartType} onValueChange={(value) => setChartType(value as ChartType)}>
-                <TabsList className={`h-8 ${theme === 'dark' 
-                  ? 'bg-[color:var(--color-black-300)]' 
-                  : 'bg-[color:var(--color-gray-200)]'}`
-                }>
-                  <TabsTrigger value="PRICE" className="text-xs">PRICE</TabsTrigger>
-                  <TabsTrigger value="MCAP" className="text-xs">MCAP</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                ? 'bg-[color:var(--color-black-300)]' 
+                : 'bg-[color:var(--color-gray-200)]'}`
+              }>
+                <button 
+                  onClick={() => setChartType("PRICE")} 
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                    chartType === "PRICE" 
+                      ? "text-[#3366FF] font-semibold" 
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Price
+                </button>
+                <span className="text-gray-500">/</span>
+                <button 
+                  onClick={() => setChartType("MCAP")} 
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                    chartType === "MCAP" 
+                      ? "text-[#3366FF] font-semibold" 
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  MCap
+                </button>
+              </div>
               
-              <Tabs value={pricePair} onValueChange={(value) => setPricePair(value as PricePair)}>
-                <TabsList className={`h-8 ${theme === 'dark' 
-                  ? 'bg-[color:var(--color-black-300)]' 
-                  : 'bg-[color:var(--color-gray-200)]'}`
-                }>
-                  <TabsTrigger value="USD" className="text-xs">X23/USD</TabsTrigger>
-                  <TabsTrigger value="ETH" className="text-xs">X23/WPOL</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                ? 'bg-[color:var(--color-black-300)]' 
+                : 'bg-[color:var(--color-gray-200)]'}`
+              }>
+                <button 
+                  onClick={() => setPricePair("USD")} 
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                    pricePair === "USD" 
+                      ? "text-[#3366FF] font-semibold" 
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  USD
+                </button>
+                <span className="text-gray-500">/</span>
+                <button 
+                  onClick={() => setPricePair("ETH")} 
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                    pricePair === "ETH" 
+                      ? "text-[#3366FF] font-semibold" 
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  WPOL
+                </button>
+              </div>
             </div>
           </div>
           
@@ -196,7 +235,7 @@ export function PriceChart({ projectId }: PriceChartProps) {
           }>
             <div className="flex flex-col">
               <div className="flex items-center space-x-2">
-                <span className="text-[color:var(--color-peach)] font-mono text-xl">
+                <span className="text-[#3366FF] font-mono text-xl">
                   {pricePair === "USD" 
                     ? `$${chartData[chartData.length - 1]?.price.toFixed(2)}` 
                     : `${chartData[chartData.length - 1]?.ethPrice.toFixed(8)}`}
@@ -255,8 +294,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
             >
               <defs>
                 <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-peach)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="var(--color-peach)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#3366FF" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#3366FF" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid 
@@ -317,7 +356,7 @@ export function PriceChart({ projectId }: PriceChartProps) {
               <Area 
                 type="monotone" 
                 dataKey={dataKey} 
-                stroke="var(--color-peach)" 
+                stroke="#3366FF" 
                 fillOpacity={1}
                 fill="url(#colorPrice)"
                 strokeWidth={0}
@@ -326,12 +365,12 @@ export function PriceChart({ projectId }: PriceChartProps) {
               <Line 
                 type="monotone" 
                 dataKey={dataKey} 
-                stroke="var(--color-peach)" 
+                stroke="#3366FF" 
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ 
                   r: 5, 
-                  stroke: 'var(--color-peach)', 
+                  stroke: '#3366FF', 
                   strokeWidth: 1, 
                   fill: theme === 'dark' ? 'var(--color-black)' : 'white' 
                 }}
