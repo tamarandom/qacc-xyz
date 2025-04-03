@@ -205,20 +205,25 @@ export function PriceChart({ projectId }: PriceChartProps) {
                   // Calculate actual price change from first to last point
                   const firstValue = chartData[0][dataKey] as number;
                   const lastValue = chartData[chartData.length - 1][dataKey] as number;
-                  const changeValue = lastValue - firstValue;
-                  const changePercent = (changeValue / firstValue) * 100;
-                  const isPositive = changeValue >= 0;
                   
-                  return (
-                    <span className={`text-xs ${isPositive ? 'text-[color:var(--color-positive)]' : 'text-[color:var(--color-negative)]'}`}>
-                      {isPositive ? '+' : ''}
-                      {pricePair === "USD" 
-                        ? `$${changeValue.toFixed(4)}` 
-                        : `${changeValue.toFixed(8)}`} 
-                      ({isPositive ? '+' : ''}
-                      {changePercent.toFixed(2)}%)
-                    </span>
-                  );
+                  // Only calculate and display if both values are valid numbers
+                  if (firstValue && lastValue && !isNaN(firstValue) && !isNaN(lastValue)) {
+                    const changeValue = lastValue - firstValue;
+                    const changePercent = firstValue !== 0 ? (changeValue / firstValue) * 100 : 0;
+                    const isPositive = changeValue >= 0;
+                    
+                    return (
+                      <span className={`text-xs ${isPositive ? 'text-[color:var(--color-positive)]' : 'text-[color:var(--color-negative)]'}`}>
+                        {isPositive ? '+' : ''}
+                        {pricePair === "USD" 
+                          ? `$${changeValue.toFixed(4)}` 
+                          : `${changeValue.toFixed(8)}`} 
+                        ({isPositive ? '+' : ''}
+                        {changePercent.toFixed(2)}%)
+                      </span>
+                    );
+                  }
+                  return null;
                 })()}
               </div>
               <div className={`text-xs ${theme === 'dark' 
