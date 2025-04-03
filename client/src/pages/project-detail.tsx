@@ -62,10 +62,10 @@ export default function ProjectDetail() {
   }
   
   return (
-    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-[color:var(--color-black)]">
       <div className="mb-6">
         <Link href="/">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="dark:text-gray-300 dark:border-gray-700 dark:hover:bg-[color:var(--color-black-200)]">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Projects
           </Button>
         </Link>
