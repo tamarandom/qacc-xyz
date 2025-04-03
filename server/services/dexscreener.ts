@@ -242,5 +242,5 @@ export async function getTokenStats(pairAddress: string) {
   }
 }
 
-// Try using a different exchange - this is the X23/WETH pair on Uniswap v3
-export const X23_PAIR_ADDRESS = '0xa7baf77b59e12df18bf07b123423db7e7c04f7d7';
+// X23 pool address on QuickSwap (Polygon)
+export const X23_PAIR_ADDRESS = 'polygon/0x0De6dA16D5181a9Fe2543cE1eeb4bFD268D68838';

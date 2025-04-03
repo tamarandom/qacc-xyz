@@ -244,16 +244,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const timeframe = req.query.timeframe as string || undefined;
       
-      // For X23.ai (project ID 1), use real data from DexScreener
+      // For X23.ai (project ID 1), try to use real data from DexScreener
       if (id === 1) {
         console.log(`Fetching real price data for X23.ai (timeframe: ${timeframe || 'all'})`);
-        const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
         
-        if (realPriceHistory.length > 0) {
-          console.log(`Retrieved ${realPriceHistory.length} price points from DexScreener`);
-          return res.json(realPriceHistory);
-        } else {
-          console.warn('Failed to get real price data from DexScreener, falling back to stored data');
+        try {
+          // First try to get current statistics to ensure we have the latest price
+          const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
+          
+          if (tokenStats) {
+            // Try to get historical data
+            const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
+            
+            if (realPriceHistory.length > 0) {
+              console.log(`Retrieved ${realPriceHistory.length} price points from DexScreener`);
+              return res.json(realPriceHistory);
+            } else {
+              console.warn('Failed to get historical price data from DexScreener, using current price with stored patterns');
+              
+              // Get stored data to use as a pattern reference
+              const storedHistory = await storage.getProjectPriceHistory(id, timeframe);
+              
+              if (storedHistory.length > 0) {
+                // Use the current price and apply similar percentage movements from stored data
+                const currentPrice = tokenStats.priceUsd;
+                const adjustedHistory = storedHistory.map((entry, index) => {
+                  // For the most recent entry, use the actual current price
+                  if (index === storedHistory.length - 1) {
+                    return {
+                      ...entry,
+                      price: currentPrice.toString()
+                    };
+                  }
+                  
+                  // Calculate the percentage difference from the stored latest price to this entry
+                  const latestStoredPrice = parseFloat(storedHistory[storedHistory.length - 1].price);
+                  const entryPrice = parseFloat(entry.price);
+                  const percentageDiff = entryPrice / latestStoredPrice;
+                  
+                  // Apply that same percentage to the current price
+                  const adjustedPrice = currentPrice * percentageDiff;
+                  
+                  return {
+                    ...entry,
+                    price: adjustedPrice.toString()
+                  };
+                });
+                
+                return res.json(adjustedHistory);
+              }
+            }
+          }
+          
+          console.warn('Failed to get any real price data from DexScreener, falling back to stored data');
+        } catch (error) {
+          console.error('Error fetching real price data:', error);
+          console.warn('Error occurred while fetching real price data, falling back to stored data');
         }
       }
       
