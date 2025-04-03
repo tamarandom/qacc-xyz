@@ -576,12 +576,12 @@ export class MemStorage implements IStorage {
       githubUrl: "https://github.com/X23Protocol",
       twitterUrl: "https://twitter.com/X23Protocol",
       discordUrl: "https://discord.gg/x23protocol",
-      avatarBg: "#FBBA80",
+      avatarBg: "#FFFFFF",
       avatarText: "X23",
       avatarColor: "#101010",
       isFeatured: true,
       isNew: false,
-      imageUrl: "/project-logos/x23.svg"
+      imageUrl: "/assets/x23-logo.png"
     });
     
     // Add project features
