@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   LineChart, 
   Line, 
@@ -162,94 +161,177 @@ export function PriceChart({ projectId }: PriceChartProps) {
     }
   };
   
-  return (
-    <Card className={`chart-container ${theme === 'dark' 
-      ? "bg-[color:var(--color-black)] text-white border-none" 
-      : "bg-white border-[color:var(--color-gray-200)]"}`
-    }>
-      <CardHeader className="pb-2">
-        <div className="flex flex-col space-y-3">
-          <div className="flex justify-between items-center">
-            <div className="flex space-x-4 items-center">
-              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
-                ? 'bg-[color:var(--color-black-300)]' 
-                : 'bg-[color:var(--color-gray-200)]'}`
-              }>
-                {["24h", "7d", "30d", "90d", "1y"].map((period) => (
+  // Special styling for X23 with GeckoTerminal embed vs. standard chart for other tokens
+  if (isX23) {
+    return (
+      // Minimal card for X23 with GeckoTerminal embed - full width, no padding
+      <Card className={`chart-container ${theme === 'dark' 
+        ? "bg-[color:var(--color-black)] text-white" 
+        : "bg-white"} border-0 shadow-none`
+      }>
+        <CardHeader className="pb-0 px-0">
+          <div className="flex flex-col space-y-1">
+            <div className="flex justify-between items-center mb-2">
+              <div className="flex space-x-2 items-center">
+                <h3 className="text-lg font-semibold mr-2">Chart</h3>
+                <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                  ? 'bg-[color:var(--color-black-300)]' 
+                  : 'bg-[color:var(--color-gray-200)]'}`
+                }>
+                  {["24h", "7d", "30d", "90d", "1y"].map((period) => (
+                    <button 
+                      key={period}
+                      onClick={() => setTimeframe(period as TimeFrame)} 
+                      className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                        timeframe === period 
+                          ? "text-[#3366FF] font-semibold" 
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      {period.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex space-x-2">
+                <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                  ? 'bg-[color:var(--color-black-300)]' 
+                  : 'bg-[color:var(--color-gray-200)]'}`
+                }>
                   <button 
-                    key={period}
-                    onClick={() => setTimeframe(period as TimeFrame)} 
-                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                      timeframe === period 
+                    onClick={() => setChartType("PRICE")} 
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                      chartType === "PRICE" 
                         ? "text-[#3366FF] font-semibold" 
                         : "text-gray-500 hover:text-gray-700"
                     }`}
                   >
-                    {period.toUpperCase()}
+                    Price
                   </button>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex space-x-4">
-              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
-                ? 'bg-[color:var(--color-black-300)]' 
-                : 'bg-[color:var(--color-gray-200)]'}`
-              }>
-                <button 
-                  onClick={() => setChartType("PRICE")} 
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                    chartType === "PRICE" 
-                      ? "text-[#3366FF] font-semibold" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  Price
-                </button>
-                <span className="text-gray-500">/</span>
-                <button 
-                  onClick={() => setChartType("MCAP")} 
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                    chartType === "MCAP" 
-                      ? "text-[#3366FF] font-semibold" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  MCap
-                </button>
-              </div>
-              
-              <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
-                ? 'bg-[color:var(--color-black-300)]' 
-                : 'bg-[color:var(--color-gray-200)]'}`
-              }>
-                <button 
-                  onClick={() => setPricePair("USD")} 
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                    pricePair === "USD" 
-                      ? "text-[#3366FF] font-semibold" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  USD
-                </button>
-                <span className="text-gray-500">/</span>
-                <button 
-                  onClick={() => setPricePair("ETH")} 
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
-                    pricePair === "ETH" 
-                      ? "text-[#3366FF] font-semibold" 
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  WPOL
-                </button>
+                  <span className="text-gray-500">/</span>
+                  <button 
+                    onClick={() => setChartType("MCAP")} 
+                    className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
+                      chartType === "MCAP" 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    MCap
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-          
-          {/* Price details line - only show for non-X23 tokens since the iframe has its own details */}
-          {!isX23 && (
+        </CardHeader>
+        <CardContent className="p-0">
+          {/* GeckoTerminal iframe embed for X23 token */}
+          <div className="h-[600px] w-full rounded-md overflow-hidden">
+            <iframe 
+              height="100%" 
+              width="100%" 
+              id="geckoterminal-embed" 
+              title="GeckoTerminal Embed" 
+              src={geckoTerminalUrl}
+              frameBorder="0" 
+              allow="clipboard-write" 
+              allowFullScreen
+              className="border-0"
+            ></iframe>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  } else {
+    // Standard card for other tokens with our custom chart
+    return (
+      <Card className={`chart-container ${theme === 'dark' 
+        ? "bg-[color:var(--color-black)] text-white border-none" 
+        : "bg-white border-[color:var(--color-gray-200)]"}`
+      }>
+        <CardHeader className="pb-2">
+          <div className="flex flex-col space-y-3">
+            <div className="flex justify-between items-center">
+              <div className="flex space-x-4 items-center">
+                <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                  ? 'bg-[color:var(--color-black-300)]' 
+                  : 'bg-[color:var(--color-gray-200)]'}`
+                }>
+                  {["24h", "7d", "30d", "90d", "1y"].map((period) => (
+                    <button 
+                      key={period}
+                      onClick={() => setTimeframe(period as TimeFrame)} 
+                      className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                        timeframe === period 
+                          ? "text-[#3366FF] font-semibold" 
+                          : "text-gray-500 hover:text-gray-700"
+                      }`}
+                    >
+                      {period.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex space-x-4">
+                <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                  ? 'bg-[color:var(--color-black-300)]' 
+                  : 'bg-[color:var(--color-gray-200)]'}`
+                }>
+                  <button 
+                    onClick={() => setChartType("PRICE")} 
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                      chartType === "PRICE" 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    Price
+                  </button>
+                  <span className="text-gray-500">/</span>
+                  <button 
+                    onClick={() => setChartType("MCAP")} 
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                      chartType === "MCAP" 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    MCap
+                  </button>
+                </div>
+                
+                <div className={`flex items-center h-8 rounded-md px-1 ${theme === 'dark' 
+                  ? 'bg-[color:var(--color-black-300)]' 
+                  : 'bg-[color:var(--color-gray-200)]'}`
+                }>
+                  <button 
+                    onClick={() => setPricePair("USD")} 
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                      pricePair === "USD" 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    USD
+                  </button>
+                  <span className="text-gray-500">/</span>
+                  <button 
+                    onClick={() => setPricePair("ETH")} 
+                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                      pricePair === "ETH" 
+                        ? "text-[#3366FF] font-semibold" 
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    WPOL
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Price details line */}
             <div className={`border-t pt-2 ${theme === 'dark' 
               ? 'border-[color:var(--color-black-200)]' 
               : 'border-[color:var(--color-gray-200)]'}`
@@ -304,27 +386,10 @@ export function PriceChart({ projectId }: PriceChartProps) {
                 </div>
               </div>
             </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isX23 ? (
-          // GeckoTerminal iframe embed for X23 token
-          <div className="h-[450px] w-full">
-            <iframe 
-              height="100%" 
-              width="100%" 
-              id="geckoterminal-embed" 
-              title="GeckoTerminal Embed" 
-              src={geckoTerminalUrl}
-              frameBorder="0" 
-              allow="clipboard-write" 
-              allowFullScreen
-              className="border-0"
-            ></iframe>
           </div>
-        ) : (
-          // Original chart for other tokens
+        </CardHeader>
+        <CardContent>
+          {/* Original chart for other tokens */}
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
@@ -417,8 +482,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
               </ComposedChart>
             </ResponsiveContainer>
           </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+        </CardContent>
+      </Card>
+    );
+  }
 }
