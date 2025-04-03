@@ -92,9 +92,28 @@ export async function fetchDexScreenerPriceHistory(
   timeframe?: string
 ): Promise<InsertPriceHistory[]> {
   try {
+    const headers = {
+      'Accept': 'application/json',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+    };
+    
     // First, fetch the pair information
-    const pairResponse = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${pairAddress}`);
-    const pairData = await pairResponse.json() as { pairs: any[] };
+    const pairResponse = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${pairAddress}`, { headers });
+    
+    if (!pairResponse.ok) {
+      console.error('DexScreener API returned status:', pairResponse.status);
+      return [];
+    }
+    
+    const pairText = await pairResponse.text();
+    
+    // Check if the response is actually HTML instead of JSON
+    if (pairText.trim().startsWith('<!DOCTYPE') || pairText.trim().startsWith('<html')) {
+      console.error('DexScreener API returned HTML instead of JSON for pair data');
+      return [];
+    }
+    
+    const pairData = JSON.parse(pairText) as { pairs: any[] };
     
     if (!pairData.pairs || pairData.pairs.length === 0) {
       console.error('No pair data found for address:', pairAddress);
@@ -102,8 +121,22 @@ export async function fetchDexScreenerPriceHistory(
     }
     
     // Now fetch the chart data
-    const chartResponse = await fetch(`https://api.dexscreener.com/latest/dex/chart/${pairAddress}`);
-    const chartData = await chartResponse.json() as DexScreenerChartResponse;
+    const chartResponse = await fetch(`https://api.dexscreener.com/latest/dex/chart/${pairAddress}`, { headers });
+    
+    if (!chartResponse.ok) {
+      console.error('DexScreener chart API returned status:', chartResponse.status);
+      return [];
+    }
+    
+    const chartText = await chartResponse.text();
+    
+    // Check if the response is actually HTML instead of JSON
+    if (chartText.trim().startsWith('<!DOCTYPE') || chartText.trim().startsWith('<html')) {
+      console.error('DexScreener API returned HTML instead of JSON for chart data');
+      return [];
+    }
+    
+    const chartData = JSON.parse(chartText) as DexScreenerChartResponse;
     
     if (!chartData.priceUsd || chartData.priceUsd.length === 0) {
       console.error('No price data found for pair:', pairAddress);
@@ -167,8 +200,27 @@ export async function fetchDexScreenerPriceHistory(
  */
 export async function getTokenStats(pairAddress: string) {
   try {
-    const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${pairAddress}`);
-    const data = await response.json() as { pairs: any[] };
+    const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${pairAddress}`, {
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+      }
+    });
+    
+    if (!response.ok) {
+      console.error('DexScreener API returned status:', response.status);
+      return null;
+    }
+    
+    const textData = await response.text();
+    
+    // Check if the response is actually HTML instead of JSON
+    if (textData.trim().startsWith('<!DOCTYPE') || textData.trim().startsWith('<html')) {
+      console.error('DexScreener API returned HTML instead of JSON');
+      return null;
+    }
+    
+    const data = JSON.parse(textData) as { pairs: any[] };
     
     if (!data.pairs || data.pairs.length === 0) {
       console.error('No pair data found for address:', pairAddress);
@@ -190,4 +242,5 @@ export async function getTokenStats(pairAddress: string) {
   }
 }
 
-export const X23_PAIR_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860';
+// Use Ethereum/Polygon contract address
+export const X23_PAIR_ADDRESS = 'ethereum/0xb08f95db36e7d9c3185b9b843be7eff7bc7b20af';
