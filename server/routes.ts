@@ -18,11 +18,7 @@ import {
   X23_TOKEN_ADDRESS,
   CTZN_TOKEN_ADDRESS 
 } from "./services/geckoterminal";
-import {
-  getTokenDistribution,
-  getTokenUnlockSchedule,
-  getTokenTradingActivity
-} from "./services/dune";
+// Dune services removed - no longer using token metrics
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -467,112 +463,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // DUNE ANALYTICS ENDPOINTS
-  
-  // Get token distribution from Dune Analytics
-  app.get('/api/projects/:id/token-distribution', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      
-      if (isNaN(id)) {
-        return res.status(400).json({ error: 'Invalid project ID' });
-      }
-      
-      const project = await storage.getProjectById(id);
-      
-      if (!project) {
-        return res.status(404).json({ error: 'Project not found' });
-      }
-      
-      // Get the token contract address
-      let tokenAddress = project.contractAddress;
-      
-      // Use specific token addresses for known projects
-      if (id === 1) {
-        tokenAddress = X23_TOKEN_ADDRESS;
-      } else if (id === 4) {
-        tokenAddress = CTZN_TOKEN_ADDRESS;
-      }
-      
-      console.log(`Fetching token distribution from Dune for ${project.name} (${tokenAddress})`);
-      
-      const distribution = await getTokenDistribution(tokenAddress);
-      res.json(distribution);
-    } catch (error) {
-      console.error('Error fetching token distribution:', error);
-      res.status(500).json({ error: 'Failed to fetch token distribution data' });
-    }
+  // Return 404 for removed endpoints
+  app.get('/api/projects/:id/token-distribution', (req, res) => {
+    res.status(404).json({ error: 'Endpoint has been removed' });
   });
-  
-  // Get token unlock schedule from Dune Analytics
-  app.get('/api/projects/:id/token-unlocks', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      
-      if (isNaN(id)) {
-        return res.status(400).json({ error: 'Invalid project ID' });
-      }
-      
-      const project = await storage.getProjectById(id);
-      
-      if (!project) {
-        return res.status(404).json({ error: 'Project not found' });
-      }
-      
-      // Get the token contract address
-      let tokenAddress = project.contractAddress;
-      
-      // Use specific token addresses for known projects
-      if (id === 1) {
-        tokenAddress = X23_TOKEN_ADDRESS;
-      } else if (id === 4) {
-        tokenAddress = CTZN_TOKEN_ADDRESS;
-      }
-      
-      console.log(`Fetching token unlock schedule from Dune for ${project.name} (${tokenAddress})`);
-      
-      const unlocks = await getTokenUnlockSchedule(tokenAddress);
-      res.json(unlocks);
-    } catch (error) {
-      console.error('Error fetching token unlock schedule:', error);
-      res.status(500).json({ error: 'Failed to fetch token unlock data' });
-    }
+
+  app.get('/api/projects/:id/token-unlocks', (req, res) => {
+    res.status(404).json({ error: 'Endpoint has been removed' });
   });
-  
-  // Get token trading activity from Dune Analytics
-  app.get('/api/projects/:id/trading-activity', async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const days = req.query.days ? parseInt(req.query.days as string) : 30;
-      
-      if (isNaN(id)) {
-        return res.status(400).json({ error: 'Invalid project ID' });
-      }
-      
-      const project = await storage.getProjectById(id);
-      
-      if (!project) {
-        return res.status(404).json({ error: 'Project not found' });
-      }
-      
-      // Get the token contract address
-      let tokenAddress = project.contractAddress;
-      
-      // Use specific token addresses for known projects
-      if (id === 1) {
-        tokenAddress = X23_TOKEN_ADDRESS;
-      } else if (id === 4) {
-        tokenAddress = CTZN_TOKEN_ADDRESS;
-      }
-      
-      console.log(`Fetching trading activity from Dune for ${project.name} (${tokenAddress}) over ${days} days`);
-      
-      const activity = await getTokenTradingActivity(tokenAddress, 'polygon', days);
-      res.json(activity);
-    } catch (error) {
-      console.error('Error fetching trading activity:', error);
-      res.status(500).json({ error: 'Failed to fetch trading activity data' });
-    }
+
+  app.get('/api/projects/:id/trading-activity', (req, res) => {
+    res.status(404).json({ error: 'Endpoint has been removed' });
   });
   
   const httpServer = createServer(app);
