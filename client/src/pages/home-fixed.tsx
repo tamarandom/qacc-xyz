@@ -167,17 +167,17 @@ export default function Home() {
           </div>
           
           <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
-            <TabsList className="bg-[color:var(--color-gray-100)]">
+            <TabsList className="bg-[#1e1e1e]">
               <TabsTrigger 
                 value="grid"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--text-secondary)]"
+                className="data-[state=active]:bg-[#FBBA80] data-[state=active]:text-[#101010] text-white"
               >
                 <LayoutGrid className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="list"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--text-secondary)]"
+                className="data-[state=active]:bg-[#FBBA80] data-[state=active]:text-[#101010] text-white"
               >
                 <List className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
