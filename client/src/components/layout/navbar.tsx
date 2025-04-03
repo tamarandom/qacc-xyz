@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { X, Menu, LogOut } from "lucide-react";
-import qaccLogo from "../../assets/qacc-logo.jpg";
+import qaccLogo from "../../assets/qacc-logo-light.jpg";
 import { useTheme } from "@/contexts/theme-context";
 
 export default function Navbar() {
@@ -59,7 +59,7 @@ export default function Navbar() {
                 <img 
                   src={qaccLogo} 
                   alt="Quadratic Accelerator Logo" 
-                  className="h-8"
+                  className="h-10 pr-2"
                 />
               </Link>
             </div>
