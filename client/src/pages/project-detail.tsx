@@ -95,15 +95,13 @@ export default function ProjectDetail() {
                 
                 {/* Contract address with copy button */}
                 <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="mr-1">Contract Address:</span>
                   <a 
                     href={`https://polygonscan.com/token/${project.contractAddress}`} 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono hover:text-[color:var(--color-peach)] truncate max-w-xs flex items-center"
+                    className="font-mono hover:text-[color:var(--color-peach)] truncate max-w-xs"
                   >
                     {project.contractAddress}
-                    <ExternalLink className="h-3 w-3 ml-1" />
                   </a>
                   <button 
                     onClick={() => {
