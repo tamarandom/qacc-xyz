@@ -161,15 +161,15 @@ export default function ProjectDetail() {
             <div className="flex flex-col items-end justify-between">
               <div className="flex items-center mt-2 space-x-6">
                 <div className="flex flex-col items-end">
+                  <div className="flex items-center mb-2">
+                    <span className="text-gray-500 dark:text-gray-400 mr-2 text-sm">Market Cap</span>
+                    <span className="font-mono text-gray-900 dark:text-white text-lg font-semibold">{formatCurrency(project.marketCap, false, true)}</span>
+                  </div>
                   <div className="flex items-center">
                     <span className="text-gray-500 dark:text-gray-400 mr-2">Price</span>
                     <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.price)}</span>
                     <PercentageChange value={project.change24h} className="ml-2" />
                     <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
-                  </div>
-                  <div className="mt-1">
-                    <span className="text-gray-500 dark:text-gray-400 mr-2">Market Cap</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap, false, true)}</span>
                   </div>
                 </div>
               </div>
