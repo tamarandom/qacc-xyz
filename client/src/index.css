@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 :root {
-  /* QACC Primary Colors - Light Mode */
+  /* QACC Primary Colors */
   --color-black: #101010;
   --color-light-gray: #F6F6F6;
   --color-peach: #FBBA80;
@@ -36,29 +36,6 @@
   --border-color: var(--color-gray-200);
 }
 
-[data-theme='dark'] {
-  /* QACC Primary Colors - Dark Mode */
-  --background: #121212;
-  --card-background: #1E1E1E;
-  --text-primary: #F6F6F6;
-  --text-secondary: #B0B0B0;
-  --border-color: #2A2A2A;
-  
-  /* Adjusted colors for dark mode */
-  --color-light-gray: #1E1E1E;
-  --color-gray-100: #2A2A2A;
-  --color-gray-200: #333333;
-  --color-dark-gray: #2A2A2A;
-  --color-gray-400: #A0A0A0;
-  
-  /* Override text colors for dark mode */
-  --color-black: #F6F6F6; 
-  --color-black-100: #B0B0B0;
-  
-  /* Additional dark theme overrides */
-  color-scheme: dark;
-}
-
 @font-face {
   font-family: "Tusker Grotesk";
   src: url('/fonts/TuskerGrotesk-6700Medium.woff2') format('woff2');
@@ -85,7 +62,6 @@
     font-family: 'IBM Plex Mono', monospace;
     color: var(--text-primary);
     background-color: var(--background);
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -128,110 +104,6 @@
     border-color: var(--color-peach);
     background-color: var(--card-background);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Dark mode specific styles */
-  [data-theme='dark'] .card {
-    background-color: var(--card-background);
-    border-color: var(--border-color);
-  }
-  
-  [data-theme='dark'] .text-[color\:var\(--color-black\)] {
-    color: var(--text-primary);
-  }
-  
-  /* Update specific color for status text in dark mode */
-  [data-theme='dark'] .bg-[color\:var\(--color-gray-100\)] {
-    color: white;
-  }
-  
-  /* Fix dark mode table */
-  [data-theme='dark'] .bg-[color\:var\(--color-light-gray\)] {
-    background-color: var(--color-dark-gray);
-    color: white;
-  }
-  
-  [data-theme='dark'] .text-\[color\:var\(--color-black\)\] {
-    color: white;
-  }
-  
-  [data-theme='dark'] .text-\[color\:var\(--color-black-100\)\] {
-    color: var(--color-gray-400);
-  }
-  
-  [data-theme='dark'] .bg-white {
-    background-color: var(--card-background);
-  }
-  
-  [data-theme='dark'] .border-[color\:var\(--color-gray-200\)] {
-    border-color: var(--border-color);
-  }
-  
-  /* Fix for "NEW" tag in dark mode */
-  [data-theme='dark'] .absolute.top-2.left-2.px-1\.5.py-0\.5.bg-\[color\:var\(--color-black\)\].text-white.rounded.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].font-bold.uppercase.tracking-wide {
-    background-color: white;
-    color: var(--color-black-300);
-  }
-  
-  /* Fix status text in dark mode */
-  [data-theme='dark'] .bg-\[color\:var\(--color-gray-100\)\].px-2\.5.py-1\.5.rounded-md.text-\[10px\].font-\[\'IBM_Plex_Mono\'\].uppercase.tracking-wide.text-\[color\:var\(--color-black-100\)\] {
-    background-color: var(--color-gray-100);
-    color: white;
-  }
-  
-  /* Fix text colors for project details page in dark mode */
-  [data-theme='dark'] .text-gray-900 {
-    color: white;
-  }
-  
-  [data-theme='dark'] .text-gray-600 {
-    color: #cccccc;
-  }
-  
-  [data-theme='dark'] .text-gray-500 {
-    color: #a0a0a0;
-  }
-  
-  [data-theme='dark'] .bg-gray-50 {
-    background-color: #1E1E1E;
-  }
-  
-  [data-theme='dark'] .border-gray-200 {
-    border-color: #2A2A2A;
-  }
-  
-  [data-theme='dark'] .divide-gray-200 > * + * {
-    border-color: #2A2A2A;
-  }
-  
-  /* Fix backgrounds in dark mode */
-  [data-theme='dark'] .bg-white {
-    background-color: #101010;
-  }
-  
-  /* Fix chart container background */
-  [data-theme='dark'] .chart-container {
-    background-color: #1E1E1E;
-  }
-  
-  /* Fix "No chart data available" text */
-  [data-theme='dark'] .text-gray-400 {
-    color: #a0a0a0;
-  }
-  
-  /* Force dark background on cards in dark mode */
-  [data-theme='dark'] .bg-card {
-    background-color: #101010 !important;
-  }
-  
-  /* Force dark background on tab panels */
-  [data-theme='dark'] [role="tabpanel"] {
-    background-color: #101010 !important;
-  }
-  
-  /* Force dark background on tab container */
-  [data-theme='dark'] [role="tablist"] {
-    background-color: #101010 !important;
   }
 }
 

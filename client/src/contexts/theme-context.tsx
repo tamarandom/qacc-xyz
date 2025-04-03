@@ -1,43 +1,34 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
-type Theme = 'light' | 'dark';
+// Simple dummy type since we're removing theme toggle functionality
 type ThemeContextType = {
-  theme: Theme;
-  toggleTheme: () => void;
+  theme: 'light';
+  toggleTheme: () => void; // Keeping the function for compatibility but it won't do anything
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Get theme from localStorage if available, otherwise default to light
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check if we're in the browser
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme;
-      return savedTheme || 'light';
-    }
-    return 'light';
-  });
-
-  // Update the data-theme attribute and localStorage when theme changes
+  // Set everything to light theme
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
     
-    // Apply class to body for more consistent styling
-    if (theme === 'dark') {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [theme]);
+    // Remove dark mode class if it exists
+    document.body.classList.remove('dark');
+    
+    // Force all dark mode classes to be removed
+    document.documentElement.classList.remove('dark');
+  }, []);
 
+  // Dummy function that doesn't do anything
   const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+    // No-op function, keeping it for compatibility
+    console.log('Dark mode has been disabled');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

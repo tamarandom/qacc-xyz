@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu, LogOut, Moon, Sun } from "lucide-react";
+import { X, Menu, LogOut } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo.jpg";
 import { useTheme } from "@/contexts/theme-context";
 
@@ -10,7 +10,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
-  const { theme, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme(); // Keep for compatibility
 
   // Initialize authentication state from localStorage on component mount
   useEffect(() => {
@@ -50,7 +50,7 @@ export default function Navbar() {
   };
   
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-10 border-b border-gray-200 dark:border-gray-700">
+    <nav className="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
@@ -66,22 +66,22 @@ export default function Navbar() {
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               <Link href="/" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-gray-900" 
+                    : "border-transparent text-gray-600 hover:border-[color:var(--color-peach-200)] hover:text-gray-900"
                 }`}>
                   PROJECTS
               </Link>
               <Link href="/portfolio" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/portfolio" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-gray-900" 
+                    : "border-transparent text-gray-600 hover:border-[color:var(--color-peach-200)] hover:text-gray-900"
                 }`}>
                 PORTFOLIO
               </Link>
               <Link href="/points" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/points" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-gray-900" 
+                    : "border-transparent text-gray-600 hover:border-[color:var(--color-peach-200)] hover:text-gray-900"
                 }`}>
                 POINTS
               </Link>
@@ -90,28 +90,14 @@ export default function Navbar() {
           
           {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-              className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
-            
             {isAuthenticated ? (
               <>                
                 <div className="flex items-center space-x-3">
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-gray-900">
                       {user.username}
                     </span>
-                    <span className="text-xs text-gray-600 dark:text-gray-300">
+                    <span className="text-xs text-gray-600">
                       {user.email}
                     </span>
                   </div>
@@ -136,7 +122,7 @@ export default function Navbar() {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogin}
-                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200"
                 >
                   Log In
                 </Button>
@@ -158,7 +144,7 @@ export default function Navbar() {
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
             >
               <span className="sr-only">Open main menu</span>
               {isMobileMenuOpen ? (
@@ -173,14 +159,14 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="sm:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pt-2 pb-3">
+        <div className="sm:hidden bg-white border-t border-gray-200 pt-2 pb-3">
           <div className="space-y-1 px-4">
             <Link 
               href="/" 
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/"
                   ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                  : "text-gray-900 hover:bg-gray-100 hover:text-gray-900"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -191,7 +177,7 @@ export default function Navbar() {
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/portfolio"
                   ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                  : "text-gray-900 hover:bg-gray-100 hover:text-gray-900"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -202,7 +188,7 @@ export default function Navbar() {
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/points"
                   ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                  : "text-gray-900 hover:bg-gray-100 hover:text-gray-900"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -211,7 +197,7 @@ export default function Navbar() {
           </div>
           
           {/* Auth area - Mobile */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 pb-3 px-4">
+          <div className="border-t border-gray-200 pt-4 pb-3 px-4">
             {isAuthenticated ? (
               <>
                 <div className="flex items-center">
@@ -221,34 +207,15 @@ export default function Navbar() {
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-900 dark:text-white">{user.username}</div>
-                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{user.email}</div>
+                    <div className="text-base font-medium text-gray-900">{user.username}</div>
+                    <div className="text-sm font-medium text-gray-600">{user.email}</div>
                   </div>
                 </div>
                 
                 <div className="mt-3 space-y-3">
-                  <div className="flex items-center mb-3 justify-between">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      Toggle Theme
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={toggleTheme}
-                      aria-label="Toggle theme"
-                      className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                    >
-                      {theme === 'dark' ? (
-                        <Sun className="h-5 w-5" />
-                      ) : (
-                        <Moon className="h-5 w-5" />
-                      )}
-                    </Button>
-                  </div>
-                
                   <Button 
                     variant="outline" 
-                    className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200"
                     onClick={() => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
@@ -261,28 +228,9 @@ export default function Navbar() {
               </>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center mb-3 justify-between">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    Toggle Theme
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggleTheme}
-                    aria-label="Toggle theme"
-                    className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    {theme === 'dark' ? (
-                      <Sun className="h-5 w-5" />
-                    ) : (
-                      <Moon className="h-5 w-5" />
-                    )}
-                  </Button>
-                </div>
-                
                 <Button 
                   variant="outline" 
-                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-gray-100 text-gray-900 border-gray-200 hover:bg-gray-200"
                   onClick={() => {
                     handleLogin();
                     setIsMobileMenuOpen(false);
