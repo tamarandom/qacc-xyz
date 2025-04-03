@@ -72,47 +72,120 @@ export default function ProjectDetail() {
       </div>
       
       <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg shadow-sm overflow-hidden">
-        <div className="px-4 py-5 sm:px-6 flex items-center justify-between border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
-          <div className="flex items-center">
-            {project.isNew && (
-              <Badge className="mr-4 bg-black text-white hover:bg-black dark:bg-zinc-800 text-sm py-1 px-3 self-center">
-                NEW
-              </Badge>
-            )}
-            <ProjectAvatar
-              name={project.name}
-              bgColor={project.avatarBg}
-              textColor={project.avatarColor}
-              initials={project.avatarText || project.name.substring(0, 2)}
-              size="lg"
-            />
-            <div className="ml-4">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name}</h1>
-              <div className="flex items-center mt-1">
-                <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200 mr-2 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/20 dark:border-green-800">
-                  Accelerator Funded
+        <div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
+          <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0">
+            {/* Left Side - Project Info */}
+            <div className="flex items-start">
+              {project.isNew && (
+                <Badge className="mr-4 bg-black text-white hover:bg-black dark:bg-zinc-800 text-sm py-1 px-3 self-center">
+                  NEW
                 </Badge>
-                <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:border-blue-800">
-                  {project.category}
-                </Badge>
+              )}
+              <ProjectAvatar
+                name={project.name}
+                bgColor={project.avatarBg}
+                textColor={project.avatarColor}
+                initials={project.avatarText || project.name.substring(0, 2)}
+                size="lg"
+              />
+              <div className="ml-4">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name} ${project.tokenSymbol}</h1>
+                
+                {/* Contract address with copy button */}
+                <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  <a 
+                    href={`https://polygonscan.com/token/${project.contractAddress}`} 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono hover:text-[color:var(--color-peach)] truncate max-w-xs"
+                  >
+                    {project.contractAddress}
+                  </a>
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(project.contractAddress);
+                      // Could add toast notification here
+                    }}
+                    className="ml-2 text-gray-400 hover:text-[color:var(--color-peach)]"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                </div>
+                
+                {/* Category and Social Links */}
+                <div className="flex items-center mt-2 space-x-3">
+                  <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:border-blue-800">
+                    {project.category}
+                  </Badge>
+                  
+                  <div className="flex items-center space-x-2">
+                    <a 
+                      href={project.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-gray-400 hover:text-[color:var(--color-peach)]"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                      </svg>
+                    </a>
+                    <a 
+                      href={project.twitter} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-gray-400 hover:text-[color:var(--color-peach)]"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                      </svg>
+                    </a>
+                    <a 
+                      href={project.discord} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="text-gray-400 hover:text-[color:var(--color-peach)]"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.6869-.2762-5.4886 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+                      </svg>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center space-x-3">
-            <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
-              Buy {project.tokenSymbol}
-            </Button>
-            {!project.isNew && project.price > 0 && (
-              <a 
-                href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
-              >
-                <img src={quickswapLogo} alt="DEX" className="h-5 w-5 rounded-full" />
-                <span>Swap on DEX</span>
-              </a>
-            )}
+            
+            {/* Right Side - Stats and Buttons */}
+            <div className="flex flex-col items-end justify-between">
+              <div className="flex flex-col items-end">
+                <div className="text-right text-sm">
+                  <div className="text-gray-500 dark:text-gray-400">Market Cap</div>
+                  <div className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap)}</div>
+                </div>
+                <div className="text-right text-sm mt-2">
+                  <div className="text-gray-500 dark:text-gray-400">Created At</div>
+                  <div className="font-mono text-gray-900 dark:text-white">6 months ago</div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-3 mt-4">
+                <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
+                  Buy {project.tokenSymbol}
+                </Button>
+                {!project.isNew && project.price > 0 && (
+                  <a 
+                    href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
+                  >
+                    <img src={quickswapLogo} alt="DEX" className="h-5 w-5 rounded-full" />
+                    <span>Swap on DEX</span>
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         
