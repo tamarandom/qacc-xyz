@@ -104,10 +104,10 @@ export default function Home() {
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-10">
-        <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+        <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--text-primary)]">
           THE FUTURE OF <span className="text-[color:var(--color-peach)]">TOKENIZATION</span>
         </h1>
-        <p className="mt-3 font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] max-w-3xl">
+        <p className="mt-3 font-['IBM_Plex_Mono'] text-[color:var(--text-secondary)] max-w-3xl">
           Browse through our portfolio of carefully selected Web3 startups participating in our Quadratic Accelerator program.
         </p>
       </div>
@@ -119,7 +119,7 @@ export default function Home() {
             variant={category === "all" ? "default" : "outline"}
             className={category === "all" 
               ? "bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)] border-none font-['IBM_Plex_Mono'] uppercase font-medium" 
-              : "text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"}
+              : "text-[color:var(--text-secondary)] border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] uppercase font-medium"}
             onClick={() => setCategory("all")}
           >
             All Projects
@@ -129,7 +129,7 @@ export default function Home() {
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="outline" 
-                className="text-[color:var(--color-black-100)] border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)] font-['IBM_Plex_Mono'] uppercase font-medium"
+                className="text-[color:var(--text-secondary)] border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] uppercase font-medium"
               >
                 <span>{PROJECT_CATEGORIES.find(cat => cat.id === category && cat.id !== 'all')?.name || 'Categories'}</span>
                 <ChevronDown className="ml-2 h-4 w-4" />
@@ -155,29 +155,29 @@ export default function Home() {
         <div className="flex items-center gap-2">
           <div className="relative w-full sm:w-auto">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-[color:var(--color-black-100)]" />
+              <Search className="h-4 w-4 text-[color:var(--text-secondary)]" />
             </div>
             <Input
               type="text"
               placeholder="Search projects or tokens..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)] w-full sm:w-[260px]"
+              className="pl-10 font-['IBM_Plex_Mono'] text-sm border-[color:var(--border-color)] w-full sm:w-[260px]"
             />
           </div>
           
           <Tabs defaultValue="grid" onValueChange={(value) => setViewMode(value as "grid" | "list")}>
-            <TabsList className="bg-[color:var(--color-light-gray)]">
+            <TabsList className="bg-[color:var(--color-gray-100)]">
               <TabsTrigger 
                 value="grid"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--text-secondary)]"
               >
                 <LayoutGrid className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">Grid</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="list"
-                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--color-black-100)]"
+                className="data-[state=active]:bg-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] text-[color:var(--text-secondary)]"
               >
                 <List className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline font-['IBM_Plex_Mono'] text-xs">List</span>
@@ -192,7 +192,7 @@ export default function Home() {
         <div className="mb-10">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="h-5 w-5 text-[color:var(--color-peach)]" />
-            <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+            <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--text-primary)]">
               New Projects
             </h2>
             <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
@@ -207,25 +207,25 @@ export default function Home() {
                 />
               ))
             ) : (
-              <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
-                <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
-                  <thead className="bg-[color:var(--color-light-gray)]">
+              <div className="overflow-hidden shadow-sm border border-[color:var(--border-color)] md:rounded-lg mb-8 bg-[color:var(--card-background)]">
+                <table className="min-w-full divide-y divide-[color:var(--border-color)]">
+                  <thead className="bg-[color:var(--color-gray-100)]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Project</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Token</th>
+                      <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Market Cap</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
+                  <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
                     {filteredNewProjects.map((project) => (
                       <tr 
                         key={project.id} 
-                        className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
+                        className="hover:bg-[color:var(--color-gray-100)] cursor-pointer"
                         onClick={() => navigate(`/projects/${project.id}`)}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <span className="mr-2 px-1.5 py-0.5 bg-[color:var(--color-black)] text-[color:var(--color-light-gray)] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
+                            <span className="mr-2 px-1.5 py-0.5 bg-[color:var(--text-primary)] text-[color:var(--card-background)] rounded text-xs font-['IBM_Plex_Mono'] font-semibold uppercase">NEW</span>
                             <ProjectAvatar
                               name={project.name}
                               bgColor={project.avatarBg || "#FBBA80"}
@@ -234,11 +234,11 @@ export default function Home() {
                               imageUrl={project.imageUrl}
                               size="sm"
                             />
-                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                            <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{project.name}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(400000, true)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">${project.tokenSymbol}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(400000, true)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -254,7 +254,7 @@ export default function Home() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--color-black)]">
+              <h2 className="text-2xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--text-primary)]">
                 Launched Projects
               </h2>
               <div className="h-1 w-12 bg-[color:var(--color-peach)] mt-1 ml-2"></div>
@@ -262,12 +262,12 @@ export default function Home() {
             
             {/* Sort Controls - integrated with heading */}
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-black-100)] hidden md:inline">Sort by:</span>
+              <span className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--text-secondary)] hidden md:inline">Sort by:</span>
               <Select 
                 value={sortBy} 
                 onValueChange={setSortBy}
               >
-                <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--color-gray-300)]">
+                <SelectTrigger className="w-[130px] md:w-[180px] font-['IBM_Plex_Mono'] text-sm border-[color:var(--border-color)]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent className="font-['IBM_Plex_Mono']">
@@ -282,7 +282,7 @@ export default function Home() {
                 variant="outline" 
                 size="icon"
                 onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
-                className="border-[color:var(--color-gray-300)] hover:bg-[color:var(--color-light-gray)] hover:text-[color:var(--color-black)]"
+                className="border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)]"
                 title={sortDirection === 'asc' ? 'Sort Ascending' : 'Sort Descending'}
               >
                 {sortDirection === 'asc' ? 
@@ -304,22 +304,22 @@ export default function Home() {
               ))}
             </div>
           ) : (
-            <div className="overflow-hidden shadow-sm border border-[color:var(--color-gray-200)] md:rounded-lg mb-8 bg-white">
-              <table className="min-w-full divide-y divide-[color:var(--color-gray-200)]">
-                <thead className="bg-[color:var(--color-light-gray)]">
+            <div className="overflow-hidden shadow-sm border border-[color:var(--border-color)] md:rounded-lg mb-8 bg-[color:var(--card-background)]">
+              <table className="min-w-full divide-y divide-[color:var(--border-color)]">
+                <thead className="bg-[color:var(--color-gray-100)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Project</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Token</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Price</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">24h %</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--color-black-100)]">Market Cap</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Project</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Token</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Price</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">24h %</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium font-['IBM_Plex_Mono'] uppercase text-[color:var(--text-secondary)]">Market Cap</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-[color:var(--color-gray-200)]">
+                <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
                   {filteredLaunchedProjects.map((project) => (
                     <tr 
                       key={project.id} 
-                      className="hover:bg-[color:var(--color-light-gray)] cursor-pointer"
+                      className="hover:bg-[color:var(--color-gray-100)] cursor-pointer"
                       onClick={() => navigate(`/projects/${project.id}`)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -332,15 +332,15 @@ export default function Home() {
                             imageUrl={project.imageUrl}
                             size="sm"
                           />
-                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{project.name}</span>
+                          <span className="ml-3 font-medium font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{project.name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">${project.tokenSymbol}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.price)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">${project.tokenSymbol}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(project.price)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <PercentageChange value={project.change24h} />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{formatCurrency(project.marketCap, true)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-['IBM_Plex_Mono'] text-[color:var(--text-primary)]">{formatCurrency(project.marketCap, true)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -352,10 +352,10 @@ export default function Home() {
       
       {/* No results */}
       {!isLoading && filteredNewProjects.length === 0 && filteredLaunchedProjects.length === 0 && (
-        <div className="bg-white rounded-lg border border-[color:var(--color-gray-200)] p-10 text-center mt-10">
+        <div className="bg-[color:var(--card-background)] rounded-lg border border-[color:var(--border-color)] p-10 text-center mt-10">
           <div className="flex flex-col items-center justify-center">
-            <Search className="h-8 w-8 text-[color:var(--color-black-100)] mb-2" />
-            <p className="text-[color:var(--color-black-100)] font-['IBM_Plex_Mono']">No projects found matching your search</p>
+            <Search className="h-8 w-8 text-[color:var(--text-secondary)] mb-2" />
+            <p className="text-[color:var(--text-secondary)] font-['IBM_Plex_Mono']">No projects found matching your search</p>
             {searchQuery && (
               <Button 
                 variant="link" 
