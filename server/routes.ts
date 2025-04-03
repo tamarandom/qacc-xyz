@@ -7,7 +7,6 @@ import {
   type Project
 } from "@shared/schema";
 import { fetchDexScreenerPriceHistory, getTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
-import { fetchDuneAnalyticsData } from "./services/dune";
 import { generateRealisticX23Data } from "./services/sample-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -246,36 +245,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const timeframe = req.query.timeframe as string || undefined;
       
-      // For X23.ai (project ID 1), try to use real data from multiple sources
+      // For X23.ai (project ID 1), try to use real data from DexScreener or generate realistic data
       if (id === 1) {
-        console.log(`Fetching real price data for X23.ai (timeframe: ${timeframe || 'all'})`);
+        console.log(`Fetching price data for X23.ai (timeframe: ${timeframe || 'all'})`);
         
         try {
           // First try to get current statistics to ensure we have the latest price
           const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
           
           if (tokenStats) {
-            // First attempt: Try to get historical data from Dune Analytics
-            console.log('Attempting to fetch historical data from Dune Analytics');
-            
-            // Check if we have an API key for Dune
-            if (process.env.DUNE_API_KEY) {
-              try {
-                const duneData = await fetchDuneAnalyticsData(4915916, timeframe);
-                if (duneData.length > 0) {
-                  console.log(`Retrieved ${duneData.length} price points from Dune Analytics`);
-                  return res.json(duneData);
-                } else {
-                  console.warn('No historical data retrieved from Dune Analytics');
-                }
-              } catch (duneError) {
-                console.error('Error fetching from Dune Analytics:', duneError);
-              }
-            } else {
-              console.warn('No Dune API key provided, skipping Dune Analytics data fetch');
-            }
-            
-            // Second attempt: Try DexScreener for historical data
+            // First attempt: Try DexScreener for historical data
             console.log('Attempting to fetch historical data from DexScreener');
             const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
             
