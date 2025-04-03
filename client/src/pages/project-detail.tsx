@@ -164,6 +164,7 @@ export default function ProjectDetail() {
                     <span className="text-gray-500 dark:text-gray-400 mr-2">Price</span>
                     <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.price)}</span>
                     <PercentageChange value={project.change24h} className="ml-2" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
                   </div>
                   <div className="mt-1">
                     <span className="text-gray-500 dark:text-gray-400 mr-2">Market Cap</span>
