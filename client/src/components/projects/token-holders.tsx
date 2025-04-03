@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCell,
@@ -41,88 +34,57 @@ export function TokenHolders({ projectId }: { projectId: number }) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Token Holders</CardTitle>
-          <CardDescription>
-            Showing the top addresses holding this token
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center items-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </CardContent>
-      </Card>
+      <div className="flex justify-center items-center py-6">
+        <Loader2 className="h-6 w-6 animate-spin text-[color:var(--color-peach)]" />
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Token Holders</CardTitle>
-          <CardDescription>
-            Showing the top addresses holding this token
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-destructive">Failed to load token holders</p>
-        </CardContent>
-      </Card>
+      <p className="text-destructive py-3">Failed to load token holders</p>
     );
   }
 
   // If there are no holders, show a message
   if (!holders || holders.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Token Holders</CardTitle>
-          <CardDescription>
-            Showing the top addresses holding this token
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No token holders found</p>
-        </CardContent>
-      </Card>
+      <p className="text-muted-foreground py-3">No token holders found</p>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Top Token Holders</CardTitle>
-        <CardDescription>
-          Showing the top addresses holding this token
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Holder</TableHead>
-              <TableHead className="text-right">Percentage</TableHead>
+    <div className="pt-2">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Showing the top addresses holding this token
+      </p>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-sm font-medium text-gray-500 dark:text-gray-200">Holder</TableHead>
+            <TableHead className="text-right hidden"></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {holders.map((holder) => (
+            <TableRow key={holder.address}>
+              <TableCell className="py-3">
+                <a 
+                  href={getAddressUrl(holder.address)} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] font-mono"
+                >
+                  {formatAddress(holder.address)}
+                </a>
+              </TableCell>
+              <TableCell className="text-right py-3 text-gray-900 dark:text-white font-semibold">
+                {holder.percentage.toFixed(2)}%
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {holders.map((holder) => (
-              <TableRow key={holder.address}>
-                <TableCell>
-                  <a 
-                    href={getAddressUrl(holder.address)} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-primary hover:underline"
-                  >
-                    {formatAddress(holder.address)}
-                  </a>
-                </TableCell>
-                <TableCell className="text-right">{holder.percentage.toFixed(2)}%</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
