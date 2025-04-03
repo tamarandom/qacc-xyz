@@ -89,7 +89,9 @@ export default function ProjectDetail() {
                 size="lg"
               />
               <div className="ml-4">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{project.name} ${project.tokenSymbol}</h1>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  {project.name} <span className="text-lg text-gray-500 dark:text-gray-400">${project.tokenSymbol}</span>
+                </h1>
                 
                 {/* Contract address with copy button */}
                 <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -122,7 +124,7 @@ export default function ProjectDetail() {
                   
                   <div className="flex items-center space-x-2">
                     <a 
-                      href={project.website} 
+                      href="https://x23.ai" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-gray-400 hover:text-[color:var(--color-peach)]"
@@ -132,7 +134,7 @@ export default function ProjectDetail() {
                       </svg>
                     </a>
                     <a 
-                      href={project.twitter} 
+                      href="https://twitter.com/x23_ai" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-gray-400 hover:text-[color:var(--color-peach)]"
@@ -142,7 +144,7 @@ export default function ProjectDetail() {
                       </svg>
                     </a>
                     <a 
-                      href={project.discord} 
+                      href="https://discord.gg/x23ai" 
                       target="_blank" 
                       rel="noopener noreferrer" 
                       className="text-gray-400 hover:text-[color:var(--color-peach)]"
@@ -158,30 +160,30 @@ export default function ProjectDetail() {
             
             {/* Right Side - Stats and Buttons */}
             <div className="flex flex-col items-end justify-between">
-              <div className="flex flex-col items-end">
+              <div className="flex items-center mt-2 space-x-6">
                 <div className="text-right text-sm">
-                  <div className="text-gray-500 dark:text-gray-400">Market Cap</div>
-                  <div className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap)}</div>
+                  <span className="text-gray-500 dark:text-gray-400 mr-2">Market Cap</span>
+                  <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap)}</span>
                 </div>
-                <div className="text-right text-sm mt-2">
-                  <div className="text-gray-500 dark:text-gray-400">Created At</div>
-                  <div className="font-mono text-gray-900 dark:text-white">6 months ago</div>
+                <div className="text-right text-sm">
+                  <span className="text-gray-500 dark:text-gray-400 mr-2">Created At</span>
+                  <span className="font-mono text-gray-900 dark:text-white">6 months ago</span>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3 mt-4">
-                <Button className="bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-dark)] text-black">
+                <button className="px-3 py-1 text-xs font-medium bg-transparent border border-[color:var(--color-peach)] text-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-light)] hover:text-[color:var(--color-peach-dark)] rounded-md transition-colors">
                   Buy {project.tokenSymbol}
-                </Button>
+                </button>
                 {!project.isNew && project.price > 0 && (
                   <a 
                     href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#4A89DC] hover:bg-[#3A79CC] text-white font-medium transition-colors"
+                    className="px-3 py-1 text-xs font-medium bg-transparent border border-[#4A89DC] text-[#4A89DC] hover:bg-[#E6F0FF] hover:text-[#3A79CC] rounded-md transition-colors inline-flex items-center gap-1"
                   >
-                    <img src={quickswapLogo} alt="DEX" className="h-5 w-5 rounded-full" />
-                    <span>Swap on DEX</span>
+                    <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                    <span>Swap</span>
                   </a>
                 )}
               </div>
@@ -189,22 +191,29 @@ export default function ProjectDetail() {
           </div>
         </div>
         
-        {/* Special X23 GeckoTerminal Chart - Full Width */}
+        {/* Special X23 GeckoTerminal Chart - In Card Container */}
         {project.id === 1 && !project.isNew && (
-          <div className="w-full dark:bg-[color:var(--color-black)] overflow-hidden">
-            <div className="h-[600px] w-full">
-              <iframe 
-                height="100%" 
-                width="100%" 
-                id="geckoterminal-embed" 
-                title="GeckoTerminal Embed" 
-                src="https://www.geckoterminal.com/polygon_pos/pools/0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h"
-                frameBorder="0" 
-                allow="clipboard-write" 
-                allowFullScreen
-                className="border-0"
-              ></iframe>
-            </div>
+          <div className="px-4 py-4 dark:bg-[color:var(--color-black)]">
+            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] shadow-sm mx-auto max-w-5xl">
+              <CardHeader className="pb-0 border-b border-gray-200 dark:border-[color:var(--color-black-200)]">
+                <CardTitle className="text-md font-medium text-gray-700 dark:text-gray-300">Live Price Chart</CardTitle>
+              </CardHeader>
+              <CardContent className="p-2">
+                <div className="h-[450px] w-full">
+                  <iframe 
+                    height="100%" 
+                    width="100%" 
+                    id="geckoterminal-embed" 
+                    title="GeckoTerminal Embed" 
+                    src="https://www.geckoterminal.com/polygon_pos/pools/0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h"
+                    frameBorder="0" 
+                    allow="clipboard-write" 
+                    allowFullScreen
+                    className="border-0"
+                  ></iframe>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 
