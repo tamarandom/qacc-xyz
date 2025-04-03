@@ -166,13 +166,13 @@ export default function ProjectDetail() {
                   <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap)}</span>
                 </div>
                 <div className="text-right text-sm">
-                  <span className="text-gray-500 dark:text-gray-400 mr-2">Created At</span>
-                  <span className="font-mono text-gray-900 dark:text-white">6 months ago</span>
+                  <span className="text-gray-500 dark:text-gray-400 mr-2">Created</span>
+                  <span className="font-mono text-gray-900 dark:text-white">6 days ago</span>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3 mt-4">
-                <button className="px-3 py-1 text-xs font-medium bg-transparent border border-[color:var(--color-peach)] text-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-light)] hover:text-[color:var(--color-peach-dark)] rounded-md transition-colors">
+                <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
                   Buy {project.tokenSymbol}
                 </button>
                 {!project.isNew && project.price > 0 && (
@@ -180,7 +180,7 @@ export default function ProjectDetail() {
                     href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="px-3 py-1 text-xs font-medium bg-transparent border border-[#4A89DC] text-[#4A89DC] hover:bg-[#E6F0FF] hover:text-[#3A79CC] rounded-md transition-colors inline-flex items-center gap-1"
+                    className="px-4 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
                   >
                     <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
                     <span>Swap</span>
@@ -194,10 +194,7 @@ export default function ProjectDetail() {
         {/* Special X23 GeckoTerminal Chart - In Card Container */}
         {project.id === 1 && !project.isNew && (
           <div className="px-4 py-4 dark:bg-[color:var(--color-black)]">
-            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] shadow-sm mx-auto max-w-5xl">
-              <CardHeader className="pb-0 border-b border-gray-200 dark:border-[color:var(--color-black-200)]">
-                <CardTitle className="text-md font-medium text-gray-700 dark:text-gray-300">Live Price Chart</CardTitle>
-              </CardHeader>
+            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] shadow-sm mx-auto max-w-5xl overflow-hidden">
               <CardContent className="p-2">
                 <div className="h-[450px] w-full">
                   <iframe 
