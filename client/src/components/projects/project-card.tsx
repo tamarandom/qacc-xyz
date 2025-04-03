@@ -42,7 +42,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                     {project.name}
                   </h3>
                   {project.isNew && (
-                    <div className="bg-[color:var(--text-primary)] text-[color:var(--card-background)] text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+                    <div className="bg-[#FBBA80] text-[#101010] text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
                       New
                     </div>
                   )}
@@ -65,32 +65,32 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3 text-sm">
           {project.isNew ? (
             <>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, true)}</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, true)}</p>
               </div>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors col-span-1">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-1">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
               </div>
             </>
           ) : (
             <>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.price)}</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.price)}</p>
               </div>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
                 <PercentageChange value={project.change24h} />
               </div>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, true)}</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, true)}</p>
               </div>
-              <div className="bg-[color:var(--color-gray-100)] p-2 rounded-md group-hover:bg-[color:var(--color-peach-50)] transition-colors">
-                <p className="text-[color:var(--text-secondary)] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
-                <p className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.volume24h, true)}</p>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.volume24h, true)}</p>
               </div>
             </>
           )}
