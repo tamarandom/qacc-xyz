@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  // Use 'media' which is the default - this won't affect our light mode
-  darkMode: 'media',
+  // We're now using 'class' based dark mode to apply it consistently
+  darkMode: 'class',
   content: ["./client/index.html", "./client/src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {

@@ -28,12 +28,22 @@
   --color-positive: #59B287; /* Green for positive changes */
   --color-negative: #E25C5C; /* Red for negative changes */
   
-  /* Background & Text colors */
+  /* Background & Text colors - Light Theme (default but not used) */
   --background: var(--color-light-gray);
   --card-background: #FFFFFF;
   --text-primary: var(--color-black);
   --text-secondary: var(--color-black-100);
   --border-color: var(--color-gray-200);
+}
+
+/* Dark mode theme - this is now being applied to the whole app */
+.dark, html, body {
+  /* Dark mode colors */
+  --background: #101010;
+  --card-background: #191919;
+  --text-primary: #F6F6F6;
+  --text-secondary: #B6B6B6;
+  --border-color: #282828;
 }
 
 @font-face {

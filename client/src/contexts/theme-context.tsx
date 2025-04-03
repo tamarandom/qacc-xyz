@@ -1,34 +1,34 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// Simple dummy type since we're removing theme toggle functionality
+type Theme = 'light' | 'dark';
 type ThemeContextType = {
-  theme: 'light';
-  toggleTheme: () => void; // Keeping the function for compatibility but it won't do anything
+  theme: Theme;
+  toggleTheme: () => void;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Set everything to light theme
+  // Always use dark mode
+  const [theme, setTheme] = useState<Theme>('dark');
+
+  // Apply dark mode to the document
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'light');
-    localStorage.setItem('theme', 'light');
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
     
-    // Remove dark mode class if it exists
-    document.body.classList.remove('dark');
-    
-    // Force all dark mode classes to be removed
-    document.documentElement.classList.remove('dark');
+    // Apply dark mode class to body
+    document.body.classList.add('dark');
+    document.documentElement.classList.add('dark');
   }, []);
 
-  // Dummy function that doesn't do anything
+  // Toggle function (just for API compatibility)
   const toggleTheme = () => {
-    // No-op function, keeping it for compatibility
-    console.log('Dark mode has been disabled');
+    console.log('Dark mode is always on');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

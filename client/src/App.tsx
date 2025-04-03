@@ -10,6 +10,7 @@ import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { useEffect } from "react";
 
 function Router() {
   return (
@@ -25,13 +26,26 @@ function Router() {
   );
 }
 
+// Force dark mode on initial load
+function InitDarkMode() {
+  useEffect(() => {
+    // Apply dark mode to the document
+    document.body.classList.add('dark');
+    document.documentElement.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  }, []);
+  
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-[color:var(--color-black)]">
+        <InitDarkMode />
+        <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
           <Navbar />
-          <main className="flex-1 bg-gray-50 dark:bg-[color:var(--color-black)]">
+          <main className="flex-1 bg-[color:var(--background)]">
             <Router />
           </main>
         </div>
