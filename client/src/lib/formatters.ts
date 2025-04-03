@@ -1,11 +1,12 @@
 /**
  * Format a number as USD currency
  * @param value - The value to format
- * @param noDecimals - Whether to remove decimal places (for spent amounts)
+ * @param compact - Whether to use compact notation for large numbers
+ * @param noDecimals - Whether to remove decimal places
  */
-export function formatCurrency(value: number, noDecimals = false): string {
+export function formatCurrency(value: number, compact = false, noDecimals = false): string {
   // For large numbers (millions)
-  if (value >= 1000000) {
+  if (value >= 1000000 && compact) {
     return `$${(value / 1000000).toFixed(noDecimals ? 0 : 1)}M`;
   }
   // For smaller numbers

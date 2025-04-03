@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
-import { ArrowLeft, Rocket, Calendar, Timer } from "lucide-react";
+import { ArrowLeft, Rocket, Calendar, Timer, Copy, ExternalLink } from "lucide-react";
 import { PriceChart } from "@/components/projects/price-chart";
 import { TokenHolders } from "@/components/projects/token-holders";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
@@ -95,13 +95,15 @@ export default function ProjectDetail() {
                 
                 {/* Contract address with copy button */}
                 <div className="flex items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="mr-1">Contract Address:</span>
                   <a 
                     href={`https://polygonscan.com/token/${project.contractAddress}`} 
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono hover:text-[color:var(--color-peach)] truncate max-w-xs"
+                    className="font-mono hover:text-[color:var(--color-peach)] truncate max-w-xs flex items-center"
                   >
                     {project.contractAddress}
+                    <ExternalLink className="h-3 w-3 ml-1" />
                   </a>
                   <button 
                     onClick={() => {
@@ -110,9 +112,7 @@ export default function ProjectDetail() {
                     }}
                     className="ml-2 text-gray-400 hover:text-[color:var(--color-peach)]"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
+                    <Copy className="h-3 w-3" />
                   </button>
                 </div>
                 
@@ -161,13 +161,16 @@ export default function ProjectDetail() {
             {/* Right Side - Stats and Buttons */}
             <div className="flex flex-col items-end justify-between">
               <div className="flex items-center mt-2 space-x-6">
-                <div className="text-right text-sm">
-                  <span className="text-gray-500 dark:text-gray-400 mr-2">Market Cap</span>
-                  <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap)}</span>
-                </div>
-                <div className="text-right text-sm">
-                  <span className="text-gray-500 dark:text-gray-400 mr-2">Created</span>
-                  <span className="font-mono text-gray-900 dark:text-white">6 days ago</span>
+                <div className="flex flex-col items-end">
+                  <div className="flex items-center">
+                    <span className="text-gray-500 dark:text-gray-400 mr-2">Price</span>
+                    <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.price)}</span>
+                    <PercentageChange value={project.change24h} className="ml-2" />
+                  </div>
+                  <div className="mt-1">
+                    <span className="text-gray-500 dark:text-gray-400 mr-2">Market Cap</span>
+                    <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.marketCap, false, true)}</span>
+                  </div>
                 </div>
               </div>
               
@@ -250,65 +253,6 @@ export default function ProjectDetail() {
               </div>
             ) : (
               <>
-                <div className="mb-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                      <CardContent className="pt-6">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Price</p>
-                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                          {formatCurrency(project.price)}
-                        </p>
-                        <div className="flex items-center mt-1">
-                          <PercentageChange value={project.change24h} />
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-2">(24h)</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                      <CardContent className="pt-6">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Market Cap</p>
-                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                          {formatCurrency(project.marketCap)}
-                        </p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            Fully Diluted: {formatCurrency(project.totalSupply * project.price)}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                      <CardContent className="pt-6">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Volume (24h)</p>
-                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                          {formatCurrency(project.volume24h, true)}
-                        </p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {((project.volume24h / project.marketCap) * 100).toFixed(1)}% of market cap
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-                      <CardContent className="pt-6">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Circulating Supply</p>
-                        <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-white font-mono">
-                          {formatNumber(project.circulatingSupply)}
-                        </p>
-                        <div className="flex items-center mt-1">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            Total: {formatNumber(project.totalSupply)} {project.tokenSymbol}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-                
                 {/* Only show PriceChart for non-X23 projects */}
                 {project.id !== 1 && (
                   <div className="mb-6">
@@ -402,45 +346,6 @@ export default function ProjectDetail() {
           </div>
           
           <div>
-            <Card className="mb-4 dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg dark:text-white">TOKEN DETAILS</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-6">
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Token Name</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.tokenName}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Symbol</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.tokenSymbol}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Chain</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white">Polygon</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Total Supply</dt>
-                    <dd className="mt-1 text-sm text-gray-900 dark:text-white font-mono">{project.isNew ? "6.4M" : `${formatNumber(project.totalSupply)} ${project.tokenSymbol}`}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-sm font-medium text-gray-500 dark:text-gray-200">Contract Address</dt>
-                    <dd className="mt-1 text-sm truncate font-mono">
-                      <a 
-                        href="https://polygonscan.com/token/0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]"
-                      >
-                        {project.contractAddress}
-                      </a>
-                    </dd>
-                  </div>
-                </dl>
-              </CardContent>
-            </Card>
-            
             <Card className="mb-4 dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg dark:text-white">TOP TOKEN HOLDERS</CardTitle>
