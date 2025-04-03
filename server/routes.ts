@@ -6,9 +6,10 @@ import {
   insertPointTransactionSchema,
   type Project
 } from "@shared/schema";
-import { fetchDexScreenerPriceHistory, getTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
+import { fetchDexScreenerPriceHistory, getTokenStats as getDexScreenerTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
 import { generateRealisticX23Data } from "./services/sample-data";
-import { fetchTopTokenHolders } from "./services/token-holders";
+import { fetchTopTokenHolders as fetchOriginalTokenHolders } from "./services/token-holders";
+import { getTokenStats as getGeckoTerminalTokenStats, fetchPriceHistory as fetchGeckoTerminalPriceHistory, fetchTopTokenHolders as fetchGeckoTokenHolders, X23_POOL_ADDRESS } from "./services/geckoterminal";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -73,22 +74,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let updatedProject = { ...project };
       
-      // For X23.ai, get real-time data from DexScreener
+      // For X23.ai, get real-time data from GeckoTerminal
       if (id === 1) {
         try {
-          console.log('Fetching real-time data for X23.ai');
-          const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
+          console.log('Fetching real-time data for X23.ai from GeckoTerminal');
+          const tokenStats = await getGeckoTerminalTokenStats(X23_POOL_ADDRESS);
           
           if (tokenStats) {
-            console.log('Retrieved real-time stats from DexScreener:', tokenStats);
+            console.log('Retrieved real-time stats from GeckoTerminal:', tokenStats);
             updatedProject = {
               ...updatedProject,
               price: tokenStats.priceUsd,
               change24h: tokenStats.priceChange24h,
               volume24h: tokenStats.volume24h,
-              // Only update other values if they exist
-              ...(tokenStats.fdv ? { marketCap: tokenStats.fdv } : {})
+              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              // Update more fields if available
+              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
+              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
+              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
             };
+          } else {
+            // Fallback to DexScreener if GeckoTerminal fails
+            console.log('GeckoTerminal data not available, trying DexScreener');
+            const dexScreenerStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS);
+            
+            if (dexScreenerStats) {
+              console.log('Retrieved real-time stats from DexScreener:', dexScreenerStats);
+              updatedProject = {
+                ...updatedProject,
+                price: dexScreenerStats.priceUsd,
+                change24h: dexScreenerStats.priceChange24h,
+                volume24h: dexScreenerStats.volume24h,
+                // Only update other values if they exist
+                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+              };
+            }
           }
         } catch (err) {
           console.error('Error fetching real-time token stats:', err);
@@ -250,8 +270,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Project not found' });
       }
       
-      // Fetch token holders
-      const tokenHolders = await fetchTopTokenHolders(project.contractAddress);
+      // Fetch token holders - use project ID 1 for X23
+      const tokenHolders = id === 1 
+        ? await fetchGeckoTokenHolders(project.contractAddress)
+        : await fetchOriginalTokenHolders(project.contractAddress);
       res.json(tokenHolders);
     } catch (error) {
       console.error('Error fetching token holders:', error);
@@ -270,26 +292,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const timeframe = req.query.timeframe as string || undefined;
       
-      // For X23.ai (project ID 1), try to use real data from DexScreener or generate realistic data
+      // For X23.ai (project ID 1), try to use real data from GeckoTerminal
       if (id === 1) {
         console.log(`Fetching price data for X23.ai (timeframe: ${timeframe || 'all'})`);
         
         try {
-          // First try to get current statistics to ensure we have the latest price
-          const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
+          // Try GeckoTerminal for historical data
+          console.log('Attempting to fetch historical data from GeckoTerminal');
+          const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(X23_POOL_ADDRESS, timeframe);
+          
+          if (geckoTerminalHistory.length > 0) {
+            console.log(`Retrieved ${geckoTerminalHistory.length} price points from GeckoTerminal`);
+            return res.json(geckoTerminalHistory);
+          }
+          
+          console.log('GeckoTerminal data not available, trying DexScreener');
+          
+          // If GeckoTerminal fails, try DexScreener as a fallback
+          const tokenStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS);
           
           if (tokenStats) {
-            // First attempt: Try DexScreener for historical data
-            console.log('Attempting to fetch historical data from DexScreener');
-            const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
+            // Try DexScreener for historical data
+            const dexScreenerHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
             
-            if (realPriceHistory.length > 0) {
-              console.log(`Retrieved ${realPriceHistory.length} price points from DexScreener`);
-              return res.json(realPriceHistory);
+            if (dexScreenerHistory.length > 0) {
+              console.log(`Retrieved ${dexScreenerHistory.length} price points from DexScreener`);
+              return res.json(dexScreenerHistory);
             } else {
               console.warn('Failed to get historical price data from DexScreener, using realistic simulation data');
               
-              // Use our realistic X23 price data generator with the latest price
+              // Use our realistic X23 price data generator as a final fallback
               const generatedData = generateRealisticX23Data(timeframe);
               
               if (generatedData.length > 0) {
@@ -318,19 +350,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   return res.json(adjustedData);
                 }
                 
-                // If no current price is available, return the generated data as is
                 console.log(`Generated ${generatedData.length} realistic price points for X23 (no price adjustment)`);
                 return res.json(generatedData);
               }
-              
-              // Fourth attempt: Use stored data (final fallback)
-              const storedHistory = await storage.getProjectPriceHistory(id, timeframe);
-              
-              if (storedHistory.length > 0) {
-                console.log(`Using ${storedHistory.length} stored price points as final fallback`);
-                return res.json(storedHistory);
-              }
             }
+          }
+          
+          // Last attempt: Use stored data as a final fallback
+          const storedHistory = await storage.getProjectPriceHistory(id, timeframe);
+          
+          if (storedHistory.length > 0) {
+            console.log(`Using ${storedHistory.length} stored price points as final fallback`);
+            return res.json(storedHistory);
           }
           
           console.warn('Failed to get any real price data, falling back to stored data');
