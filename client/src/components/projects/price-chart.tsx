@@ -2,7 +2,18 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ResponsiveContainer, 
+  ReferenceLine,
+  Area,
+  ComposedChart
+} from "recharts";
 import { formatCurrency } from "@/lib/formatters";
 import { Loader2 } from "lucide-react";
 import type { PriceHistory } from "@shared/schema";
@@ -190,12 +201,25 @@ export function PriceChart({ projectId }: PriceChartProps) {
                     ? `$${chartData[chartData.length - 1]?.price.toFixed(2)}` 
                     : `${chartData[chartData.length - 1]?.ethPrice.toFixed(8)}`}
                 </span>
-                <span className="text-[color:var(--color-positive)] text-xs">
-                  {pricePair === "USD" 
-                    ? `+$${(chartData[chartData.length - 1]?.price * 0.005).toFixed(4)}` 
-                    : `+${(chartData[chartData.length - 1]?.ethPrice * 0.005).toFixed(8)}`} 
-                  (+0.50%)
-                </span>
+                {chartData.length > 1 && (() => {
+                  // Calculate actual price change from first to last point
+                  const firstValue = chartData[0][dataKey] as number;
+                  const lastValue = chartData[chartData.length - 1][dataKey] as number;
+                  const changeValue = lastValue - firstValue;
+                  const changePercent = (changeValue / firstValue) * 100;
+                  const isPositive = changeValue >= 0;
+                  
+                  return (
+                    <span className={`text-xs ${isPositive ? 'text-[color:var(--color-positive)]' : 'text-[color:var(--color-negative)]'}`}>
+                      {isPositive ? '+' : ''}
+                      {pricePair === "USD" 
+                        ? `$${changeValue.toFixed(4)}` 
+                        : `${changeValue.toFixed(8)}`} 
+                      ({isPositive ? '+' : ''}
+                      {changePercent.toFixed(2)}%)
+                    </span>
+                  );
+                })()}
               </div>
               <div className={`text-xs ${theme === 'dark' 
                 ? 'text-[color:var(--color-gray)]' 
@@ -204,7 +228,14 @@ export function PriceChart({ projectId }: PriceChartProps) {
                 Volume <span className={theme === 'dark' 
                   ? 'text-[color:var(--color-gray-300)]' 
                   : 'text-gray-400'
-                }>0</span>
+                }>
+                  {chartData && chartData.length > 0 && chartData[chartData.length - 1]?.volume
+                    ? `$${new Intl.NumberFormat('en-US', { 
+                        style: 'decimal',
+                        maximumFractionDigits: 0,
+                      }).format(chartData[chartData.length - 1].volume)}`
+                    : '$0'}
+                </span>
               </div>
             </div>
           </div>
@@ -213,10 +244,16 @@ export function PriceChart({ projectId }: PriceChartProps) {
       <CardContent>
         <div className="h-[300px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart
+            <ComposedChart
               data={chartData}
               margin={{ top: 10, right: 10, left: 0, bottom: 5 }}
             >
+              <defs>
+                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--color-peach)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--color-peach)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid 
                 strokeDasharray="3 3" 
                 vertical={false} 
@@ -263,6 +300,24 @@ export function PriceChart({ projectId }: PriceChartProps) {
                   color: 'var(--color-black)',
                 }}
               />
+              {/* Reference line for opening price */}
+              {chartData.length > 0 && (
+                <ReferenceLine 
+                  y={chartData[0][dataKey]} 
+                  stroke={theme === 'dark' ? '#666' : '#ccc'} 
+                  strokeDasharray="3 3" 
+                />
+              )}
+              {/* Fill area below the line */}
+              <Area 
+                type="monotone" 
+                dataKey={dataKey} 
+                stroke="var(--color-peach)" 
+                fillOpacity={1}
+                fill="url(#colorPrice)"
+                strokeWidth={0}
+              />
+              {/* Main price line */}
               <Line 
                 type="monotone" 
                 dataKey={dataKey} 
@@ -270,13 +325,13 @@ export function PriceChart({ projectId }: PriceChartProps) {
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ 
-                  r: 6, 
+                  r: 5, 
                   stroke: 'var(--color-peach)', 
                   strokeWidth: 1, 
                   fill: theme === 'dark' ? 'var(--color-black)' : 'white' 
                 }}
               />
-            </LineChart>
+            </ComposedChart>
           </ResponsiveContainer>
         </div>
       </CardContent>

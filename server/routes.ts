@@ -6,6 +6,7 @@ import {
   insertPointTransactionSchema,
   type Project
 } from "@shared/schema";
+import { fetchDexScreenerPriceHistory, getTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -68,8 +69,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const features = await storage.getProjectFeatures(id);
       const technicalDetails = await storage.getProjectTechnicalDetails(id);
       
+      let updatedProject = { ...project };
+      
+      // For X23.ai, get real-time data from DexScreener
+      if (id === 1) {
+        try {
+          console.log('Fetching real-time data for X23.ai');
+          const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
+          
+          if (tokenStats) {
+            console.log('Retrieved real-time stats from DexScreener:', tokenStats);
+            updatedProject = {
+              ...updatedProject,
+              price: tokenStats.priceUsd,
+              change24h: tokenStats.priceChange24h,
+              volume24h: tokenStats.volume24h,
+              // Only update other values if they exist
+              ...(tokenStats.fdv ? { marketCap: tokenStats.fdv } : {})
+            };
+          }
+        } catch (err) {
+          console.error('Error fetching real-time token stats:', err);
+          // Continue with stored data if real-time fetch fails
+        }
+      }
+      
       res.json({
-        ...project,
+        ...updatedProject,
         features,
         technicalDetails
       });
@@ -217,8 +243,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const timeframe = req.query.timeframe as string || undefined;
-      const priceHistory = await storage.getProjectPriceHistory(id, timeframe);
       
+      // For X23.ai (project ID 1), use real data from DexScreener
+      if (id === 1) {
+        console.log(`Fetching real price data for X23.ai (timeframe: ${timeframe || 'all'})`);
+        const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
+        
+        if (realPriceHistory.length > 0) {
+          console.log(`Retrieved ${realPriceHistory.length} price points from DexScreener`);
+          return res.json(realPriceHistory);
+        } else {
+          console.warn('Failed to get real price data from DexScreener, falling back to stored data');
+        }
+      }
+      
+      // For other projects or if DexScreener failed, use stored data
+      const priceHistory = await storage.getProjectPriceHistory(id, timeframe);
       res.json(priceHistory);
     } catch (error) {
       console.error('Error fetching price history:', error);
