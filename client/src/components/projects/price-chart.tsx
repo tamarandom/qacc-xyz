@@ -25,7 +25,7 @@ interface PriceChartProps {
 
 type TimeFrame = "24h" | "7d" | "30d" | "90d" | "1y";
 type ChartType = "PRICE" | "MCAP";
-type PricePair = "USD" | "ETH";
+type PricePair = "USD" | "ETH"; // Using "ETH" as the type identifier but displaying as "WPOL"
 
 export function PriceChart({ projectId }: PriceChartProps) {
   const { theme } = useTheme();
@@ -39,11 +39,11 @@ export function PriceChart({ projectId }: PriceChartProps) {
     enabled: !!projectId,
   });
   
-  // Format data for the chart - including mock ETH values
+  // Format data for the chart - including mock WPOL values
   const chartData = (priceHistory || []).map(entry => {
     const price = parseFloat(entry.price);
-    // Mock ETH value based on price (with a slightly different pattern to show variation)
-    const ethPrice = price / 1900; // Approximately based on ETH price
+    // Mock WPOL value based on price (with a slightly different pattern to show variation)
+    const ethPrice = price / 1.1; // Approximately based on WPOL price
     const adjustedEthPrice = ethPrice * (0.9 + Math.random() * 0.2); // Add some variability
     
     // Mock market cap values for the MCAP view (based on circulating supply * price)
@@ -137,8 +137,8 @@ export function PriceChart({ projectId }: PriceChartProps) {
         : `$${value.toFixed(2)}`;
     } else {
       return dataKey.includes("market")
-        ? `${value.toFixed(2)} ETH`
-        : `${value.toFixed(8)} ETH`;
+        ? `${value.toFixed(2)} WPOL`
+        : `${value.toFixed(8)} WPOL`;
     }
   };
   
@@ -183,7 +183,7 @@ export function PriceChart({ projectId }: PriceChartProps) {
                   : 'bg-[color:var(--color-gray-200)]'}`
                 }>
                   <TabsTrigger value="USD" className="text-xs">X23/USD</TabsTrigger>
-                  <TabsTrigger value="ETH" className="text-xs">X23/ETH</TabsTrigger>
+                  <TabsTrigger value="ETH" className="text-xs">X23/WPOL</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
