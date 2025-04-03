@@ -167,7 +167,8 @@ export class MemStorage implements IStorage {
       avatarText: insertProject.avatarText || "",
       isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false,
       isNew: insertProject.isNew !== undefined ? insertProject.isNew : false,
-      imageUrl: insertProject.imageUrl || null
+      imageUrl: insertProject.imageUrl || null,
+      swapUrl: insertProject.swapUrl || null
     };
     this.projects.set(id, project);
     return project;
@@ -581,7 +582,8 @@ export class MemStorage implements IStorage {
       avatarColor: "#101010",
       isFeatured: true,
       isNew: false,
-      imageUrl: "/assets/x23-logo.png"
+      imageUrl: "/assets/x23-logo.png",
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0xc530b75465ce3c6286e718110a7b2e2b64bdc860"
     });
     
     // Add project features
@@ -626,7 +628,8 @@ export class MemStorage implements IStorage {
       avatarText: "NF",
       avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/nexus-finance.svg"
+      imageUrl: "/project-logos/nexus-finance.svg",
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B"
     });
 
     // Project 5: Grand Timeline
@@ -656,7 +659,8 @@ export class MemStorage implements IStorage {
       avatarText: "QY",
       avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/quantum-dao.svg"
+      imageUrl: "/project-logos/quantum-dao.svg",
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x460a8186aa4574c18709d1eff118efdaa5235c19"
     });
     
     // Project 6: Prismo Technology
@@ -687,7 +691,8 @@ export class MemStorage implements IStorage {
       avatarColor: "#101010",
       isFeatured: false,
       isNew: false,
-      imageUrl: "/project-logos/chain-guard.svg"
+      imageUrl: "/project-logos/chain-guard.svg",
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x4dc15edc968eceaec3a5e0f12d0acecacee05e25"
     });
     
     // Project 8: Gridlock

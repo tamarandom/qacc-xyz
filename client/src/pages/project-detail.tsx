@@ -174,18 +174,19 @@ export default function ProjectDetail() {
               </div>
               
               <div className="flex items-center space-x-3 mt-4">
-                <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
-                  Buy {project.tokenSymbol}
-                </button>
-                {!project.isNew && project.price > 0 && (
+                {project.isNew ? (
+                  <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                    Buy {project.tokenSymbol}
+                  </button>
+                ) : (
                   <a 
-                    href="https://quickswap.exchange/#/swap?currency0=ETH&currency1=0xc530b75465ce3c6286e718110a7b2e2b64bdc860" 
+                    href={project.swapUrl || "#"} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="px-4 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
                   >
                     <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                    <span>Swap</span>
+                    <span>Swap on DEX</span>
                   </a>
                 )}
               </div>
@@ -193,32 +194,18 @@ export default function ProjectDetail() {
           </div>
         </div>
         
-        {/* Special X23 GeckoTerminal Chart - In Card Container */}
-        {project.id === 1 && !project.isNew && (
+        {/* Chart for all launched projects */}
+        {!project.isNew && (
           <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)]">
-            <Card className="border border-gray-200 dark:border-[color:var(--color-black-200)] dark:bg-[color:var(--color-black)] shadow-sm mx-auto max-w-5xl overflow-hidden">
-              <CardContent className="p-2 dark:bg-[color:var(--color-black)]">
-                <div className="h-[450px] w-full">
-                  <iframe 
-                    height="100%" 
-                    width="100%" 
-                    id="geckoterminal-embed" 
-                    title="GeckoTerminal Embed" 
-                    src="https://www.geckoterminal.com/polygon_pos/pools/0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h"
-                    frameBorder="0" 
-                    allow="clipboard-write" 
-                    allowFullScreen
-                    className="border-0"
-                  ></iframe>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="mx-auto max-w-5xl overflow-hidden">
+              <PriceChart projectId={project.id} />
+            </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
           <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
-            {project.isNew ? (
+            {project.isNew && (
               <div className="mb-6">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
                   <CardContent className="py-6">
@@ -250,15 +237,6 @@ export default function ProjectDetail() {
                   </CardContent>
                 </Card>
               </div>
-            ) : (
-              <>
-                {/* Show PriceChart for non-X23 projects and specifically include CTZN */}
-                <div className="mb-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    <PriceChart projectId={parseInt(id || "0")} />
-                  </div>
-                </div>
-              </>
             )}
             
             <div className="mb-6">

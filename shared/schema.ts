@@ -32,6 +32,7 @@ export const projects = pgTable("projects", {
   isFeatured: boolean("is_featured").notNull().default(false),
   isNew: boolean("is_new").notNull().default(false),
   imageUrl: text("image_url"),
+  swapUrl: text("swap_url"),
 });
 
 // Project features/highlights
