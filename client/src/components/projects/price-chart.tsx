@@ -93,7 +93,15 @@ export function PriceChart({ projectId }: PriceChartProps) {
             A GeckoTerminal chart for this token is available at the top of this page.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Latest price: {priceHistory[0]?.price ? `$${typeof priceHistory[0].price === 'string' ? parseFloat(priceHistory[0].price).toFixed(4) : priceHistory[0].price.toFixed(4)}` : 'N/A'}
+            Latest price: {priceHistory[0]?.price 
+              ? `$${typeof priceHistory[0].price === 'string' 
+                ? parseFloat(priceHistory[0].price).toFixed(4) 
+                : (typeof priceHistory[0].price === 'number' 
+                  ? priceHistory[0].price.toFixed(4) 
+                  : '0.0000')
+              }` 
+              : 'N/A'
+            }
           </p>
         </div>
       </CardContent>

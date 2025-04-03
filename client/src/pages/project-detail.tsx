@@ -11,6 +11,7 @@ import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency, formatNumber } from "@/lib/formatters";
 import { ArrowLeft, Rocket, Calendar, Timer, Copy, ExternalLink } from "lucide-react";
 import { PriceChart } from "@/components/projects/price-chart";
+import { GeckoTerminalChart } from "@/components/projects/gecko-terminal-chart";
 import { TokenHolders } from "@/components/projects/token-holders";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
@@ -198,7 +199,7 @@ export default function ProjectDetail() {
         {!project.isNew && (
           <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)]">
             <div className="mx-auto max-w-5xl overflow-hidden">
-              <PriceChart projectId={project.id} />
+              <GeckoTerminalChart projectId={project.id} tokenSymbol={project.tokenSymbol} />
             </div>
           </div>
         )}
