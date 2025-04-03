@@ -116,6 +116,25 @@ export default function ProjectDetail() {
           </div>
         </div>
         
+        {/* Special X23 GeckoTerminal Chart - Full Width */}
+        {project.id === 1 && !project.isNew && (
+          <div className="w-full dark:bg-[color:var(--color-black)] overflow-hidden">
+            <div className="h-[600px] w-full">
+              <iframe 
+                height="100%" 
+                width="100%" 
+                id="geckoterminal-embed" 
+                title="GeckoTerminal Embed" 
+                src="https://www.geckoterminal.com/polygon_pos/pools/0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h"
+                frameBorder="0" 
+                allow="clipboard-write" 
+                allowFullScreen
+                className="border-0"
+              ></iframe>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 dark:bg-[color:var(--color-black)]">
           <div className="bg-gray-50 dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
             {project.isNew ? (
@@ -211,11 +230,14 @@ export default function ProjectDetail() {
                   </div>
                 </div>
                 
-                <div className="mb-6">
-                  <div className="grid grid-cols-1 gap-4">
-                    <PriceChart projectId={parseInt(id || "0")} />
+                {/* Only show PriceChart for non-X23 projects */}
+                {project.id !== 1 && (
+                  <div className="mb-6">
+                    <div className="grid grid-cols-1 gap-4">
+                      <PriceChart projectId={parseInt(id || "0")} />
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             )}
             
