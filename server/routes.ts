@@ -7,6 +7,7 @@ import {
   type Project
 } from "@shared/schema";
 import { fetchDexScreenerPriceHistory, getTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
+import { fetchDuneAnalyticsData } from "./services/dune";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // put application routes here
@@ -244,7 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const timeframe = req.query.timeframe as string || undefined;
       
-      // For X23.ai (project ID 1), try to use real data from DexScreener
+      // For X23.ai (project ID 1), try to use real data from multiple sources
       if (id === 1) {
         console.log(`Fetching real price data for X23.ai (timeframe: ${timeframe || 'all'})`);
         
@@ -253,7 +254,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const tokenStats = await getTokenStats(X23_PAIR_ADDRESS);
           
           if (tokenStats) {
-            // Try to get historical data
+            // First attempt: Try to get historical data from Dune Analytics
+            console.log('Attempting to fetch historical data from Dune Analytics');
+            
+            // Check if we have an API key for Dune
+            if (process.env.DUNE_API_KEY) {
+              try {
+                const duneData = await fetchDuneAnalyticsData(4915916, timeframe);
+                if (duneData.length > 0) {
+                  console.log(`Retrieved ${duneData.length} price points from Dune Analytics`);
+                  return res.json(duneData);
+                } else {
+                  console.warn('No historical data retrieved from Dune Analytics');
+                }
+              } catch (duneError) {
+                console.error('Error fetching from Dune Analytics:', duneError);
+              }
+            } else {
+              console.warn('No Dune API key provided, skipping Dune Analytics data fetch');
+            }
+            
+            // Second attempt: Try DexScreener for historical data
+            console.log('Attempting to fetch historical data from DexScreener');
             const realPriceHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
             
             if (realPriceHistory.length > 0) {
@@ -262,6 +284,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } else {
               console.warn('Failed to get historical price data from DexScreener, using current price with stored patterns');
               
+              // Third attempt: Use stored data adjusted with current price
               // Get stored data to use as a pattern reference
               const storedHistory = await storage.getProjectPriceHistory(id, timeframe);
               
@@ -296,7 +319,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
           
-          console.warn('Failed to get any real price data from DexScreener, falling back to stored data');
+          console.warn('Failed to get any real price data, falling back to stored data');
         } catch (error) {
           console.error('Error fetching real price data:', error);
           console.warn('Error occurred while fetching real price data, falling back to stored data');
