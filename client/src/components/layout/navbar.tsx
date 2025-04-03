@@ -66,22 +66,22 @@ export default function Navbar() {
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
               <Link href="/" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
+                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
                 }`}>
                   PROJECTS
               </Link>
               <Link href="/portfolio" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/portfolio" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
+                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
                 }`}>
                 PORTFOLIO
               </Link>
               <Link href="/points" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
                   location === "/points" 
-                    ? "border-[color:var(--color-peach)] text-gray-900 dark:text-white" 
-                    : "border-transparent text-gray-600 dark:text-gray-300 hover:border-[color:var(--color-peach-200)] hover:text-gray-900 dark:hover:text-white"
+                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
+                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
                 }`}>
                 POINTS
               </Link>
@@ -95,7 +95,7 @@ export default function Navbar() {
               size="icon"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="rounded-full text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)]"
             >
               {theme === 'dark' ? (
                 <Sun className="h-5 w-5" />
@@ -108,10 +108,10 @@ export default function Navbar() {
               <>                
                 <div className="flex items-center space-x-3">
                   <div className="flex flex-col items-end">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-[color:var(--text-primary)]">
                       {user.username}
                     </span>
-                    <span className="text-xs text-gray-600 dark:text-gray-300">
+                    <span className="text-xs text-[color:var(--text-secondary)]">
                       {user.email}
                     </span>
                   </div>
@@ -136,7 +136,7 @@ export default function Navbar() {
                   variant="outline" 
                   size="sm"
                   onClick={handleLogin}
-                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-gray-100)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-200)]"
                 >
                   Log In
                 </Button>
@@ -158,7 +158,7 @@ export default function Navbar() {
               variant="ghost"
               size="sm"
               onClick={toggleMobileMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="inline-flex items-center justify-center p-2 rounded-md text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)]"
             >
               <span className="sr-only">Open main menu</span>
               {isMobileMenuOpen ? (
@@ -173,14 +173,14 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="sm:hidden bg-white dark:bg-[color:var(--color-black)] border-t border-[color:var(--border-color)] pt-2 pb-3">
+        <div className="sm:hidden bg-[color:var(--background)] border-t border-[color:var(--border-color)] pt-2 pb-3">
           <div className="space-y-1 px-4">
             <Link 
               href="/" 
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/"
-                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[color:var(--color-black-200)] hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-[color:var(--color-peach-100)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)]"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -190,8 +190,8 @@ export default function Navbar() {
               href="/portfolio" 
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/portfolio"
-                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[color:var(--color-black-200)] hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-[color:var(--color-peach-100)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)]"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -201,8 +201,8 @@ export default function Navbar() {
               href="/points" 
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
                 location === "/points"
-                  ? "bg-[color:var(--color-peach-50)] text-[color:var(--color-peach)]"
-                  : "text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[color:var(--color-black-200)] hover:text-gray-900 dark:hover:text-white"
+                  ? "bg-[color:var(--color-peach-100)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)] hover:text-[color:var(--text-primary)]"
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -221,14 +221,14 @@ export default function Navbar() {
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-gray-900 dark:text-white">{user.username}</div>
-                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300">{user.email}</div>
+                    <div className="text-base font-medium text-[color:var(--text-primary)]">{user.username}</div>
+                    <div className="text-sm font-medium text-[color:var(--text-secondary)]">{user.email}</div>
                   </div>
                 </div>
                 
                 <div className="mt-3 space-y-3">
                   <div className="flex items-center mb-3 justify-between">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                    <span className="text-sm font-medium text-[color:var(--text-primary)]">
                       Toggle Theme
                     </span>
                     <Button
@@ -236,7 +236,7 @@ export default function Navbar() {
                       size="icon"
                       onClick={toggleTheme}
                       aria-label="Toggle theme"
-                      className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                      className="rounded-full text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)]"
                     >
                       {theme === 'dark' ? (
                         <Sun className="h-5 w-5" />
@@ -248,7 +248,7 @@ export default function Navbar() {
                 
                   <Button 
                     variant="outline" 
-                    className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--color-gray-100)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-200)]"
                     onClick={() => {
                       handleLogout();
                       setIsMobileMenuOpen(false);
@@ -262,7 +262,7 @@ export default function Navbar() {
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center mb-3 justify-between">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="text-sm font-medium text-[color:var(--text-primary)]">
                     Toggle Theme
                   </span>
                   <Button
@@ -270,7 +270,7 @@ export default function Navbar() {
                     size="icon"
                     onClick={toggleTheme}
                     aria-label="Toggle theme"
-                    className="rounded-full text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                    className="rounded-full text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--color-gray-100)]"
                   >
                     {theme === 'dark' ? (
                       <Sun className="h-5 w-5" />
@@ -282,7 +282,7 @@ export default function Navbar() {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-gray-100)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--color-gray-200)]"
                   onClick={() => {
                     handleLogin();
                     setIsMobileMenuOpen(false);
