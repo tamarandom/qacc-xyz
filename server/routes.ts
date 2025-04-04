@@ -29,6 +29,66 @@ import {
   PRSM_TOKEN_ADDRESS,
   GRNDT_TOKEN_ADDRESS
 } from "./services/geckoterminal";
+
+// Cache for project price data
+interface PriceCache {
+  lastUpdated: Date;
+  data: {
+    price: number;
+    marketCap: number;
+    volume24h: number;
+    change24h: number;
+  };
+}
+
+// Project data cache with a 1-hour expiration
+const projectDataCache: Record<number, PriceCache> = {};
+
+// Check if cache is valid (less than 1 hour old)
+function isCacheValid(projectId: number): boolean {
+  if (!projectDataCache[projectId]) return false;
+  
+  const now = new Date();
+  const cacheTime = projectDataCache[projectId].lastUpdated;
+  const diffMs = now.getTime() - cacheTime.getTime();
+  const diffHours = diffMs / (1000 * 60 * 60);
+  
+  return diffHours < 1; // Cache is valid if less than 1 hour old
+}
+
+// Get cached project data or fetch from storage
+async function getProjectData(projectId: number): Promise<{
+  price: number;
+  marketCap: number;
+  volume24h: number;
+  change24h: number;
+}> {
+  // If we have valid cached data, return it
+  if (isCacheValid(projectId)) {
+    console.log(`Using cached data for project ${projectId} from ${projectDataCache[projectId].lastUpdated}`);
+    return projectDataCache[projectId].data;
+  }
+  
+  // Otherwise, get from storage
+  const project = await storage.getProjectById(projectId);
+  if (!project) {
+    throw new Error(`Project with ID ${projectId} not found`);
+  }
+  
+  // Update the cache
+  projectDataCache[projectId] = {
+    lastUpdated: new Date(),
+    data: {
+      price: project.price,
+      marketCap: project.marketCap,
+      volume24h: project.volume24h,
+      change24h: project.change24h
+    }
+  };
+  
+  console.log(`Updated cache for project ${projectId} with data from storage`);
+  return projectDataCache[projectId].data;
+}
 // Dune services removed - no longer using token metrics
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -42,6 +102,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sortBy = req.query.sortBy as string || 'marketCap';
       
       let projects = await storage.getAllProjects();
+      
+      // Apply cached price data to all projects
+      const projectsWithCachedData = await Promise.all(projects.map(async (project) => {
+        try {
+          // Get cached price data for this project
+          const priceData = await getProjectData(project.id);
+          
+          // Return project with updated price data
+          return {
+            ...project,
+            price: priceData.price,
+            marketCap: priceData.marketCap,
+            volume24h: priceData.volume24h,
+            change24h: priceData.change24h
+          };
+        } catch (error) {
+          // If error occurs, return original project data
+          console.error(`Error getting cached data for project ${project.id}:`, error);
+          return project;
+        }
+      }));
+      
+      // Use the projects with cached data
+      projects = projectsWithCachedData;
       
       // Filter by category if not 'all'
       if (category !== 'all') {
@@ -92,182 +176,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const features = await storage.getProjectFeatures(id);
       const technicalDetails = await storage.getProjectTechnicalDetails(id);
       
-      let updatedProject = { ...project };
+      // Get the cached price data
+      const priceData = await getProjectData(id);
       
-      // For X23.ai, get real-time data from GeckoTerminal
-      if (id === 1) {
-        try {
-          console.log('Fetching real-time data for X23.ai from GeckoTerminal');
-          const tokenStats = await getGeckoTerminalTokenStats(X23_POOL_ADDRESS);
-          
-          if (tokenStats) {
-            console.log('Retrieved real-time stats from GeckoTerminal:', tokenStats);
-            updatedProject = {
-              ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
-              // Update more fields if available
-              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
-              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
-              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
-            };
-          } else {
-            // Fallback to DexScreener if GeckoTerminal fails
-            console.log('GeckoTerminal data not available, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS, 'X23');
-            
-            if (dexScreenerStats) {
-              console.log('Retrieved real-time stats from DexScreener:', dexScreenerStats);
-              updatedProject = {
-                ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
-                // Only update other values if they exist
-                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
-              };
-            }
-          }
-        } catch (err) {
-          console.error('Error fetching real-time token stats for X23:', err);
-          // Continue with stored data if real-time fetch fails
-        }
-      }
-      
-      // For Citizen Wallet (CTZN), get real-time data from GeckoTerminal
-      else if (id === 2) {
-        try {
-          console.log('Fetching real-time data for Citizen Wallet (CTZN) from GeckoTerminal');
-          const tokenStats = await getGeckoTerminalTokenStats(CTZN_POOL_ADDRESS);
-          
-          if (tokenStats) {
-            console.log('Retrieved real-time stats for CTZN from GeckoTerminal:', tokenStats);
-            updatedProject = {
-              ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
-              // Update more fields if available
-              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
-              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
-              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
-            };
-          } else {
-            // Fallback to DexScreener if GeckoTerminal fails
-            console.log('GeckoTerminal data not available for CTZN, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS, 'CTZN');
-            
-            if (dexScreenerStats) {
-              console.log('Retrieved real-time stats for CTZN from DexScreener:', dexScreenerStats);
-              updatedProject = {
-                ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
-                // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
-              };
-            }
-          }
-        } catch (err) {
-          console.error('Error fetching real-time token stats for CTZN:', err);
-          // Continue with stored data if real-time fetch fails
-        }
-      }
-      
-      // For Prismo Technology (PRSM), get real-time data from GeckoTerminal
-      else if (id === 4) {
-        try {
-          console.log('Fetching real-time data for Prismo Technology (PRSM) from GeckoTerminal');
-          const tokenStats = await getGeckoTerminalTokenStats(PRSM_POOL_ADDRESS);
-          
-          if (tokenStats) {
-            console.log('Retrieved real-time stats for PRSM from GeckoTerminal:', tokenStats);
-            updatedProject = {
-              ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
-              // Update more fields if available
-              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
-              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
-              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
-            };
-          } else {
-            // Fallback to DexScreener if GeckoTerminal fails
-            console.log('GeckoTerminal data not available for PRSM, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS, 'PRSM');
-            
-            if (dexScreenerStats) {
-              console.log('Retrieved real-time stats for PRSM from DexScreener:', dexScreenerStats);
-              updatedProject = {
-                ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
-                // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
-              };
-            }
-          }
-        } catch (err) {
-          console.error('Error fetching real-time token stats for PRSM:', err);
-          // Continue with stored data if real-time fetch fails
-        }
-      }
-      
-      // For Grand Timeline (GRNDT token), get real-time data from GeckoTerminal
-      else if (id === 3) {
-        try {
-          console.log("Fetching real-time data for Grand Timeline (GRNDT) from GeckoTerminal");
-          const tokenStats = await getGeckoTerminalTokenStats(GRNDT_POOL_ADDRESS);
-          
-          if (tokenStats) {
-            console.log("Retrieved real-time stats for Grand Timeline (GRNDT) from GeckoTerminal:", tokenStats);
-            // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
-            const realTimeMarketCap = tokenStats.marketCap || tokenStats.fdv;
-            console.log(`Using real-time market cap for Grand Timeline (GRNDT): ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
-            
-            updatedProject = {
-              ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: realTimeMarketCap, // Fixed: Always use real-time value
-              // Update more fields if available
-              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
-              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
-              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
-            };
-          } else {
-            // Fallback to DexScreener if GeckoTerminal fails
-            console.log("GeckoTerminal data not available for Grand Timeline (GRNDT), trying DexScreener");
-            const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
-            
-            if (dexScreenerStats) {
-              console.log("Retrieved real-time stats for Grand Timeline (GRNDT) from DexScreener:", dexScreenerStats);
-              // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
-              const realTimeMarketCap = dexScreenerStats.marketCap || dexScreenerStats.fdv;
-              console.log(`Using real-time market cap for Grand Timeline (GRNDT): ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
-              
-              updatedProject = {
-                ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
-                marketCap: realTimeMarketCap // Fixed: Always use real-time value
-              };
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching real-time token stats for Grand Timeline (GRNDT):", err);
-          // Continue with stored data if real-time fetch fails
-        }
-      }
+      // Apply the price data to the project
+      const updatedProject = {
+        ...project,
+        price: priceData.price,
+        marketCap: priceData.marketCap,
+        volume24h: priceData.volume24h,
+        change24h: priceData.change24h
+      };
       
       res.json({
         ...updatedProject,
