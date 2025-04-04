@@ -15,11 +15,14 @@ import {
   GRNDT_PAIR_ADDRESS
 } from "./services/dexscreener";
 import { generateRealisticX23Data } from "./services/sample-data";
-import { fetchTopTokenHolders as fetchOriginalTokenHolders } from "./services/token-holders";
+import { 
+  fetchTokenHolders, 
+  TokenHolderData as TokenHolderDataType,
+  TOKEN_ADDRESSES 
+} from "./services/token-holders";
 import { 
   getTokenStats as getGeckoTerminalTokenStats, 
   fetchPriceHistory as fetchGeckoTerminalPriceHistory, 
-  fetchTopTokenHolders as fetchGeckoTokenHolders, 
   X23_POOL_ADDRESS,
   CTZN_POOL_ADDRESS,
   PRSM_POOL_ADDRESS,
@@ -42,12 +45,10 @@ interface PriceCache {
 }
 
 // Cache for project token holders data
-interface TokenHolderData {
-  address: string;
-  balance?: string;
-  percentage: number;
-  label?: string;
-}
+// Using the type definition from the token-holders service
+import { TokenHolderData as TokenHolderDataType } from './services/token-holders';
+// Alias the imported type for backward compatibility
+type TokenHolderData = TokenHolderDataType;
 
 interface TokenHoldersCache {
   lastUpdated: Date;
@@ -111,7 +112,7 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
     
     // Use the Polygonscan API to fetch token holders
     console.log(`Fetching token holders for ${project.tokenSymbol} from Polygonscan API`);
-    tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+    tokenHolders = await fetchTokenHolders(project.contractAddress);
     
     if (tokenHolders.length > 0) {
       // Cache the token holders data
@@ -735,7 +736,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (id === 1 || forceRefresh) {
         console.log(`Forcing fetch of token holders data for ${project.tokenSymbol} (project id ${id})`);
         // Force fetch from our customized token service which now uses Polygonscan API
-        const tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        const tokenHolders = await fetchTokenHolders(project.contractAddress);
         
         // Update cache with fresh data
         tokenHoldersCache[id] = {
@@ -755,7 +756,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // If cache is invalid, fetch new data from Polygonscan API
       console.log(`Fetching token holders for ${project.tokenSymbol} using Polygonscan API`);
-      const tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      const tokenHolders = await fetchTokenHolders(project.contractAddress);
       
       // Cache the token holders data
       tokenHoldersCache[id] = {
