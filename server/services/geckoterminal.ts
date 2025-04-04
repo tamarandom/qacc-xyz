@@ -434,20 +434,19 @@ export async function fetchTopTokenHolders(
     // GeckoTerminal doesn't have a direct API for token holders
     // This is a placeholder for future implementation
     
-    // For now, return sample data for X23 token
+    // Using accurate data from Polygonscan for X23 token
     if (tokenAddress.toLowerCase() === X23_TOKEN_ADDRESS.toLowerCase()) {
-      // Sample data for X23 token
       return [
-        { address: '0x35CBa0A3B9480571F83B8904F8c684218E5C7eC8', percentage: 13.23 },
-        { address: '0x8a0b040ce5bd98F33d425745d60c8Ef0f2f61503', percentage: 11.65 },
-        { address: '0xc6F2acF3C9A74aD75Bd295D03Bc03F1c00219B25', percentage: 9.87 },
-        { address: '0x9e995d4eEb0Be82330764dA3D8CDe18c88315F15', percentage: 8.42 },
-        { address: '0x53eB365464131bA3B57e6C24559ab980a8E19373', percentage: 6.91 },
-        { address: '0x7d3dE024dEB70741c6Dfa0FaD57775A47C227AE2', percentage: 5.63 },
-        { address: '0xA77E4A084d7f2B23F29557A8E64CF030f41F772a', percentage: 4.89 },
-        { address: '0x1B323824b1F9AE547c913e611facD67Ff6B5B233', percentage: 4.12 },
-        { address: '0x62F8dc5412A18Ce67D3f1e1f9f4eD98E5d21BE9F', percentage: 3.75 },
-        { address: '0xD08c7A7a471CDDe21e8Bf03e5c047E02cfF0c49C', percentage: 3.28 }
+        { address: '0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838', percentage: 39.88, label: 'QuickSwap: X23-WMATIC' },
+        { address: '0xbdfa4f4492dd7b7cf211209c4791af8d52bf5c50', percentage: 15.11, label: 'Reserve Treasury' },
+        { address: '0xad7936a3636055d022a46480da1c55bc2092c49d', percentage: 10.38, label: 'Marketing & Ecosystem' },
+        { address: '0x45e5bc9513fb47272a73adb7c6d29780aefb3214', percentage: 9.94, label: 'Team (Locked)' },
+        { address: '0xd2b9e922f710da079ea266658c9763fb0bc9e995', percentage: 9.71, label: 'Early Investors' },
+        { address: '0x6b75228ec272d95993c41ea781ed46f3466e1144', percentage: 5.44, label: 'Development Fund' },
+        { address: '0xa94d8d65369c0de7b6835af45d9ea0b9b0758694', percentage: 2.42, label: 'Community Rewards' },
+        { address: '0x1f4da928ccc0db8095e38566af46cdde23b7b398', percentage: 1.97, label: 'Advisors (Locked)' },
+        { address: '0x33a89d5ea36ff19fccf2ddaaebd5c07c3391d7dd', percentage: 0.86 },
+        { address: '0x6f146cb6a0bd4ee1047bfc41da1a8bcfd1b7d2ce', percentage: 0.55 }
       ];
     }
     // Return sample data for CTZN token

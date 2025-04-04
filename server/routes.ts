@@ -102,53 +102,9 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
     
     let tokenHolders = [];
     
-    if (projectId === 1) {
-      // X23 token holders
-      console.log('Fetching token holders for X23 from GeckoTerminal');
-      tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
-    } else if (projectId === 2) {
-      // CTZN token holders
-      try {
-        console.log('Fetching token holders for CTZN from GeckoTerminal');
-        tokenHolders = await fetchGeckoTokenHolders(CTZN_TOKEN_ADDRESS);
-        
-        if (tokenHolders.length === 0) {
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } catch (err) {
-        console.error('Error fetching CTZN token holders:', err);
-        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-      }
-    } else if (projectId === 3) {
-      // GRNDT token holders
-      try {
-        console.log("Fetching token holders for GRNDT from GeckoTerminal");
-        tokenHolders = await fetchGeckoTokenHolders(GRNDT_TOKEN_ADDRESS);
-        
-        if (tokenHolders.length === 0) {
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } catch (err) {
-        console.error("Error fetching GRNDT token holders:", err);
-        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-      }
-    } else if (projectId === 4) {
-      // PRSM token holders
-      try {
-        console.log('Fetching token holders for PRSM from GeckoTerminal');
-        tokenHolders = await fetchGeckoTokenHolders(PRSM_TOKEN_ADDRESS);
-        
-        if (tokenHolders.length === 0) {
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } catch (err) {
-        console.error('Error fetching PRSM token holders:', err);
-        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-      }
-    } else {
-      // Other projects
-      tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-    }
+    // For all projects, use our local data with labeled token holders
+    console.log(`Fetching token holders for ${project.tokenSymbol} from local database`);
+    tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
     
     if (tokenHolders.length > 0) {
       // Cache the token holders data
@@ -768,59 +724,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(tokenHoldersCache[id].data);
       }
       
-      // Fetch token holders - use different methods based on project ID
+      // Fetch token holders using local data with labels for all projects
       let tokenHolders = [];
       
-      if (id === 1) {
-        // X23 token holders
-        console.log('Fetching token holders for X23 from GeckoTerminal');
-        tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
-      } else if (id === 2) {
-        // CTZN token holders (Citizen Wallet)
-        try {
-          console.log('Fetching token holders for CTZN from GeckoTerminal');
-          tokenHolders = await fetchGeckoTokenHolders(CTZN_TOKEN_ADDRESS);
-          
-          // If Gecko returns empty, fall back to sample data
-          if (tokenHolders.length === 0) {
-            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-          }
-        } catch (err) {
-          console.error('Error fetching CTZN token holders:', err);
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } else if (id === 3) {
-        // GRNDT token holders (Grand Timeline)
-        try {
-          console.log("Fetching token holders for Grand Timeline (GRNDT) from GeckoTerminal");
-          tokenHolders = await fetchGeckoTokenHolders(GRNDT_TOKEN_ADDRESS);
-          
-          // If Gecko returns empty, fall back to sample data
-          if (tokenHolders.length === 0) {
-            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-          }
-        } catch (err) {
-          console.error("Error fetching Grand Timeline (GRNDT) token holders:", err);
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } else if (id === 4) {
-        // PRSM token holders (Prism Protocol)
-        try {
-          console.log('Fetching token holders for PRSM from GeckoTerminal');
-          tokenHolders = await fetchGeckoTokenHolders(PRSM_TOKEN_ADDRESS);
-          
-          // If Gecko returns empty, fall back to sample data
-          if (tokenHolders.length === 0) {
-            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-          }
-        } catch (err) {
-          console.error('Error fetching PRSM token holders:', err);
-          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-        }
-      } else {
-        // Other projects
-        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
-      }
+      // For all projects, use our local data with labeled token holders
+      console.log(`Fetching token holders for ${project.tokenSymbol} from local database`);
+      tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
       
       // Cache the token holders data
       tokenHoldersCache[id] = {
@@ -1091,6 +1000,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/projects/:id/trading-activity', (req, res) => {
     res.status(404).json({ error: 'Endpoint has been removed' });
+  });
+  
+  // API endpoint to clear the caches
+  app.post('/api/cache/clear', (req, res) => {
+    console.log('Clearing all caches');
+    // Clear all properties of the caches while maintaining the reference
+    Object.keys(projectDataCache).forEach(key => delete projectDataCache[Number(key)]);
+    Object.keys(tokenHoldersCache).forEach(key => delete tokenHoldersCache[Number(key)]);
+    console.log('All caches cleared successfully');
+    res.json({ success: true, message: 'All caches cleared successfully' });
   });
   
   const httpServer = createServer(app);
