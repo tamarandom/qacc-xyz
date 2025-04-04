@@ -6,6 +6,21 @@ import {
   insertPointTransactionSchema,
   type Project
 } from "@shared/schema";
+import {
+  ProjectMarketData,
+  ProjectTokenHolders,
+  ProjectCacheEntry,
+  CACHE_DURATION_MINUTES,
+  isCacheValid,
+  getProjectMarketData,
+  getProjectTokenHolders,
+  updateProjectMarketData,
+  updateProjectTokenHolders,
+  initializeProjectCache,
+  invalidateProjectCache,
+  invalidateAllProjectCaches,
+  _projectCache as projectCache
+} from "./cache";
 import { 
   fetchDexScreenerPriceHistory, 
   getTokenStats as getDexScreenerTokenStats, 
@@ -32,43 +47,12 @@ import {
   PRSM_TOKEN_ADDRESS,
   GRNDT_TOKEN_ADDRESS
 } from "./services/geckoterminal";
+import { registerAdminRoutes } from "./api/admin";
 
-// Cache for project price data
-interface PriceCache {
-  lastUpdated: Date;
-  data: {
-    price: number;
-    marketCap: number;
-    volume24h: number;
-    change24h: number;
-  };
-}
-
-// Cache for project token holders data
-// We're using the TokenHolderData type imported from token-holders.ts in line 20
-
-interface TokenHoldersCache {
-  lastUpdated: Date;
-  data: TokenHolderDataType[];
-}
-
-// Project data cache with a 15-minute expiration
-const projectDataCache: Record<number, PriceCache> = {};
-
-// Token holders cache with a 15-minute expiration
-const tokenHoldersCache: Record<number, TokenHoldersCache> = {};
-
-// Check if price cache is valid (less than 15 minutes old)
-function isCacheValid(projectId: number): boolean {
-  if (!projectDataCache[projectId]) return false;
-  
-  const now = new Date();
-  const cacheTime = projectDataCache[projectId].lastUpdated;
-  const diffMs = now.getTime() - cacheTime.getTime();
-  const diffMinutes = diffMs / (1000 * 60);
-  
-  return diffMinutes < 15; // Cache is valid if less than 15 minutes old
-}
+// Deprecated caches - use the centralized cache from './cache.ts' instead
+// These are kept for backward compatibility with existing code
+const projectDataCache: Record<number, { lastUpdated: Date, data: any }> = {};
+const tokenHoldersCache: Record<number, { lastUpdated: Date, data: any }> = {};
 
 // Check if token holders cache is valid (less than 15 minutes old)
 function isTokenHoldersCacheValid(projectId: number): boolean {
@@ -515,15 +499,20 @@ async function getProjectData(projectId: number): Promise<{
 }
 // Dune services removed - no longer using token metrics
 
+// No additional imports needed here
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize the project data cache when server starts
   await updateAllProjectCaches();
   
-  // Set up a timer to refresh the cache every 15 minutes
+  // Set up a timer to refresh the cache every 30 minutes
   setInterval(async () => {
-    console.log('Running scheduled cache refresh');
+    console.log(`Running scheduled cache refresh (every ${CACHE_DURATION_MINUTES} minutes)`);
     await updateAllProjectCaches();
-  }, 15 * 60 * 1000); // 15 minutes in milliseconds
+  }, CACHE_DURATION_MINUTES * 60 * 1000); // 30 minutes in milliseconds
+  
+  // Register admin endpoints
+  registerAdminRoutes(app);
   
   // put application routes here
   // prefix all routes with /api

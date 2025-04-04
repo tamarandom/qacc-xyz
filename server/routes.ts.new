@@ -1,0 +1,659 @@
+import type { Express, Request, Response } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { 
+  insertUserSchema, 
+  insertPointTransactionSchema,
+  type Project
+} from "@shared/schema";
+import { 
+  fetchDexScreenerPriceHistory, 
+  getTokenStats as getDexScreenerTokenStats, 
+  X23_PAIR_ADDRESS,
+  CTZN_PAIR_ADDRESS,
+  PRSM_PAIR_ADDRESS,
+  GRNDT_PAIR_ADDRESS
+} from "./services/dexscreener";
+import { 
+  fetchTokenHolders 
+} from "./services/token-holders";
+import { 
+  getTokenStats as getGeckoTerminalTokenStats, 
+  fetchPriceHistory as fetchGeckoTerminalPriceHistory, 
+  X23_POOL_ADDRESS,
+  CTZN_POOL_ADDRESS,
+  PRSM_POOL_ADDRESS,
+  GRNDT_POOL_ADDRESS
+} from "./services/geckoterminal";
+
+import {
+  getProjectMarketData,
+  getProjectTokenHolders,
+  updateProjectMarketData,
+  updateProjectTokenHolders,
+  initializeProjectCache,
+  invalidateProjectCache,
+  ProjectMarketData,
+  isCacheValid,
+  invalidateAllProjectCaches,
+  CACHE_DURATION_MINUTES
+} from "./cache";
+
+// Timer ID for the cache refresh interval
+let cacheRefreshTimer: NodeJS.Timeout | null = null;
+
+/**
+ * Function to update market data for a project
+ * 
+ * @param projectId - Project ID to update
+ * @returns Promise resolving when the update is complete
+ */
+async function updateProjectMarketDataFromApi(projectId: number): Promise<void> {
+  try {
+    console.log(`Updating market data for project ${projectId} from APIs`);
+    const project = await storage.getProjectById(projectId);
+    
+    if (!project) {
+      console.error(`Project with ID ${projectId} not found`);
+      return;
+    }
+    
+    // For new projects, use the predefined values
+    if (project.isNew) {
+      updateProjectMarketData(
+        projectId,
+        {
+          price: project.price,
+          marketCap: project.marketCap,
+          volume24h: project.volume24h,
+          change24h: project.change24h
+        },
+        true, // Consider this a successful API call (values are correct)
+        true  // Mark as new project
+      );
+      return;
+    }
+    
+    // Use the appropriate pool/pair address based on the project ID
+    let poolAddress: string;
+    let pairAddress: string;
+    let tokenSymbol: string = project.tokenSymbol;
+    
+    switch (projectId) {
+      case 1: // X23
+        poolAddress = X23_POOL_ADDRESS;
+        pairAddress = X23_PAIR_ADDRESS;
+        break;
+      case 2: // CTZN
+        poolAddress = CTZN_POOL_ADDRESS;
+        pairAddress = CTZN_PAIR_ADDRESS;
+        break;
+      case 3: // GRNDT
+        poolAddress = GRNDT_POOL_ADDRESS;
+        pairAddress = GRNDT_PAIR_ADDRESS;
+        break;
+      case 4: // PRSM
+        poolAddress = PRSM_POOL_ADDRESS;
+        pairAddress = PRSM_PAIR_ADDRESS;
+        break;
+      default:
+        console.error(`No API source defined for project ${projectId}`);
+        updateProjectMarketData(
+          projectId,
+          { price: null, marketCap: null, volume24h: null, change24h: null },
+          false
+        );
+        return;
+    }
+    
+    // Try to fetch data from GeckoTerminal first
+    try {
+      const geckoStats = await getGeckoTerminalTokenStats(poolAddress);
+      
+      if (geckoStats) {
+        console.log(`Retrieved market data for ${tokenSymbol} from GeckoTerminal:`, geckoStats);
+        
+        updateProjectMarketData(
+          projectId,
+          {
+            price: geckoStats.priceUsd,
+            marketCap: geckoStats.marketCap,
+            volume24h: geckoStats.volume24h,
+            change24h: geckoStats.priceChange24h
+          },
+          true // API call succeeded
+        );
+        return;
+      }
+    } catch (error) {
+      console.error(`Error fetching ${tokenSymbol} data from GeckoTerminal:`, error);
+    }
+    
+    // If GeckoTerminal fails, try DexScreener
+    try {
+      console.log(`GeckoTerminal data unavailable, trying DexScreener for ${tokenSymbol}`);
+      const dexStats = await getDexScreenerTokenStats(pairAddress, tokenSymbol);
+      
+      if (dexStats) {
+        console.log(`Retrieved market data for ${tokenSymbol} from DexScreener:`, dexStats);
+        
+        updateProjectMarketData(
+          projectId,
+          {
+            price: dexStats.priceUsd,
+            marketCap: dexStats.marketCap || dexStats.fdv || null,
+            volume24h: dexStats.volume24h,
+            change24h: dexStats.priceChange24h
+          },
+          true // API call succeeded
+        );
+        return;
+      }
+    } catch (error) {
+      console.error(`Error fetching ${tokenSymbol} data from DexScreener:`, error);
+    }
+    
+    // If both APIs fail, use null values to trigger fallback UI
+    updateProjectMarketData(
+      projectId,
+      { price: null, marketCap: null, volume24h: null, change24h: null },
+      false // API call failed
+    );
+    
+  } catch (error) {
+    console.error(`Error updating market data for project ${projectId}:`, error);
+    
+    // On error, store null values to trigger fallback UI
+    updateProjectMarketData(
+      projectId,
+      { price: null, marketCap: null, volume24h: null, change24h: null },
+      false
+    );
+  }
+}
+
+/**
+ * Function to update token holders for a project
+ * 
+ * @param projectId - Project ID to update
+ * @returns Promise resolving when the update is complete
+ */
+async function updateProjectTokenHoldersFromApi(projectId: number): Promise<void> {
+  try {
+    console.log(`Updating token holders for project ${projectId} from API`);
+    const project = await storage.getProjectById(projectId);
+    
+    if (!project) {
+      console.error(`Project with ID ${projectId} not found`);
+      return;
+    }
+    
+    // New projects have no token holders - skip API call
+    if (project.isNew) {
+      updateProjectTokenHolders(projectId, []);
+      return;
+    }
+    
+    // Check if required API key is available
+    if (!process.env.COVALENT_API_KEY) {
+      console.error('COVALENT_API_KEY environment variable not set');
+      console.log('Unable to fetch token holders, API key missing');
+      return;
+    }
+    
+    // Use the Covalent API to fetch token holders
+    console.log(`Fetching token holders for ${project.tokenSymbol} using Covalent API`);
+    const tokenHolders = await fetchTokenHolders(project.contractAddress);
+    
+    // Update the cache with the token holders
+    updateProjectTokenHolders(projectId, tokenHolders);
+    
+  } catch (error) {
+    console.error(`Error updating token holders for project ${projectId}:`, error);
+    // Keep existing token holders in cache on error
+  }
+}
+
+/**
+ * Function to update all project data
+ * 
+ * @returns Promise resolving when all updates are complete
+ */
+async function updateAllProjectData(): Promise<void> {
+  try {
+    console.log('Refreshing project data for all projects');
+    const projects = await storage.getAllProjects();
+    
+    // Initialize cache for all projects if needed
+    for (const project of projects) {
+      if (!isCacheValid(project.id)) {
+        initializeProjectCache(project);
+      }
+    }
+    
+    // Update market data for all projects in parallel
+    await Promise.all(projects.map(project => 
+      updateProjectMarketDataFromApi(project.id)
+    ));
+    
+    // Update token holders for all launched projects in parallel
+    const launchedProjects = projects.filter(project => !project.isNew);
+    await Promise.all(launchedProjects.map(project => 
+      updateProjectTokenHoldersFromApi(project.id)
+    ));
+    
+    console.log('Project data refresh completed');
+  } catch (error) {
+    console.error('Error refreshing project data:', error);
+  }
+}
+
+/**
+ * Configure cache refresh interval
+ * 
+ * @param intervalMinutes - Interval in minutes for cache refresh (default: CACHE_DURATION_MINUTES)
+ */
+function setupCacheRefreshInterval(intervalMinutes: number = CACHE_DURATION_MINUTES): void {
+  // Clear any existing interval
+  if (cacheRefreshTimer) {
+    clearInterval(cacheRefreshTimer);
+  }
+  
+  // Set up a timer to refresh the cache periodically
+  cacheRefreshTimer = setInterval(async () => {
+    console.log(`Running scheduled cache refresh (every ${intervalMinutes} minutes)`);
+    await updateAllProjectData();
+  }, intervalMinutes * 60 * 1000);
+  
+  console.log(`Cache refresh interval set to ${intervalMinutes} minutes`);
+}
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize the project data cache when server starts
+  await updateAllProjectData();
+  
+  // Set up the cache refresh interval
+  setupCacheRefreshInterval();
+  
+  // ADMIN ENDPOINT - Force refresh all project data
+  app.post('/api/admin/refresh-cache', async (req, res) => {
+    try {
+      console.log('Manual cache refresh requested');
+      await updateAllProjectData();
+      res.json({ success: true, message: 'Project data cache refreshed' });
+    } catch (error) {
+      console.error('Error refreshing cache:', error);
+      res.status(500).json({ success: false, error: 'Failed to refresh cache' });
+    }
+  });
+  
+  // ADMIN ENDPOINT - Force refresh a specific project's data
+  app.post('/api/admin/refresh-cache/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ success: false, error: 'Invalid project ID' });
+      }
+      
+      console.log(`Manual cache refresh requested for project ${id}`);
+      
+      const project = await storage.getProjectById(id);
+      if (!project) {
+        return res.status(404).json({ success: false, error: 'Project not found' });
+      }
+      
+      // Invalidate the project's cache
+      invalidateProjectCache(id);
+      
+      // Update the project's market data
+      await updateProjectMarketDataFromApi(id);
+      
+      // Update the project's token holders if it's not a new project
+      if (!project.isNew) {
+        await updateProjectTokenHoldersFromApi(id);
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Project ${id} (${project.name}) cache refreshed` 
+      });
+    } catch (error) {
+      console.error('Error refreshing cache:', error);
+      res.status(500).json({ success: false, error: 'Failed to refresh cache' });
+    }
+  });
+  
+  // PROJECT ENDPOINTS
+  
+  // Get all projects with optional filters
+  app.get('/api/projects', async (req, res) => {
+    try {
+      const category = req.query.category as string || 'all';
+      const sortBy = req.query.sortBy as string || 'marketCap';
+      
+      let projects = await storage.getAllProjects();
+      
+      // Apply cached market data to all projects
+      projects = projects.map(project => {
+        const marketData = getProjectMarketData(project.id);
+        
+        return {
+          ...project,
+          // Use market data from cache, or fallback to storage
+          price: marketData.price !== null ? marketData.price : project.price,
+          marketCap: marketData.marketCap !== null ? marketData.marketCap : project.marketCap,
+          volume24h: marketData.volume24h !== null ? marketData.volume24h : project.volume24h,
+          change24h: marketData.change24h !== null ? marketData.change24h : project.change24h
+        };
+      });
+      
+      // Filter by category if not 'all'
+      if (category !== 'all') {
+        projects = projects.filter(p => p.category.toLowerCase() === category.toLowerCase());
+      }
+      
+      // Sort projects
+      projects = projects.sort((a, b) => {
+        if (sortBy === 'name') {
+          return a.name.localeCompare(b.name);
+        } else if (sortBy === 'marketCap') {
+          return (b.marketCap || 0) - (a.marketCap || 0);
+        } else if (sortBy === 'price') {
+          return (b.price || 0) - (a.price || 0);
+        } else if (sortBy === 'volume24h') {
+          return (b.volume24h || 0) - (a.volume24h || 0);
+        } else if (sortBy === 'change24h') {
+          return (b.change24h || 0) - (a.change24h || 0);
+        } else if (sortBy === 'rank') {
+          return a.rank - b.rank; // Lower rank is better (1st, 2nd, etc.)
+        }
+        
+        return 0;
+      });
+      
+      res.json(projects);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      res.status(500).json({ error: 'Failed to fetch projects' });
+    }
+  });
+  
+  // Get project by ID with its features and technical details
+  app.get('/api/projects/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      const features = await storage.getProjectFeatures(id);
+      const technicalDetails = await storage.getProjectTechnicalDetails(id);
+      
+      // Get market data from cache or use project data from storage
+      const marketData = getProjectMarketData(id);
+      
+      const updatedProject = {
+        ...project,
+        price: marketData.price !== null ? marketData.price : project.price,
+        marketCap: marketData.marketCap !== null ? marketData.marketCap : project.marketCap,
+        volume24h: marketData.volume24h !== null ? marketData.volume24h : project.volume24h,
+        change24h: marketData.change24h !== null ? marketData.change24h : project.change24h
+      };
+      
+      res.json({
+        ...updatedProject,
+        features,
+        technicalDetails
+      });
+    } catch (error) {
+      console.error('Error fetching project:', error);
+      res.status(500).json({ error: 'Failed to fetch project details' });
+    }
+  });
+  
+  // Get token holders for a project
+  app.get('/api/projects/:id/token-holders', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const project = await storage.getProjectById(id);
+      
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // For new projects, return an empty array (they have no token holders)
+      if (project.isNew) {
+        console.log(`Project ${project.name} is new, returning empty token holders array`);
+        return res.json([]);
+      }
+      
+      // Check if force refresh is requested via query param
+      const forceRefresh = req.query.refresh === 'true';
+      
+      if (forceRefresh) {
+        console.log(`Force refresh requested for token holders of project ${id}`);
+        await updateProjectTokenHoldersFromApi(id);
+      }
+      
+      // Get token holders from cache
+      const tokenHolders = getProjectTokenHolders(id);
+      
+      // If cache is empty, try to fetch fresh data
+      if (tokenHolders.length === 0 && !forceRefresh) {
+        console.log(`No token holders in cache for project ${id}, fetching fresh data`);
+        await updateProjectTokenHoldersFromApi(id);
+        // Get updated token holders from cache
+        const freshTokenHolders = getProjectTokenHolders(id);
+        return res.json(freshTokenHolders);
+      }
+      
+      return res.json(tokenHolders);
+    } catch (error) {
+      console.error('Error fetching token holders:', error);
+      res.status(500).json({ error: 'Failed to fetch token holders' });
+    }
+  });
+  
+  // Get price history for a project
+  app.get('/api/projects/:id/price-history', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      const timeframe = req.query.timeframe as string || undefined;
+      
+      // Get the project
+      const project = await storage.getProjectById(id);
+      if (!project) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // For new projects, return sample data from storage (we've already generated this)
+      if (project.isNew) {
+        const priceHistory = await storage.getProjectPriceHistory(id, timeframe);
+        return res.json(priceHistory);
+      }
+      
+      // For existing projects, try APIs first for real data
+      let priceHistory = [];
+      
+      // For X23.ai (project ID 1), try to use real data from GeckoTerminal
+      if (id === 1) {
+        try {
+          // Try GeckoTerminal for historical data
+          console.log('Attempting to fetch historical data from GeckoTerminal');
+          const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(X23_POOL_ADDRESS, timeframe);
+          
+          if (geckoTerminalHistory && geckoTerminalHistory.length > 0) {
+            return res.json(geckoTerminalHistory);
+          }
+          
+          // If GeckoTerminal fails, try DexScreener
+          console.log('GeckoTerminal historical data unavailable, trying DexScreener');
+          const dexScreenerHistory = await fetchDexScreenerPriceHistory(X23_PAIR_ADDRESS, timeframe);
+          
+          if (dexScreenerHistory && dexScreenerHistory.length > 0) {
+            return res.json(dexScreenerHistory);
+          }
+        } catch (error) {
+          console.error('Error fetching real-time price history:', error);
+        }
+      }
+      
+      // If API calls fail or for other projects, use data from storage
+      priceHistory = await storage.getProjectPriceHistory(id, timeframe);
+      
+      res.json(priceHistory);
+    } catch (error) {
+      console.error('Error fetching price history:', error);
+      res.status(500).json({ error: 'Failed to fetch price history' });
+    }
+  });
+  
+  // USER ENDPOINTS
+  
+  // Get all users
+  app.get('/api/users', async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      res.status(500).json({ error: 'Failed to fetch users' });
+    }
+  });
+  
+  // Get user by ID
+  app.get('/api/users/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+      
+      const user = await storage.getUserById(id);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      const transactions = await storage.getUserTransactions(id);
+      
+      res.json({
+        ...user,
+        transactions
+      });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Failed to fetch user details' });
+    }
+  });
+  
+  // Create new user
+  app.post('/api/users', async (req, res) => {
+    try {
+      const validationResult = insertUserSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ error: validationResult.error.message });
+      }
+      
+      const userData = validationResult.data;
+      const user = await storage.createUser(userData);
+      
+      res.status(201).json(user);
+    } catch (error) {
+      console.error('Error creating user:', error);
+      res.status(500).json({ error: 'Failed to create user' });
+    }
+  });
+  
+  // POINTS ENDPOINTS
+  
+  // Get top users leaderboard
+  app.get('/api/leaderboard', async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const users = await storage.getTopUsers(limit);
+      res.json(users);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    }
+  });
+  
+  // Add point transaction for user
+  app.post('/api/points/transactions', async (req, res) => {
+    try {
+      const validationResult = insertPointTransactionSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ error: validationResult.error.message });
+      }
+      
+      const transactionData = validationResult.data;
+      const transaction = await storage.addPointTransaction(transactionData);
+      
+      res.status(201).json(transaction);
+    } catch (error) {
+      console.error('Error creating point transaction:', error);
+      res.status(500).json({ error: 'Failed to create point transaction' });
+    }
+  });
+  
+  // Get a user's points
+  app.get('/api/users/:id/points', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+      
+      const points = await storage.getUserPoints(id);
+      res.json({ userId: id, points });
+    } catch (error) {
+      console.error('Error fetching user points:', error);
+      res.status(500).json({ error: 'Failed to fetch user points' });
+    }
+  });
+  
+  // Get a user's point transactions
+  app.get('/api/users/:id/transactions', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+      
+      const transactions = await storage.getUserTransactions(id);
+      res.json(transactions);
+    } catch (error) {
+      console.error('Error fetching user transactions:', error);
+      res.status(500).json({ error: 'Failed to fetch user transactions' });
+    }
+  });
+  
+  // Create HTTP server
+  const httpServer = createServer(app);
+  
+  return httpServer;
+}
