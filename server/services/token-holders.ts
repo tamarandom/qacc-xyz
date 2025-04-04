@@ -1,7 +1,5 @@
 import fetch from 'node-fetch';
-import { 
-  fetchTokenHolders as fetchCovalentTokenHolders
-} from './covalent';
+import { fetchTokenHolders as fetchCovalentTokenHolders } from './covalent';
 
 /**
  * Interface for token holder data
@@ -85,38 +83,25 @@ export async function fetchTokenHolders(tokenAddress: string): Promise<TokenHold
     console.log(`Fetching token holders for ${tokenSymbol} from Covalent API`);
     
     // Try to fetch data from Covalent API
-    try {
-      const covalentHolders = await fetchCovalentTokenHolders(normalizedAddress, tokenSymbol, tokenPrice);
+    const covalentHolders = await fetchCovalentTokenHolders(normalizedAddress, tokenSymbol, tokenPrice);
+    
+    if (covalentHolders.length > 0) {
+      console.log(`Successfully fetched ${covalentHolders.length} holders from Covalent API`);
       
-      if (covalentHolders.length > 0) {
-        console.log(`Successfully fetched ${covalentHolders.length} holders from Covalent API`);
-        
-        // Add labels to known addresses
-        return covalentHolders.map(holder => {
-          const address = holder.address.toLowerCase();
-          if (KNOWN_ADDRESSES[address]) {
-            return { ...holder, label: KNOWN_ADDRESSES[address] };
-          }
-          return holder;
-        });
-      }
-    } catch (error: any) {
-      console.error(`Error fetching token holders from Covalent API: ${error?.message || 'Unknown error'}`);
+      // Add labels to known addresses
+      return covalentHolders.map(holder => {
+        const address = holder.address.toLowerCase();
+        if (KNOWN_ADDRESSES[address]) {
+          return { ...holder, label: KNOWN_ADDRESSES[address] };
+        }
+        return holder;
+      });
     }
     
-    console.warn(`Covalent API failed to return holders for ${tokenSymbol}, using default token holders data`);
-    
-    // Use default token holders data
-    const defaultHolders = getDefaultTokenHolders(normalizedAddress);
-    if (defaultHolders.length > 0) {
-      console.log(`Using ${defaultHolders.length} default holders for ${tokenSymbol}`);
-      return defaultHolders;
-    }
-    
-    console.warn(`No default token holders data available for ${tokenSymbol}, returning empty array`);
+    console.warn(`Covalent API failed to return holders for ${tokenSymbol}, returning empty array`);
     return [];
-  } catch (error: any) {
-    console.error('Error fetching token holders:', error?.message || 'Unknown error');
+  } catch (error) {
+    console.error('Error fetching token holders:', error);
     return [];
   }
 }
@@ -203,6 +188,3 @@ export const TOKEN_ADDRESSES = {
   PRSM: '0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68',
   GRID: '0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd'
 };
-
-// Define type alias for token holder data from covalent.ts
-export type TokenHolderDataType = TokenHolderData;
