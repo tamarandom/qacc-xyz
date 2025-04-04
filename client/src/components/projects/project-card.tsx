@@ -66,10 +66,14 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
           {project.isNew ? (
             <>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap || 400000, false, true, true)}</p>
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(0.069)}</p>
               </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-1">
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, false, true, true)}</p>
+              </div>
+              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-2">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
                 <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
               </div>

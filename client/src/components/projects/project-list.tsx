@@ -265,13 +265,13 @@ export default function ProjectList({ filterOutNew = false }: ProjectListProps =
                     {project.isNew ? `$${project.tokenSymbol}` : project.tokenSymbol}
                   </TableCell>
                   <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
-                    {project.isNew ? "-" : formatCurrency(project.price)}
+                    {project.isNew ? formatCurrency(0.069) : formatCurrency(project.price)}
                   </TableCell>
                   <TableCell className="text-right">
                     {project.isNew ? "-" : <PercentageChange value={project.change24h} />}
                   </TableCell>
                   <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
-                    {project.isNew ? "$400,000" : formatCurrency(project.marketCap)}
+                    {project.isNew ? formatCurrency(400000, false, true, true) : formatCurrency(project.marketCap, false, true, true)}
                   </TableCell>
                   <TableCell className="text-right font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">
                     {project.isNew ? "-" : formatCurrency(project.volume24h, true)}

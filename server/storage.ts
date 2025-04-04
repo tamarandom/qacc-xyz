@@ -701,9 +701,9 @@ export class MemStorage implements IStorage {
       description: "Gridlock is a next-generation blockchain infrastructure that enhances network security and scalability through innovative grid-based node architecture. Our solution enables parallel transaction processing for improved throughput while maintaining decentralization.",
       tokenSymbol: "GRID",
       tokenName: "GRID Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
       change24h: 0,
       totalSupply: 250000000,
       circulatingSupply: 0,
@@ -732,9 +732,9 @@ export class MemStorage implements IStorage {
       description: "To Da Moon is a community-driven DeFi project focused on innovative staking solutions and yield optimization strategies. Our protocol aims to maximize returns for token holders while maintaining robust security and governance controls.",
       tokenSymbol: "2MOON",
       tokenName: "To Da Moon Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
       change24h: 0,
       totalSupply: 200000000,
       circulatingSupply: 0,
@@ -765,10 +765,10 @@ export class MemStorage implements IStorage {
       description: "How to DAO provides educational resources, governance frameworks, and tooling for creating and managing decentralized autonomous organizations. Our platform offers templates, best practices, and community support to help projects launch and maintain effective DAOs.",
       tokenSymbol: "H2D",
       tokenName: "How to DAO Token",
-      price: 0.32,
-      marketCap: 2200000,
-      volume24h: 310000,
-      change24h: -2.3,
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
       totalSupply: 150000000,
       circulatingSupply: 20000000,
       category: "SoFi",
@@ -796,10 +796,10 @@ export class MemStorage implements IStorage {
       description: "Web3 Packs delivers curated collections of digital assets that introduce users to different blockchain ecosystems. Our platform provides educational resources and starter assets to help onboard new users into web3 with confidence and knowledge.",
       tokenSymbol: "WPACK",
       tokenName: "Web3 Packs Token",
-      price: 0.18,
-      marketCap: 1200000,
-      volume24h: 180000,
-      change24h: 12.5,
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
       totalSupply: 200000000,
       circulatingSupply: 20000000,
       category: "DeFi",
@@ -1125,10 +1125,10 @@ export class MemStorage implements IStorage {
     await this.generateSamplePriceHistory(2, 0.92, 3.8, 90); // Citizen Wallet
     await this.generateSamplePriceHistory(3, 0.65, 4.3, 90); // Grand Timeline
     await this.generateSamplePriceHistory(4, 0.18, 5.0, 90); // Prismo Technology
-    await this.generateSamplePriceHistory(8, 0.18, 8.0, 90); // Gridlock 
-    await this.generateSamplePriceHistory(9, 0.18, 7.0, 90); // To Da Moon
-    await this.generateSamplePriceHistory(11, 0.32, 8.0, 90); // How to DAO
-    await this.generateSamplePriceHistory(12, 0.18, 9.5, 90); // Web3 Packs
+    await this.generateSamplePriceHistory(8, 0.069, 0.0, 7); // Gridlock 
+    await this.generateSamplePriceHistory(9, 0.069, 0.0, 7); // To Da Moon
+    await this.generateSamplePriceHistory(11, 0.069, 0.0, 7); // How to DAO
+    await this.generateSamplePriceHistory(12, 0.069, 0.0, 7); // Web3 Packs
   }
 }
 
