@@ -116,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             // Fallback to DexScreener if GeckoTerminal fails
             console.log('GeckoTerminal data not available, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS);
+            const dexScreenerStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS, 'X23');
             
             if (dexScreenerStats) {
               console.log('Retrieved real-time stats from DexScreener:', dexScreenerStats);
@@ -158,7 +158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             // Fallback to DexScreener if GeckoTerminal fails
             console.log('GeckoTerminal data not available for CTZN, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS);
+            const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS, 'CTZN');
             
             if (dexScreenerStats) {
               console.log('Retrieved real-time stats for CTZN from DexScreener:', dexScreenerStats);
@@ -200,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             // Fallback to DexScreener if GeckoTerminal fails
             console.log('GeckoTerminal data not available for PRSM, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS);
+            const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS, 'PRSM');
             
             if (dexScreenerStats) {
               console.log('Retrieved real-time stats for PRSM from DexScreener:', dexScreenerStats);
@@ -242,7 +242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             // Fallback to DexScreener if GeckoTerminal fails
             console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
-            const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS);
+            const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
             
             if (dexScreenerStats) {
               console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexScreenerStats);
@@ -503,7 +503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log('GeckoTerminal data not available, trying DexScreener');
           
           // If GeckoTerminal fails, try DexScreener as a fallback
-          const tokenStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS);
+          const tokenStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS, 'X23');
           
           if (tokenStats) {
             // Try DexScreener for historical data
@@ -587,7 +587,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // GeckoTerminal failed, try DexScreener as a fallback
           console.log('GeckoTerminal data not available for CTZN, trying DexScreener');
-          const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS);
+          const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS, 'CTZN');
           
           if (dexScreenerStats) {
             // Try DexScreener for historical data
@@ -635,7 +635,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // GeckoTerminal failed, try DexScreener as a fallback
           console.log('GeckoTerminal data not available for PRSM, trying DexScreener');
-          const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS);
+          const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS, 'PRSM');
           
           if (dexScreenerStats) {
             // Try DexScreener for historical data
@@ -683,7 +683,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // GeckoTerminal failed, try DexScreener as a fallback
           console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
-          const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS);
+          const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
           
           if (dexScreenerStats) {
             // Try DexScreener for historical data

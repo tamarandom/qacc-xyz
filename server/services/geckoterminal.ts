@@ -107,6 +107,63 @@ interface GeckoTerminalTokenHoldersResponse {
 }
 
 /**
+ * Get market cap data by scraping the GeckoTerminal website directly
+ * 
+ * @param poolAddress - The pool address to fetch data for
+ * @param networkId - The network ID (e.g., polygon_pos)
+ * @returns Market cap data or null if not found
+ */
+export async function getMarketCapFromGeckoWeb(poolAddress: string, networkId: string = NETWORK_ID): Promise<number | null> {
+  try {
+    console.log(`Fetching market cap from GeckoTerminal website for ${poolAddress} on ${networkId}`);
+    // Call the actual website URL
+    const response = await fetch(`https://www.geckoterminal.com/${networkId}/pools/${poolAddress}`, {
+      headers: {
+        'Accept': 'text/html',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36'
+      }
+    });
+    
+    if (!response.ok) {
+      console.error(`GeckoTerminal website returned status: ${response.status}`);
+      return null;
+    }
+    
+    const html = await response.text();
+    
+    // Extract market cap from the HTML using regex
+    // Looking for patterns like "$467.17K" in the market cap section
+    const marketCapRegex = /Market\s+Cap[^$]*\$([0-9.,]+[KMB]?)/i;
+    const match = html.match(marketCapRegex);
+    
+    if (match && match[1]) {
+      console.log(`Found market cap value: $${match[1]}`);
+      const marketCapStr = match[1];
+      
+      // Convert string value like "467.17K" to numeric value
+      let marketCap = parseFloat(marketCapStr.replace(/,/g, ''));
+      
+      if (marketCapStr.endsWith('K')) {
+        marketCap *= 1000;
+      } else if (marketCapStr.endsWith('M')) {
+        marketCap *= 1000000;
+      } else if (marketCapStr.endsWith('B')) {
+        marketCap *= 1000000000;
+      }
+      
+      console.log(`Converted market cap value: ${marketCap}`);
+      return marketCap;
+    }
+    
+    console.error('Could not find market cap value in the HTML');
+    return null;
+  } catch (error) {
+    console.error('Error fetching market cap from GeckoTerminal website:', error);
+    return null;
+  }
+}
+
+/**
  * Get pool information for X23 from GeckoTerminal
  * 
  * @returns Pool information with price, volume, etc.
@@ -145,13 +202,17 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
       return null;
     }
     
+    // Try to get market cap from website directly as it's more accurate
+    const marketCap = await getMarketCapFromGeckoWeb(poolAddress, networkId);
+    
     return {
       priceUsd: baseToken.price_usd,
       priceChange24h: attributes.price_change_percentage.h24 || 0,
       volume24h: attributes.volume_usd.h24 || 0,
       liquidity: attributes.reserve_in_usd || 0,
       fdv: baseToken.fdv_usd || 0,
-      marketCap: baseToken.market_cap_usd || 0,
+      // Use the market cap from the website if available, otherwise fall back to API value
+      marketCap: marketCap || baseToken.market_cap_usd || 0,
       totalSupply: baseToken.total_supply 
         ? parseInt(baseToken.total_supply) / Math.pow(10, baseToken.decimals || 18)
         : 0,

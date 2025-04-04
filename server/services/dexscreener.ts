@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { InsertPriceHistory } from '@shared/schema';
+import { getMarketCapFromGeckoWeb } from './geckoterminal';
 
 interface DexScreenerPairResponse {
   pair: {
@@ -196,10 +197,12 @@ export async function fetchDexScreenerPriceHistory(
  * Gets latest price and statistics for a token pair
  * 
  * @param pairAddress - The pair address from DexScreener
+ * @param tokenName - The token name for display in logs
  * @returns Current price and statistics
  */
-export async function getTokenStats(pairAddress: string) {
+export async function getTokenStats(pairAddress: string, tokenName: string = 'token') {
   try {
+    console.log(`Retrieved real-time stats for ${tokenName} from DexScreener`);
     const response = await fetch(`https://api.dexscreener.com/latest/dex/pairs/${pairAddress}`, {
       headers: {
         'Accept': 'application/json',
@@ -229,19 +232,41 @@ export async function getTokenStats(pairAddress: string) {
     
     const pair = data.pairs[0];
     
-    // Calculate market cap based on the circulatingSupply percentage of total supply
+    // Extract the pool address from the pairAddress
+    // This will convert strings like 'polygon/0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8' to '0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8'
+    const poolAddress = pairAddress.includes('/') ? pairAddress.split('/')[1] : pairAddress;
+    
+    // Try to get market cap from GeckoTerminal website as it's more accurate
+    let marketCap = null;
+    try {
+      marketCap = await getMarketCapFromGeckoWeb(poolAddress);
+      if (marketCap) {
+        console.log(`Using market cap value from GeckoTerminal for ${tokenName}: $${marketCap.toLocaleString()}`);
+      }
+    } catch (error) {
+      console.error('Error fetching market cap from GeckoTerminal:', error);
+    }
+    
+    // Calculate market cap based on the circulatingSupply percentage of total supply if we don't have it from GeckoTerminal
     // For these tokens, we'll use a default of 45% of tokens in circulation for marketing cap
     // This is a common ratio for new tokens where a portion is locked
     const circulatingRatio = 0.45; // 45% of tokens in circulation
+    const calculatedMarketCap = pair.fdv ? Math.round(pair.fdv * circulatingRatio) : 0;
     
-    return {
+    // Use the market cap from GeckoTerminal if available, otherwise use the calculated one
+    const finalMarketCap = marketCap || calculatedMarketCap;
+    
+    const result = {
       priceUsd: parseFloat(pair.priceUsd),
       priceChange24h: pair.priceChange?.h24 || 0,
       volume24h: pair.volume?.h24 || 0,
       liquidity: pair.liquidity?.usd || 0,
       fdv: pair.fdv || 0,
-      marketCap: pair.fdv ? Math.round(pair.fdv * circulatingRatio) : 0, // Calculate market cap from FDV
+      marketCap: finalMarketCap
     };
+    
+    console.log(`Retrieved real-time stats for ${tokenName} from DexScreener:`, result);
+    return result;
   } catch (error) {
     console.error('Error fetching token stats from DexScreener:', error);
     return null;
