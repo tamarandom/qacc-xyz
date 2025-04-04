@@ -19,7 +19,9 @@ interface TokenHolder {
 export function TokenHolders({ projectId }: { projectId: number }) {
   const { data: holders, isLoading, error } = useQuery<TokenHolder[]>({
     queryKey: [`/api/projects/${projectId}/token-holders`],
-    enabled: !!projectId
+    enabled: !!projectId,
+    // Adding a staleTime of 1 minute to avoid excessive requests
+    staleTime: 60 * 1000
   });
 
   // Format the address to show only first few characters

@@ -74,6 +74,11 @@ function isCacheValid(projectId: number): boolean {
 function isTokenHoldersCacheValid(projectId: number): boolean {
   if (!tokenHoldersCache[projectId]) return false;
   
+  // For X23 token (project id 1), always refetch to ensure data is up-to-date
+  if (projectId === 1) {
+    return false;
+  }
+  
   const now = new Date();
   const cacheTime = tokenHoldersCache[projectId].lastUpdated;
   const diffMs = now.getTime() - cacheTime.getTime();
