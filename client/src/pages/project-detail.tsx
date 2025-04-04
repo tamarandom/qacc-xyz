@@ -205,22 +205,22 @@ export default function ProjectDetail() {
                   </div>
                 </>
               ) : (
-                // For launched projects: Layout with prominent Market Cap
-                <>
+                // For launched projects: Compact horizontal layout
+                <div className="flex flex-wrap items-center justify-end">
                   {/* Market Cap - Most important data */}
-                  <div className="flex flex-col items-end mb-4 mt-1">
+                  <div className="mr-6">
                     <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
-                    <p className="font-mono text-xl font-bold text-gray-900 dark:text-white">
+                    <p className="font-mono text-lg font-bold text-gray-900 dark:text-white">
                       {formatCurrency(project.marketCap, false, true, true)}
                     </p>
                   </div>
                   
-                  {/* Price and Volume stats */}
-                  <div className="flex justify-end space-x-8 mb-3">
+                  {/* Stats row */}
+                  <div className="flex space-x-6">
                     {/* Price with 24h change */}
-                    <div className="text-right">
+                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center">
                         <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">
                           {formatCurrency(project.price)}
                         </span>
@@ -229,30 +229,30 @@ export default function ProjectDetail() {
                     </div>
                     
                     {/* 24h Volume */}
-                    <div className="text-right">
+                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</p>
                       <p className="font-mono text-sm text-gray-900 dark:text-white">
                         {formatCurrency(project.volume24h, false, false, true)}
                       </p>
                     </div>
+                    
+                    {/* Action buttons - Eye-catching */}
+                    <div className="flex items-center space-x-2 ml-2">
+                      <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm font-bold">
+                        Buy
+                      </button>
+                      <a 
+                        href={project.swapUrl || "#"} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-md inline-flex items-center gap-1 border border-[#3A79CC]/30"
+                      >
+                        <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                        <span className="font-bold">Swap</span>
+                      </a>
+                    </div>
                   </div>
-                  
-                  {/* Action buttons - Eye-catching */}
-                  <div className="flex items-center space-x-3">
-                    <button className="px-5 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm font-bold">
-                      Buy
-                    </button>
-                    <a 
-                      href={project.swapUrl || "#"} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="px-5 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-md inline-flex items-center gap-1 border border-[#3A79CC]/30"
-                    >
-                      <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                      <span className="font-bold">Swap</span>
-                    </a>
-                  </div>
-                </>
+                </div>
               )}
             </div>
           </div>
