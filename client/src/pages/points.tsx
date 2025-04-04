@@ -92,24 +92,24 @@ export default function PointsPage() {
   const currentUser = Array.isArray(users) ? users.find(user => user.id === currentUserId) : null;
 
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
+    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-black)] text-white">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Points Leaderboard</h1>
-          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
+          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-white">Points Leaderboard</h1>
+          <p className="text-gray-400 font-['IBM_Plex_Mono'] mb-6">Climb the ranks, showcase your expertise</p>
         </div>
 
         {/* User standing section - Only show when authenticated */}
         {isAuthenticated && (
           <div>
-            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your Standing</h2>
-            <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] text-sm mb-4">Compared to others</p>
+            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-2 text-white">Your Standing</h2>
+            <p className="text-gray-400 font-['IBM_Plex_Mono'] text-sm mb-4">Compared to others</p>
             
             {currentUser ? (
-              <div className="rounded-lg p-3 border border-[color:var(--color-peach-100)] bg-white">
+              <div className="rounded-lg p-3 border border-gray-800 bg-[color:var(--color-black-200)]">
                 <div className="flex items-center justify-between">
                   <Link href={`/user-score?id=${currentUser.id}`} className="flex items-center space-x-4 hover:opacity-90 transition-opacity">
-                    <span className="text-2xl font-bold text-[color:var(--color-black)]">#{currentUser.rank}</span>
+                    <span className="text-2xl font-bold text-white">#{currentUser.rank}</span>
                     {currentUser.avatarUrl ? (
                       <img 
                         src={currentUser.avatarUrl} 
@@ -122,18 +122,18 @@ export default function PointsPage() {
                       </div>
                     )}
                     <div>
-                      <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{currentUser.username}</div>
-                      <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
+                      <div className="font-medium font-['IBM_Plex_Mono'] text-white">{currentUser.username}</div>
+                      <div className="text-xs text-gray-400 font-['IBM_Plex_Mono'] mt-1">
                         You
                       </div>
                     </div>
                   </Link>
-                  <span className="font-bold text-xl text-[color:var(--color-black)]">{formatNumber(currentUser.points)}</span>
+                  <span className="font-bold text-xl text-white">{formatNumber(currentUser.points)}</span>
                 </div>
               </div>
             ) : (
-              <div className="rounded-lg p-6 text-center border border-[color:var(--color-peach-100)] bg-white">
-                <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">Sign in to see your position on the leaderboard</p>
+              <div className="rounded-lg p-6 text-center border border-gray-800 bg-[color:var(--color-black-200)]">
+                <p className="text-gray-400 font-['IBM_Plex_Mono']">Sign in to see your position on the leaderboard</p>
               </div>
             )}
           </div>
@@ -141,24 +141,24 @@ export default function PointsPage() {
 
         {/* Leaderboard section */}
         <div>
-          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-[color:var(--color-black)]">Leaderboard</h2>
+          <h2 className="text-xl font-['Tusker_Grotesk'] font-bold mb-4 text-white">Leaderboard</h2>
           
           {isLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
+                <div key={i} className="bg-[color:var(--color-black-200)] rounded-lg p-4 border border-gray-800">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <Skeleton className="h-10 w-10 rounded-md" />
-                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-10 w-10 rounded-md bg-gray-700" />
+                      <Skeleton className="h-6 w-32 bg-gray-700" />
                     </div>
-                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-6 w-16 bg-gray-700" />
                   </div>
                 </div>
               ))}
             </div>
           ) : error ? (
-            <div className="p-6 text-center text-red-500 bg-white rounded-lg border border-[color:var(--color-peach-100)]">
+            <div className="p-6 text-center text-red-500 bg-[color:var(--color-black-200)] rounded-lg border border-gray-800">
               Failed to load leaderboard. Please try again later.
             </div>
           ) : (
@@ -169,10 +169,10 @@ export default function PointsPage() {
                   <Link 
                     href={`/user-score?id=${user.id}`}
                     key={user.id}
-                    className={`flex items-stretch bg-white rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity
-                    ${isAuthenticated && isCurrentUser ? "border-2 border-[color:var(--color-peach)]" : "border border-[color:var(--color-peach-100)]"}`}
+                    className={`flex items-stretch bg-[color:var(--color-black-200)] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity
+                    ${isAuthenticated && isCurrentUser ? "border-2 border-[color:var(--color-peach)]" : "border border-gray-800"}`}
                   >
-                    <div className="w-16 bg-[color:var(--color-light-gray)] flex items-center justify-center">
+                    <div className="w-16 bg-[color:var(--color-black-300)] flex items-center justify-center">
                       <RankBadge rank={user.rank || 0} />
                     </div>
                     <div className="flex-1 p-4 flex items-center justify-between relative overflow-hidden">
@@ -181,7 +181,7 @@ export default function PointsPage() {
                         {Array.from({ length: 5 }).map((_, i) => (
                           <div 
                             key={i} 
-                            className="w-[2px] h-full bg-[color:var(--color-light-gray)] transform rotate-[20deg] ml-4"
+                            className="w-[2px] h-full bg-gray-700 transform rotate-[20deg] ml-4"
                             style={{ height: '200%' }}
                           />
                         ))}
@@ -201,20 +201,20 @@ export default function PointsPage() {
                             </div>
                           )}
                           <div>
-                            <div className="font-medium font-['IBM_Plex_Mono'] text-[color:var(--color-black)]">{user.username}</div>
-                            <div className="text-xs text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mt-1">
+                            <div className="font-medium font-['IBM_Plex_Mono'] text-white">{user.username}</div>
+                            <div className="text-xs text-gray-400 font-['IBM_Plex_Mono'] mt-1">
                               {isCurrentUser ? "You" : "project backer"}
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="text-right z-10 font-bold text-lg text-[color:var(--color-black)]">
+                      <div className="text-right z-10 font-bold text-lg text-white">
                         {formatNumber(user.points)}
                       </div>
                     </div>
                   </Link>
                 );
-              }) : <p className="p-4 text-center text-[color:var(--color-gray)]">No users found</p>}
+              }) : <p className="p-4 text-center text-gray-400">No users found</p>}
             </div>
           )}
         </div>

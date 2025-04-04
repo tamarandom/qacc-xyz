@@ -287,33 +287,33 @@ export default function PortfolioPage() {
   };
   
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-light-gray)]">
+    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-black)] text-white">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-[color:var(--color-black)]">Your Portfolio</h1>
+          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-2 text-white">Your Portfolio</h1>
           <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] mb-6">Track your holdings and token unlocks</p>
         </div>
         
         {/* Portfolio Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
+          <div className="bg-[color:var(--color-black-200)] rounded-lg p-4 border border-gray-800">
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">TOTAL SPENT</h3>
-            <div className="text-3xl font-bold text-[color:var(--color-black)]">
-              {isLoading ? <Skeleton className="h-8 w-24" /> : formatCurrency(totalUsdSpent, true)}
+            <div className="text-3xl font-bold text-white">
+              {isLoading ? <Skeleton className="h-8 w-24 bg-gray-700" /> : formatCurrency(totalUsdSpent, true)}
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
+          <div className="bg-[color:var(--color-black-200)] rounded-lg p-4 border border-gray-800">
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">PROJECTS FUNDED</h3>
-            <div className="text-3xl font-bold text-[color:var(--color-black)]">
-              {isLoading ? <Skeleton className="h-8 w-16" /> : projectsCount}
+            <div className="text-3xl font-bold text-white">
+              {isLoading ? <Skeleton className="h-8 w-16 bg-gray-700" /> : projectsCount}
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-4 border border-[color:var(--color-peach-100)]">
+          <div className="bg-[color:var(--color-black-200)] rounded-lg p-4 border border-gray-800">
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">Q/ACC POINTS</h3>
-            <div className="text-3xl font-bold text-[color:var(--color-black)]">
-              {isLoading ? <Skeleton className="h-8 w-24" /> : formatNumber(userData?.points || 0)}
+            <div className="text-3xl font-bold text-white">
+              {isLoading ? <Skeleton className="h-8 w-24 bg-gray-700" /> : formatNumber(userData?.points || 0)}
             </div>
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function PortfolioPage() {
         {/* Projects List */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold text-[color:var(--color-black)]">Your Holdings</h2>
+            <h2 className="text-xl font-['Tusker_Grotesk'] font-bold text-white">Your Holdings</h2>
             
             <Button 
               onClick={handleClaimAllTokens}
@@ -337,22 +337,22 @@ export default function PortfolioPage() {
           {isLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="bg-white rounded-lg p-6 border border-[color:var(--color-peach-100)]">
+                <div key={i} className="bg-[color:var(--color-black-200)] rounded-lg p-6 border border-gray-800">
                   <div className="flex items-center mb-4">
-                    <Skeleton className="h-10 w-10 rounded-md mr-4" />
-                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-10 w-10 rounded-md mr-4 bg-gray-700" />
+                    <Skeleton className="h-6 w-32 bg-gray-700" />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <Skeleton className="h-16 w-full" />
-                    <Skeleton className="h-16 w-full" />
-                    <Skeleton className="h-16 w-full" />
-                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full bg-gray-700" />
+                    <Skeleton className="h-16 w-full bg-gray-700" />
+                    <Skeleton className="h-16 w-full bg-gray-700" />
+                    <Skeleton className="h-16 w-full bg-gray-700" />
                   </div>
                 </div>
               ))}
             </div>
           ) : portfolioItems?.length === 0 ? (
-            <div className="bg-white rounded-lg p-6 border border-[color:var(--color-peach-100)] text-center">
+            <div className="bg-[color:var(--color-black-200)] rounded-lg p-6 border border-gray-800 text-center">
               <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">
                 You don't have any holdings yet. Explore projects to get started!
               </p>
@@ -363,7 +363,7 @@ export default function PortfolioPage() {
           ) : (
             <div className="space-y-4">
               {portfolioItems?.map((item, index) => (
-                <div key={index} className="bg-white rounded-lg p-6 border border-[color:var(--color-peach-100)]">
+                <div key={index} className="bg-[color:var(--color-black-200)] rounded-lg p-6 border border-gray-800">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center">
                       {item.project ? (
@@ -376,7 +376,7 @@ export default function PortfolioPage() {
                             className="mr-4"
                           />
                           <div>
-                            <h3 className="text-lg font-bold text-[color:var(--color-black)] font-['IBM_Plex_Mono']">
+                            <h3 className="text-lg font-bold text-white font-['IBM_Plex_Mono']">
                               {item.project.name}
                             </h3>
                             <p className="text-sm text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">
@@ -388,7 +388,7 @@ export default function PortfolioPage() {
                         <div className="flex items-center">
                           <div className="w-10 h-10 rounded-md bg-[color:var(--color-light-gray)] mr-4"></div>
                           <div>
-                            <h3 className="text-lg font-bold text-[color:var(--color-black)] font-['IBM_Plex_Mono']">
+                            <h3 className="text-lg font-bold text-white font-['IBM_Plex_Mono']">
                               Project #{item.transaction.projectId}
                             </h3>
                           </div>
@@ -409,7 +409,7 @@ export default function PortfolioPage() {
                         <Briefcase size={16} className="mr-2" />
                         <span className="text-xs font-['IBM_Plex_Mono']">TOTAL SPENT</span>
                       </div>
-                      <p className="font-bold text-lg text-[color:var(--color-black)]">
+                      <p className="font-bold text-lg text-white">
                         {formatCurrency(item.transaction.amount, true)}
                       </p>
                     </div>
@@ -419,7 +419,7 @@ export default function PortfolioPage() {
                         <Coins size={16} className="mr-2" />
                         <span className="text-xs font-['IBM_Plex_Mono']">TOTAL TOKENS</span>
                       </div>
-                      <p className="font-bold text-lg text-[color:var(--color-black)]">
+                      <p className="font-bold text-lg text-white">
                         {item.transaction.tokenAmount} {item.project?.tokenSymbol || "tokens"}
                       </p>
                     </div>
@@ -427,7 +427,7 @@ export default function PortfolioPage() {
                   
                   {/* Multiple token unlock rows */}
                   {item.allUnlocks && item.allUnlocks.length > 0 && (
-                    <div className="mt-4 border-t border-[color:var(--color-light-gray)] pt-4">
+                    <div className="mt-4 border-t border-gray-700 pt-4">
                       <h4 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-3">TOKEN UNLOCKS</h4>
                       
                       <div className="w-full overflow-x-auto">
@@ -444,20 +444,20 @@ export default function PortfolioPage() {
                           </thead>
                           <tbody>
                             {item.allUnlocks.map((unlock) => (
-                              <tr key={unlock.id} className="border-b border-[color:var(--color-gray-200)] last:border-b-0">
-                                <td className="py-2 pl-0 text-[color:var(--color-black)]">
+                              <tr key={unlock.id} className="border-b border-gray-700 last:border-b-0">
+                                <td className="py-2 pl-0 text-white">
                                   {unlock.buyDate ? formatDate(unlock.buyDate) : 'N/A'}
                                 </td>
-                                <td className="py-2 text-[color:var(--color-black)]">
+                                <td className="py-2 text-white">
                                   {unlock.spent ? formatCurrency(unlock.spent, true) : 'N/A'}
                                 </td>
-                                <td className="py-2 text-[color:var(--color-black)]">
+                                <td className="py-2 text-white">
                                   {unlock.amount}
                                 </td>
-                                <td className="py-2 text-[color:var(--color-black)]">
+                                <td className="py-2 text-white">
                                   {formatDate(unlock.cliffDate)}
                                 </td>
-                                <td className="py-2 text-[color:var(--color-black)]">
+                                <td className="py-2 text-white">
                                   {formatDate(unlock.endDate)}
                                 </td>
                                 <td className="py-2 pr-0 text-right">
