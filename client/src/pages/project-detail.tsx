@@ -15,6 +15,7 @@ import { TokenHolders } from "@/components/projects/token-holders";
 import { ProjectTabs } from "@/components/projects/project-tabs";
 import { X23AboutContent, X23TeamContent, X23RoadmapContent } from "@/components/projects/x23-content";
 import { GridlockAboutContent, GridlockRoadmapContent } from "@/components/projects/gridlock-content";
+import { Web3PacksAboutContent, Web3PacksTeamContent, Web3PacksRoadmapContent } from "@/components/projects/web3packs-content";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
@@ -297,6 +298,14 @@ export default function ProjectDetail() {
                 projectName={project.name}
                 aboutContent={<GridlockAboutContent />}
                 roadmapContent={<GridlockRoadmapContent />}
+              />
+            ) : project.id === 8 ? (
+              <ProjectTabs 
+                projectId={project.id}
+                projectName={project.name}
+                aboutContent={<Web3PacksAboutContent />}
+                teamContent={<Web3PacksTeamContent />}
+                roadmapContent={<Web3PacksRoadmapContent />}
               />
             ) : (
               <ProjectTabs 
