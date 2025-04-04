@@ -351,12 +351,36 @@ async function updateProjectCache(projectId: number): Promise<void> {
     }
     
     // If we can't get API data or for other projects, check if storage data is reliable
-    // Only use storage data if it appears to be valid (non-zero or reasonable values)
+    // Flag to determine if we were able to fetch valid data from APIs
+    // This is more reliable than checking for non-zero values
+    let hasValidApiFetch = false; // We'll set this to true only when API calls succeed
+    
+    // Check if the storage data appears valid
     const hasValidPrice = project.price > 0;
     const hasValidMarketCap = project.marketCap > 0;
     const hasValidData = hasValidPrice && hasValidMarketCap;
     
-    if (hasValidData) {
+    // In production environment, NEVER trust the storage values for production projects 
+    // since they might be incorrect. Only use verified API data
+    const isProductionEnv = process.env.NODE_ENV === 'production';
+    const isLaunchedProject = projectId <= 4; // Projects 1-4 are launched, 5+ are new
+    
+    // If we're in production and dealing with a launched project, but API calls failed,
+    // use placeholder values to trigger the UI fallback
+    if (isProductionEnv && isLaunchedProject && !hasValidApiFetch) {
+      projectDataCache[projectId] = {
+        lastUpdated: new Date(),
+        data: {
+          price: 0,
+          marketCap: 0,
+          volume24h: 0,
+          change24h: 0
+        }
+      };
+      console.log(`PRODUCTION: Using fallback values for project ${projectId} since API calls failed`);
+    } else if (project.isNew) {
+      // For new projects, use the predefined values from storage
+      // They're assumed to be correct (price = 0.069, marketCap = 400000)
       projectDataCache[projectId] = {
         lastUpdated: new Date(),
         data: {
@@ -366,9 +390,21 @@ async function updateProjectCache(projectId: number): Promise<void> {
           change24h: project.change24h
         }
       };
-      console.log(`Updated cache for project ${projectId} with valid data from storage`);
+      console.log(`Using predefined values for new project ${projectId}`);
+    } else if (hasValidData) {
+      // For dev environment or non-launched projects, use storage data if it's valid
+      projectDataCache[projectId] = {
+        lastUpdated: new Date(),
+        data: {
+          price: project.price,
+          marketCap: project.marketCap,
+          volume24h: project.volume24h,
+          change24h: project.change24h
+        }
+      };
+      console.log(`Using valid storage data for project ${projectId}`);
     } else {
-      // If storage data also appears invalid, store null values to trigger the fallback UI display
+      // If all else fails, store placeholder values to trigger the fallback UI display
       projectDataCache[projectId] = {
         lastUpdated: new Date(),
         data: {
@@ -420,8 +456,37 @@ async function getProjectData(projectId: number): Promise<{
   const hasValidMarketCap = project.marketCap > 0;
   const hasValidData = hasValidPrice && hasValidMarketCap;
   
-  if (hasValidData) {
-    // Update the cache with valid data
+  // Check environment and project type
+  const isProductionEnv = process.env.NODE_ENV === 'production';
+  const isLaunchedProject = projectId <= 4; // Projects 1-4 are launched, 5+ are new
+  
+  if (project.isNew) {
+    // For new projects, always use the predefined values (price = 0.069, marketCap = 400000)
+    projectDataCache[projectId] = {
+      lastUpdated: new Date(),
+      data: {
+        price: project.price,
+        marketCap: project.marketCap,
+        volume24h: project.volume24h,
+        change24h: project.change24h
+      }
+    };
+    console.log(`Using predefined values for new project ${projectId}`);
+  } else if (isProductionEnv && isLaunchedProject) {
+    // In production for launched projects, we can't trust the storage values
+    // Return zeros to force the UI to show "-" placeholders
+    projectDataCache[projectId] = {
+      lastUpdated: new Date(),
+      data: {
+        price: 0,
+        marketCap: 0,
+        volume24h: 0,
+        change24h: 0
+      }
+    };
+    console.log(`PRODUCTION: Using fallback values for launched project ${projectId}`);
+  } else if (hasValidData) {
+    // For dev environment or valid data, use storage values
     projectDataCache[projectId] = {
       lastUpdated: new Date(),
       data: {
