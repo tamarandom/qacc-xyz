@@ -254,7 +254,9 @@ export async function getTokenStats(pairAddress: string, tokenName: string = 'to
     const calculatedMarketCap = pair.fdv ? Math.round(pair.fdv * circulatingRatio) : 0;
     
     // Use the market cap from GeckoTerminal if available, otherwise use the calculated one
-    const finalMarketCap = marketCap || calculatedMarketCap;
+    let finalMarketCap = marketCap || calculatedMarketCap;
+    
+    // No hardcoding - we need a reliable data source
     
     const result = {
       priceUsd: parseFloat(pair.priceUsd),

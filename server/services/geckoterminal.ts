@@ -205,14 +205,22 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
     // Try to get market cap from website directly as it's more accurate
     const marketCap = await getMarketCapFromGeckoWeb(poolAddress, networkId);
     
+    // For tokens like CTZN where market_cap_usd is null but fdv_usd is available
+    // use the top-level fdv_usd value as the market cap
+    const finalMarketCap = marketCap || 
+                           baseToken.market_cap_usd || 
+                           (attributes.fdv_usd ? Math.round(parseFloat(attributes.fdv_usd.toString())) : 0);
+    
+    console.log(`Market cap sources - Web scrape: ${marketCap}, API base_token: ${baseToken.market_cap_usd}, API fdv_usd: ${attributes.fdv_usd}`);
+    
     return {
       priceUsd: baseToken.price_usd,
       priceChange24h: attributes.price_change_percentage.h24 || 0,
       volume24h: attributes.volume_usd.h24 || 0,
       liquidity: attributes.reserve_in_usd || 0,
-      fdv: baseToken.fdv_usd || 0,
-      // Use the market cap from the website if available, otherwise fall back to API value
-      marketCap: marketCap || baseToken.market_cap_usd || 0,
+      fdv: baseToken.fdv_usd || attributes.fdv_usd || 0,
+      // Use the most reliable market cap source available
+      marketCap: finalMarketCap,
       totalSupply: baseToken.total_supply 
         ? parseInt(baseToken.total_supply) / Math.pow(10, baseToken.decimals || 18)
         : 0,
