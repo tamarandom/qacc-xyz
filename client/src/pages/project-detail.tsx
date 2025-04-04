@@ -205,41 +205,22 @@ export default function ProjectDetail() {
                   </div>
                 </>
               ) : (
-                // For launched projects: New two-row layout
+                // For launched projects: Layout with prominent Market Cap
                 <>
-                  {/* First row: Market Cap + Action buttons */}
-                  <div className="flex items-center justify-between mb-3 mt-2">
-                    {/* Market Cap */}
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
-                      <p className="font-mono text-base font-bold text-gray-900 dark:text-white">
-                        {formatCurrency(project.marketCap, false, true, true)}
-                      </p>
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex items-center space-x-3">
-                      <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
-                        Buy
-                      </button>
-                      <a 
-                        href={project.swapUrl || "#"} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
-                      >
-                        <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                        <span>Swap</span>
-                      </a>
-                    </div>
+                  {/* Market Cap - Most important data */}
+                  <div className="flex flex-col items-end mb-4 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
+                    <p className="font-mono text-xl font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(project.marketCap, false, true, true)}
+                    </p>
                   </div>
                   
-                  {/* Second row: Price + 24h volume */}
-                  <div className="flex items-center space-x-8">
+                  {/* Price and Volume stats */}
+                  <div className="flex justify-end space-x-8 mb-3">
                     {/* Price with 24h change */}
-                    <div>
+                    <div className="text-right">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
-                      <div className="flex items-center">
+                      <div className="flex items-center justify-end">
                         <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">
                           {formatCurrency(project.price)}
                         </span>
@@ -248,12 +229,28 @@ export default function ProjectDetail() {
                     </div>
                     
                     {/* 24h Volume */}
-                    <div>
+                    <div className="text-right">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</p>
                       <p className="font-mono text-sm text-gray-900 dark:text-white">
                         {formatCurrency(project.volume24h, false, false, true)}
                       </p>
                     </div>
+                  </div>
+                  
+                  {/* Action buttons - Eye-catching */}
+                  <div className="flex items-center space-x-3">
+                    <button className="px-5 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm font-bold">
+                      Buy
+                    </button>
+                    <a 
+                      href={project.swapUrl || "#"} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-5 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-md inline-flex items-center gap-1 border border-[#3A79CC]/30"
+                    >
+                      <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                      <span className="font-bold">Swap</span>
+                    </a>
                   </div>
                 </>
               )}
