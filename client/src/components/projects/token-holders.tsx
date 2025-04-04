@@ -51,7 +51,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
   if (!holders || holders.length === 0) {
     return (
       <div className="pt-2">
-        <Table className="border-collapse w-[250px] ml-auto">
+        <Table className="border-collapse w-[200px] ml-auto">
           <TableHeader className="hidden">
             <TableRow>
               <TableHead></TableHead>
@@ -61,12 +61,12 @@ export function TokenHolders({ projectId }: { projectId: number }) {
           <TableBody>
             {[...Array(10)].map((_, i) => (
               <TableRow key={i} className="border-b-0">
-                <TableCell className="pt-3 pb-1 pl-0 pr-2">
+                <TableCell className="pt-2 pb-1 pl-0 pr-1">
                   <div className="flex flex-col">
                     <span className="font-mono text-gray-500">-</span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right pt-3 pb-1 pl-0 pr-0 text-gray-500 font-semibold">
+                <TableCell className="text-right pt-2 pb-1 pl-0 pr-0 text-gray-500 font-semibold">
                   -
                 </TableCell>
               </TableRow>
@@ -82,7 +82,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
   
   return (
     <div className="pt-2">
-      <Table className="border-collapse w-[250px] ml-auto">
+      <Table className="border-collapse w-[200px] ml-auto">
         <TableHeader className="hidden">
           <TableRow>
             <TableHead></TableHead>
@@ -92,7 +92,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
         <TableBody>
           {topHolders.map((holder) => (
             <TableRow key={holder.address} className="border-b-0">
-              <TableCell className="pt-3 pb-1 pl-0 pr-2">
+              <TableCell className="pt-2 pb-1 pl-0 pr-1">
                 <div className="flex flex-col">
                   <a 
                     href={getAddressUrl(holder.address)} 
@@ -109,7 +109,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
                   )}
                 </div>
               </TableCell>
-              <TableCell className="text-right pt-3 pb-1 pl-0 pr-0 text-gray-900 dark:text-white font-semibold">
+              <TableCell className="text-right pt-2 pb-1 pl-0 pr-0 text-gray-900 dark:text-white font-semibold">
                 {holder.percentage.toFixed(2)}%
               </TableCell>
             </TableRow>
