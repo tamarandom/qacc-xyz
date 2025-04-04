@@ -161,36 +161,52 @@ export default function ProjectDetail() {
             <div className="flex flex-col items-end justify-between">
               {/* Stats section */}
               <div className="grid grid-cols-1 gap-3 mt-2">
-                {/* Market Cap prominently displayed at the top for launched projects */}
-                {!project.isNew && (
+                {project.isNew ? (
+                  // For new projects, just show price
                   <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
-                    <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(project.marketCap, false, true)}
-                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
+                    <div className="flex items-center justify-end">
+                      <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
+                        {formatCurrency(project.price)}
+                      </span>
+                      <PercentageChange value={project.change24h} className="ml-2" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
+                    </div>
                   </div>
-                )}
-                
-                {/* Price with 24h change */}
-                <div className="text-right">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
-                  <div className="flex items-center justify-end">
-                    <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
-                      {formatCurrency(project.price)}
-                    </span>
-                    <PercentageChange value={project.change24h} className="ml-2" />
-                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
-                  </div>
-                </div>
-                
-                {/* 24h Volume - only for launched projects */}
-                {!project.isNew && (
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">24h Volume</p>
-                    <p className="font-mono text-base text-gray-900 dark:text-white">
-                      {formatCurrency(project.volume24h)}
-                    </p>
-                  </div>
+                ) : (
+                  // For launched projects, compact layout with Market Cap and Price in a grid
+                  <>
+                    {/* Market Cap and Price in a 2-column grid */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Market Cap prominently displayed */}
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
+                        <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
+                          {formatCurrency(project.marketCap, false, true)}
+                        </p>
+                      </div>
+                      
+                      {/* Price with 24h change */}
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
+                        <div className="flex items-center justify-end">
+                          <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
+                            {formatCurrency(project.price)}
+                          </span>
+                          <PercentageChange value={project.change24h} className="ml-2" />
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 24h Volume */}
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">24h Volume</p>
+                      <p className="font-mono text-base text-gray-900 dark:text-white">
+                        {formatCurrency(project.volume24h)}
+                      </p>
+                    </div>
+                  </>
                 )}
               </div>
               
