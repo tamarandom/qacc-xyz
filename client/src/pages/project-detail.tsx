@@ -182,7 +182,7 @@ export default function ProjectDetail() {
                       <div className="text-right">
                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
                         <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
-                          {formatCurrency(project.marketCap, false, true)}
+                          {formatCurrency(project.marketCap, false, true, true)}
                         </p>
                       </div>
                       
@@ -203,7 +203,7 @@ export default function ProjectDetail() {
                     <div className="text-right">
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">24h Volume</p>
                       <p className="font-mono text-base text-gray-900 dark:text-white">
-                        {formatCurrency(project.volume24h)}
+                        {formatCurrency(project.volume24h, false, false, true)}
                       </p>
                     </div>
                   </>

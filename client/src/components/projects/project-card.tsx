@@ -67,7 +67,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             <>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, true)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap || 400000, false, true, true)}</p>
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-1">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
@@ -86,11 +86,11 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, true)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, false, true, true)}</p>
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.volume24h, true)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.volume24h, false, false, true)}</p>
               </div>
             </>
           )}

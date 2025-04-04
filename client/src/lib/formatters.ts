@@ -3,12 +3,32 @@
  * @param value - The value to format
  * @param compact - Whether to use compact notation for large numbers
  * @param noDecimals - Whether to remove decimal places
+ * @param forceCompact - Whether to always use compact notation for marketCap regardless of size
  */
-export function formatCurrency(value: number, compact = false, noDecimals = false): string {
-  // For large numbers (millions)
+export function formatCurrency(value: number, compact = false, noDecimals = false, forceCompact = false): string {
+  // Handle null or undefined values
+  if (value === null || value === undefined) {
+    return '$0';
+  }
+  
+  // For market caps (always use M/B format when forceCompact is true)
+  if (forceCompact) {
+    if (value >= 1000000000) {
+      return `$${(value / 1000000000).toFixed(1)}B`;
+    }
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    }
+    if (value >= 1000) {
+      return `$${(value / 1000).toFixed(1)}K`;
+    }
+  }
+  
+  // For large numbers (millions) with compact option
   if (value >= 1000000 && compact) {
     return `$${(value / 1000000).toFixed(noDecimals ? 0 : 1)}M`;
   }
+  
   // For smaller numbers
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

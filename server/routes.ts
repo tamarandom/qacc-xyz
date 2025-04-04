@@ -137,7 +137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // For Citizen Wallet (CTZN), get real-time data from GeckoTerminal
-      else if (id === 4) {
+      else if (id === 2) {
         try {
           console.log('Fetching real-time data for Citizen Wallet (CTZN) from GeckoTerminal');
           const tokenStats = await getGeckoTerminalTokenStats(CTZN_POOL_ADDRESS);
@@ -167,8 +167,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 price: dexScreenerStats.priceUsd,
                 change24h: dexScreenerStats.priceChange24h,
                 volume24h: dexScreenerStats.volume24h,
-                // Only update other values if they exist
-                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+                // Use the marketCap property from DexScreener if available, otherwise use fdv
+                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
               };
             }
           }
@@ -209,8 +209,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 price: dexScreenerStats.priceUsd,
                 change24h: dexScreenerStats.priceChange24h,
                 volume24h: dexScreenerStats.volume24h,
-                // Only update other values if they exist
-                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+                // Use the marketCap property from DexScreener if available, otherwise use fdv
+                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
               };
             }
           }
@@ -251,8 +251,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 price: dexScreenerStats.priceUsd,
                 change24h: dexScreenerStats.priceChange24h,
                 volume24h: dexScreenerStats.volume24h,
-                // Only update other values if they exist
-                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+                // Use the marketCap property from DexScreener if available, otherwise use fdv
+                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
               };
             }
           }
@@ -422,8 +422,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (id === 1) {
         // X23 token holders
         tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
-      } else if (id === 4) {
-        // CTZN token holders
+      } else if (id === 2) {
+        // CTZN token holders (Citizen Wallet)
         try {
           console.log('Fetching token holders for CTZN from GeckoTerminal');
           tokenHolders = await fetchGeckoTokenHolders(CTZN_TOKEN_ADDRESS);
@@ -434,6 +434,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         } catch (err) {
           console.error('Error fetching CTZN token holders:', err);
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } else if (id === 5) {
+        // GRNDT token holders (Green Data)
+        try {
+          console.log('Fetching token holders for GRNDT from GeckoTerminal');
+          tokenHolders = await fetchGeckoTokenHolders(GRNDT_TOKEN_ADDRESS);
+          
+          // If Gecko returns empty, fall back to sample data
+          if (tokenHolders.length === 0) {
+            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+          }
+        } catch (err) {
+          console.error('Error fetching GRNDT token holders:', err);
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } else if (id === 6) {
+        // PRSM token holders (Prism Protocol)
+        try {
+          console.log('Fetching token holders for PRSM from GeckoTerminal');
+          tokenHolders = await fetchGeckoTokenHolders(PRSM_TOKEN_ADDRESS);
+          
+          // If Gecko returns empty, fall back to sample data
+          if (tokenHolders.length === 0) {
+            tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+          }
+        } catch (err) {
+          console.error('Error fetching PRSM token holders:', err);
           tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
         }
       } else {
@@ -537,8 +565,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For Citizen Wallet (CTZN) project (ID 4), try to fetch real data
-      else if (id === 4) {
+      // For Citizen Wallet (CTZN) project (ID 2), try to fetch real data
+      else if (id === 2) {
         console.log(`Fetching price data for Citizen Wallet (CTZN) (timeframe: ${timeframe || 'all'})`);
         
         try {
@@ -550,7 +578,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Need to update the projectId from the default value (1) to CTZN's project ID
             const updatedHistory = geckoTerminalHistory.map(entry => ({
               ...entry,
-              projectId: 4 // CTZN project ID
+              projectId: 2 // CTZN project ID
             }));
             
             console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for CTZN`);
@@ -569,7 +597,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Update the projectId from the default value (1) to CTZN's project ID
               const updatedHistory = dexScreenerHistory.map(entry => ({
                 ...entry,
-                projectId: 4 // CTZN project ID
+                projectId: 2 // CTZN project ID
               }));
               
               console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for CTZN`);

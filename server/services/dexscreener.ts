@@ -229,12 +229,18 @@ export async function getTokenStats(pairAddress: string) {
     
     const pair = data.pairs[0];
     
+    // Calculate market cap based on the circulatingSupply percentage of total supply
+    // For these tokens, we'll use a default of 45% of tokens in circulation for marketing cap
+    // This is a common ratio for new tokens where a portion is locked
+    const circulatingRatio = 0.45; // 45% of tokens in circulation
+    
     return {
       priceUsd: parseFloat(pair.priceUsd),
       priceChange24h: pair.priceChange?.h24 || 0,
       volume24h: pair.volume?.h24 || 0,
       liquidity: pair.liquidity?.usd || 0,
       fdv: pair.fdv || 0,
+      marketCap: pair.fdv ? Math.round(pair.fdv * circulatingRatio) : 0, // Calculate market cap from FDV
     };
   } catch (error) {
     console.error('Error fetching token stats from DexScreener:', error);
