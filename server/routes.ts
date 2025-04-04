@@ -163,6 +163,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for X23 from GeckoTerminal:', geckoStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -172,6 +173,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: geckoStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
         
@@ -183,6 +196,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for X23 from DexScreener:', dexStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -192,6 +206,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: dexStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
       } catch (error) {
@@ -208,6 +234,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for CTZN from GeckoTerminal:', geckoStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -217,6 +244,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: geckoStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
         
@@ -228,6 +267,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for CTZN from DexScreener:', dexStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -237,6 +277,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: dexStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
       } catch (error) {
@@ -253,6 +305,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', geckoStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -262,6 +315,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: geckoStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
         
@@ -273,6 +338,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -282,6 +348,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: dexStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
       } catch (error) {
@@ -298,6 +376,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for PRSM from GeckoTerminal:', geckoStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -307,6 +386,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: geckoStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
         
@@ -318,6 +409,7 @@ async function updateProjectCache(projectId: number): Promise<void> {
           console.log('Retrieved real-time stats for PRSM from DexScreener:', dexStats);
           
           // Update the cache with the latest API data
+          // Old cache system (deprecated but kept for compatibility)
           projectDataCache[projectId] = {
             lastUpdated: new Date(),
             data: {
@@ -327,6 +419,18 @@ async function updateProjectCache(projectId: number): Promise<void> {
               change24h: dexStats.priceChange24h
             }
           };
+          
+          // Update the centralized cache system
+          updateProjectMarketData(
+            projectId,
+            {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            },
+            true // API success
+          );
           return;
         }
       } catch (error) {

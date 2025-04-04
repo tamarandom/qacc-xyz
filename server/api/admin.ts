@@ -6,7 +6,12 @@
  */
 
 import { Express } from "express";
-import { invalidateAllProjectCaches, invalidateProjectCache } from "../cache";
+import { 
+  invalidateAllProjectCaches, 
+  invalidateProjectCache,
+  _projectCache,
+  ProjectCacheEntry
+} from "../cache";
 
 /**
  * Register admin API routes
@@ -41,6 +46,41 @@ export function registerAdminRoutes(app: Express): void {
     } catch (error) {
       console.error('Error refreshing cache:', error);
       res.status(500).json({ error: 'Failed to refresh cache' });
+    }
+  });
+  
+  // Get current cache state (debug endpoint)
+  app.get('/api/admin/cache', (req, res) => {
+    try {
+      console.log('Admin requested current cache state');
+      // Use a safer approach to avoid TypeScript issues
+      const cacheEntries: Record<string, any> = {};
+      
+      // Get all keys and convert them to numbers, then process
+      const projectKeys = Object.keys(_projectCache);
+      for (const key of projectKeys) {
+        const projectId = key; // Keep as string for indexing the output object
+        const cacheEntry = _projectCache[parseInt(key)];
+        
+        // Only add if the entry exists
+        if (cacheEntry) {
+          cacheEntries[projectId] = {
+            lastUpdated: cacheEntry.lastUpdated,
+            marketData: cacheEntry.marketData,
+            tokenHoldersCount: cacheEntry.tokenHolders.holders.length,
+            apiSuccess: cacheEntry.apiSuccess,
+            isNew: cacheEntry.isNew
+          };
+        }
+      }
+      
+      res.json({
+        cacheEntries,
+        cacheSize: Object.keys(_projectCache).length
+      });
+    } catch (error) {
+      console.error('Error retrieving cache state:', error);
+      res.status(500).json({ error: 'Failed to retrieve cache state' });
     }
   });
 }
