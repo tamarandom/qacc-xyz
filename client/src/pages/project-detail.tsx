@@ -415,53 +415,12 @@ export default function ProjectDetail() {
           </div>
           
           <div>
-            <Card className="mb-4 dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+            <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg dark:text-white">TOP 10 HOLDERS</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <TokenHolders projectId={parseInt(id || "0")} />
-              </CardContent>
-            </Card>
-            
-            <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg dark:text-white">Links & Resources</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="divide-y divide-gray-200 dark:divide-[color:var(--color-black-200)]">
-
-                  <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Website</span>
-                    <a href={project.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
-                      {new URL(project.websiteUrl).hostname}
-                    </a>
-                  </li>
-                  <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Whitepaper</span>
-                    <a href={project.whitePaperUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
-                      View PDF
-                    </a>
-                  </li>
-                  <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">GitHub</span>
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
-                      {new URL(project.githubUrl).pathname.substring(1)}
-                    </a>
-                  </li>
-                  <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Twitter</span>
-                    <a href={project.twitterUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
-                      @{new URL(project.twitterUrl).pathname.substring(1)}
-                    </a>
-                  </li>
-                  <li className="py-3 flex justify-between">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-200">Discord</span>
-                    <a href={project.discordUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-primary-600 hover:text-primary-800 dark:text-[color:var(--color-peach)] dark:hover:text-[color:var(--color-peach-dark)]">
-                      discord.gg/{new URL(project.discordUrl).pathname.split('/').pop()}
-                    </a>
-                  </li>
-                </ul>
               </CardContent>
             </Card>
           </div>
