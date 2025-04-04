@@ -27,37 +27,70 @@ interface GeckoTerminalPoolResponse {
       address: string;
       name: string;
       pool_created_at: string;
-      fdv_usd: number;
-      market_cap_usd: number;
-      price_usd: number;
-      price_native: number;
+      fdv_usd: string; // Updated to string as API returns it as string value
+      market_cap_usd: string | null; // Can be null for some tokens like CTZN
+      base_token_price_usd: string;
+      base_token_price_native_currency: string;
+      quote_token_price_usd: string;
+      quote_token_price_native_currency: string;
+      base_token_price_quote_token: string;
+      quote_token_price_base_token: string;
       volume_usd: {
-        h24: number;
-        h6: number;
-        h1: number;
+        m5?: string;
+        m15?: string;
+        m30?: string;
+        h1?: string;
+        h6?: string;
+        h24?: string;
       };
       reserve_in_usd: number;
-      token_price_usd: number;
       price_change_percentage: {
-        h24: number;
-        h6: number;
-        h1: number;
+        m5?: number;
+        m15?: number;
+        m30?: number;
+        h1?: number;
+        h6?: number;
+        h24?: number;
       };
       transactions: {
-        h24: {
+        m5?: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
         };
-        h6: {
+        m15?: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
         };
-        h1: {
+        m30?: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        h1?: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        h6?: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        h24?: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
         };
       };
-      base_token_data: {
+      base_token_data?: { // Made optional since it can be missing
         id: string;
         address: string;
         name: string;
@@ -68,13 +101,33 @@ interface GeckoTerminalPoolResponse {
         fdv_usd: number;
         market_cap_usd: number;
       };
-      quote_token_data: {
+      quote_token_data?: { // Made optional since it can be missing
         id: string;
         address: string;
         name: string;
         symbol: string;
         decimals: number;
         price_usd: number;
+      };
+    };
+    relationships: {
+      base_token: {
+        data: {
+          id: string;
+          type: string;
+        };
+      };
+      quote_token: {
+        data: {
+          id: string;
+          type: string;
+        };
+      };
+      dex: {
+        data: {
+          id: string;
+          type: string;
+        };
       };
     };
   };
@@ -178,7 +231,12 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
       return null;
     }
     
-    const data = await response.json() as GeckoTerminalPoolResponse;
+    // For debugging, let's log the raw response
+    const responseText = await response.text();
+    console.log(`GeckoTerminal API raw response for ${poolAddress}:`, responseText.substring(0, 500) + '...');
+    
+    // Parse the response again
+    const data = JSON.parse(responseText) as GeckoTerminalPoolResponse;
     
     if (!data.data || !data.data.attributes) {
       console.error('Invalid data structure from GeckoTerminal');
@@ -187,18 +245,42 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
     
     const attributes = data.data.attributes;
     
+    // If base_token_data is missing, we can still use the top level price and FDV data
     if (!attributes.base_token_data) {
-      console.error('Missing base_token_data in GeckoTerminal response');
-      return null;
+      console.log('Missing base_token_data in GeckoTerminal response, using top-level attributes');
+      console.log('Available attributes:', Object.keys(attributes).join(', '));
+      
+      // Get token info from relationships if available
+      const baseTokenId = data.data.relationships?.base_token?.data?.id || '';
+      const tokenSymbol = baseTokenId.split('_').pop() || 'CTZN';
+      
+      // Try to get market cap from website directly as it's more accurate
+      const marketCap = await getMarketCapFromGeckoWeb(poolAddress, networkId);
+      
+      // For tokens like CTZN where base_token_data is missing, use the top-level fdv_usd
+      const fdvUsd = attributes.fdv_usd ? parseFloat(attributes.fdv_usd) : 0;
+      console.log(`Using top-level fdv_usd as market cap for ${tokenSymbol}: ${fdvUsd}`);
+      
+      return {
+        priceUsd: parseFloat(attributes.base_token_price_usd || '0'),
+        priceChange24h: attributes.price_change_percentage?.h24 || 0,
+        volume24h: parseFloat(attributes.volume_usd?.h24 || '0'),
+        liquidity: attributes.reserve_in_usd || 0,
+        fdv: fdvUsd,
+        // Use fdv_usd as market cap for tokens like CTZN
+        marketCap: marketCap || Math.round(fdvUsd),
+        totalSupply: 0, // Not available without base_token_data
+        tokenSymbol: tokenSymbol,
+        tokenName: attributes.name?.split(' / ')[0] || tokenSymbol,
+      };
     }
     
+    // If we have base_token_data, use it
     const baseToken = attributes.base_token_data;
     
     // Check for required fields to prevent errors
-    if (baseToken.price_usd === undefined || 
-        attributes.price_change_percentage?.h24 === undefined || 
-        attributes.volume_usd?.h24 === undefined) {
-      console.error('Missing required data fields in GeckoTerminal response');
+    if (baseToken.price_usd === undefined) {
+      console.error('Missing price_usd in GeckoTerminal base_token_data');
       return null;
     }
     
@@ -207,18 +289,20 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
     
     // For tokens like CTZN where market_cap_usd is null but fdv_usd is available
     // use the top-level fdv_usd value as the market cap
+    const fdvUsd = attributes.fdv_usd ? parseFloat(attributes.fdv_usd) : (baseToken.fdv_usd || 0);
     const finalMarketCap = marketCap || 
                            baseToken.market_cap_usd || 
-                           (attributes.fdv_usd ? Math.round(parseFloat(attributes.fdv_usd.toString())) : 0);
+                           Math.round(fdvUsd);
     
-    console.log(`Market cap sources - Web scrape: ${marketCap}, API base_token: ${baseToken.market_cap_usd}, API fdv_usd: ${attributes.fdv_usd}`);
+    console.log(`Market cap sources for ${baseToken.symbol || 'token'} - Web scrape: ${marketCap}, API base_token: ${baseToken.market_cap_usd}, API fdv_usd: ${fdvUsd}`);
+    console.log(`Using final market cap value: ${finalMarketCap}`);
     
     return {
       priceUsd: baseToken.price_usd,
-      priceChange24h: attributes.price_change_percentage.h24 || 0,
-      volume24h: attributes.volume_usd.h24 || 0,
+      priceChange24h: attributes.price_change_percentage?.h24 || 0,
+      volume24h: parseFloat(attributes.volume_usd?.h24 || '0'),
       liquidity: attributes.reserve_in_usd || 0,
-      fdv: baseToken.fdv_usd || attributes.fdv_usd || 0,
+      fdv: fdvUsd,
       // Use the most reliable market cap source available
       marketCap: finalMarketCap,
       totalSupply: baseToken.total_supply 

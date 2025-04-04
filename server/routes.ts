@@ -104,10 +104,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('Retrieved real-time stats from GeckoTerminal:', tokenStats);
             updatedProject = {
               ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              price: Number(tokenStats.priceUsd),
+              change24h: Number(tokenStats.priceChange24h),
+              volume24h: Number(tokenStats.volume24h),
+              marketCap: Number(tokenStats.marketCap || tokenStats.fdv),
               // Update more fields if available
               ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
@@ -122,11 +122,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('Retrieved real-time stats from DexScreener:', dexScreenerStats);
               updatedProject = {
                 ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
+                price: Number(dexScreenerStats.priceUsd),
+                change24h: Number(dexScreenerStats.priceChange24h),
+                volume24h: Number(dexScreenerStats.volume24h),
                 // Only update other values if they exist
-                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+                ...(dexScreenerStats.fdv ? { marketCap: Number(dexScreenerStats.fdv) } : {})
               };
             }
           }
@@ -146,10 +146,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('Retrieved real-time stats for CTZN from GeckoTerminal:', tokenStats);
             updatedProject = {
               ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              price: Number(tokenStats.priceUsd),
+              change24h: Number(tokenStats.priceChange24h),
+              volume24h: Number(tokenStats.volume24h),
+              marketCap: Number(tokenStats.marketCap || tokenStats.fdv),
               // Update more fields if available
               ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
@@ -164,11 +164,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('Retrieved real-time stats for CTZN from DexScreener:', dexScreenerStats);
               updatedProject = {
                 ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
+                price: Number(dexScreenerStats.priceUsd),
+                change24h: Number(dexScreenerStats.priceChange24h),
+                volume24h: Number(dexScreenerStats.volume24h),
                 // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
+                marketCap: Number(dexScreenerStats.marketCap || dexScreenerStats.fdv)
               };
             }
           }
@@ -188,10 +188,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('Retrieved real-time stats for PRSM from GeckoTerminal:', tokenStats);
             updatedProject = {
               ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              price: Number(tokenStats.priceUsd),
+              change24h: Number(tokenStats.priceChange24h),
+              volume24h: Number(tokenStats.volume24h),
+              marketCap: Number(tokenStats.marketCap || tokenStats.fdv),
               // Update more fields if available
               ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
@@ -206,11 +206,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('Retrieved real-time stats for PRSM from DexScreener:', dexScreenerStats);
               updatedProject = {
                 ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
+                price: Number(dexScreenerStats.priceUsd),
+                change24h: Number(dexScreenerStats.priceChange24h),
+                volume24h: Number(dexScreenerStats.volume24h),
                 // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
+                marketCap: Number(dexScreenerStats.marketCap || dexScreenerStats.fdv)
               };
             }
           }
@@ -230,10 +230,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', tokenStats);
             updatedProject = {
               ...updatedProject,
-              price: tokenStats.priceUsd,
-              change24h: tokenStats.priceChange24h,
-              volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              price: Number(tokenStats.priceUsd),
+              change24h: Number(tokenStats.priceChange24h),
+              volume24h: Number(tokenStats.volume24h),
+              marketCap: Number(tokenStats.marketCap || tokenStats.fdv),
               // Update more fields if available
               ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
@@ -248,11 +248,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexScreenerStats);
               updatedProject = {
                 ...updatedProject,
-                price: dexScreenerStats.priceUsd,
-                change24h: dexScreenerStats.priceChange24h,
-                volume24h: dexScreenerStats.volume24h,
+                price: Number(dexScreenerStats.priceUsd),
+                change24h: Number(dexScreenerStats.priceChange24h),
+                volume24h: Number(dexScreenerStats.volume24h),
                 // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
+                marketCap: Number(dexScreenerStats.marketCap || dexScreenerStats.fdv)
               };
             }
           }
