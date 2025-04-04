@@ -12,7 +12,7 @@ interface GeckoTerminalChartProps {
 const POOL_ADDRESSES: Record<string, string> = {
   "X23": "0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838",
   "CTZN": "0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8",
-  "PRSM": "0x4dc15edc968eceaec3a5e0f12d0acecacee05e19",
+  "PRSM": "0x4dc15edc968eceaec3a5e0f12d0acecacee05e25", // Updated with correct address
   "GRNDT": "0x460a8186aa4574c18709d1eff118efdaa5235c19"
 };
 
