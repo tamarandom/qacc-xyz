@@ -45,14 +45,11 @@ interface PriceCache {
 }
 
 // Cache for project token holders data
-// Using the type definition from the token-holders service
-import { TokenHolderData as TokenHolderDataType } from './services/token-holders';
-// Alias the imported type for backward compatibility
-type TokenHolderData = TokenHolderDataType;
+// We're using the TokenHolderData type imported from token-holders.ts in line 20
 
 interface TokenHoldersCache {
   lastUpdated: Date;
-  data: TokenHolderData[];
+  data: TokenHolderDataType[];
 }
 
 // Project data cache with a 15-minute expiration
