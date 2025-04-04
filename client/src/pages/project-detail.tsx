@@ -205,18 +205,18 @@ export default function ProjectDetail() {
                   </div>
                 </>
               ) : (
-                // For launched projects: Compact horizontal layout
-                <div className="flex flex-wrap items-center justify-end">
-                  {/* Market Cap - Most important data */}
-                  <div className="mr-6">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
-                    <p className="font-mono text-lg font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(project.marketCap, false, true, true)}
-                    </p>
-                  </div>
-                  
+                // For launched projects: Compact layout with buttons below
+                <>
                   {/* Stats row */}
-                  <div className="flex space-x-6">
+                  <div className="flex justify-end items-center space-x-8 mb-3">
+                    {/* Market Cap - Most important data */}
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
+                      <p className="font-mono text-lg font-bold text-gray-900 dark:text-white">
+                        {formatCurrency(project.marketCap, false, true, true)}
+                      </p>
+                    </div>
+                    
                     {/* Price with 24h change */}
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
@@ -235,24 +235,24 @@ export default function ProjectDetail() {
                         {formatCurrency(project.volume24h, false, false, true)}
                       </p>
                     </div>
-                    
-                    {/* Action buttons - Eye-catching */}
-                    <div className="flex items-center space-x-2 ml-2">
-                      <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm font-bold">
-                        Buy
-                      </button>
-                      <a 
-                        href={project.swapUrl || "#"} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-md inline-flex items-center gap-1 border border-[#3A79CC]/30"
-                      >
-                        <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                        <span className="font-bold">Swap</span>
-                      </a>
-                    </div>
                   </div>
-                </div>
+                  
+                  {/* Action buttons - Eye-catching */}
+                  <div className="flex items-center space-x-3">
+                    <button className="px-5 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm font-bold">
+                      Buy
+                    </button>
+                    <a 
+                      href={project.swapUrl || "#"} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-5 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-md inline-flex items-center gap-1 border border-[#3A79CC]/30"
+                    >
+                      <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                      <span className="font-bold">Swap</span>
+                    </a>
+                  </div>
+                </>
               )}
             </div>
           </div>
