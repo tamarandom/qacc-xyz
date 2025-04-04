@@ -47,13 +47,39 @@ export function TokenHolders({ projectId }: { projectId: number }) {
     );
   }
 
-  // If there are no holders, show a message
+  // If there are no holders, show placeholders with dashes
   if (!holders || holders.length === 0) {
     return (
-      <p className="text-muted-foreground py-3">No token holders found</p>
+      <div className="pt-2">
+        <Table>
+          <TableHeader className="hidden">
+            <TableRow>
+              <TableHead></TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[...Array(10)].map((_, i) => (
+              <TableRow key={i}>
+                <TableCell className="py-3">
+                  <div className="flex flex-col">
+                    <span className="font-mono text-gray-500">-</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right py-3 text-gray-500 font-semibold">
+                  -
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     );
   }
 
+  // Only show top 10 holders
+  const topHolders = holders.slice(0, 10);
+  
   return (
     <div className="pt-2">
       <Table>
@@ -64,7 +90,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {holders.map((holder) => (
+          {topHolders.map((holder) => (
             <TableRow key={holder.address}>
               <TableCell className="py-3">
                 <div className="flex flex-col">

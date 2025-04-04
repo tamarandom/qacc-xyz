@@ -98,11 +98,11 @@ export async function fetchTokenHolders(tokenAddress: string): Promise<TokenHold
       });
     }
     
-    console.warn(`Covalent API failed to return holders for ${tokenSymbol}, using fallback data`);
-    return getDefaultTokenHolders(normalizedAddress);
+    console.warn(`Covalent API failed to return holders for ${tokenSymbol}, returning empty array`);
+    return [];
   } catch (error) {
     console.error('Error fetching token holders:', error);
-    return getDefaultTokenHolders(tokenAddress);
+    return [];
   }
 }
 

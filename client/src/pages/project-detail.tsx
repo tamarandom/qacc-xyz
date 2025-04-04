@@ -417,7 +417,7 @@ export default function ProjectDetail() {
           <div>
             <Card className="mb-4 dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg dark:text-white">TOP TOKEN HOLDERS</CardTitle>
+                <CardTitle className="text-lg dark:text-white">TOP 10 HOLDERS</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <TokenHolders projectId={parseInt(id || "0")} />
