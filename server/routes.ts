@@ -176,17 +176,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const features = await storage.getProjectFeatures(id);
       const technicalDetails = await storage.getProjectTechnicalDetails(id);
       
-      // Get the cached price data
-      const priceData = await getProjectData(id);
+      let updatedProject;
       
-      // Apply the price data to the project
-      const updatedProject = {
-        ...project,
-        price: priceData.price,
-        marketCap: priceData.marketCap,
-        volume24h: priceData.volume24h,
-        change24h: priceData.change24h
-      };
+      // For X23 (id=1), fetch real-time data from external sources
+      if (id === 1) {
+        console.log('Fetching real-time data for X23 project detail page');
+        
+        try {
+          // Try GeckoTerminal first
+          const geckoStats = await getGeckoTerminalTokenStats(X23_POOL_ADDRESS);
+          
+          if (geckoStats) {
+            console.log('Retrieved real-time stats for X23 from GeckoTerminal:', geckoStats);
+            
+            updatedProject = {
+              ...project,
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            };
+          } else {
+            // If GeckoTerminal fails, try DexScreener
+            console.log('GeckoTerminal data unavailable, trying DexScreener for X23');
+            const dexStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS, 'X23');
+            
+            if (dexStats) {
+              console.log('Retrieved real-time stats for X23 from DexScreener:', dexStats);
+              
+              updatedProject = {
+                ...project,
+                price: dexStats.priceUsd,
+                marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+                volume24h: dexStats.volume24h,
+                change24h: dexStats.priceChange24h
+              };
+            } else {
+              // If both fail, use cached data
+              console.log('External APIs failed, falling back to cached data for X23');
+              const priceData = await getProjectData(id);
+              
+              updatedProject = {
+                ...project,
+                price: priceData.price,
+                marketCap: priceData.marketCap,
+                volume24h: priceData.volume24h,
+                change24h: priceData.change24h
+              };
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching real-time X23 data:', error);
+          // If error occurs, fall back to cached data
+          const priceData = await getProjectData(id);
+          
+          updatedProject = {
+            ...project,
+            price: priceData.price,
+            marketCap: priceData.marketCap,
+            volume24h: priceData.volume24h,
+            change24h: priceData.change24h
+          };
+        }
+      } else {
+        // For all other projects, use cached data
+        const priceData = await getProjectData(id);
+        
+        updatedProject = {
+          ...project,
+          price: priceData.price,
+          marketCap: priceData.marketCap,
+          volume24h: priceData.volume24h,
+          change24h: priceData.change24h
+        };
+      }
       
       res.json({
         ...updatedProject,
