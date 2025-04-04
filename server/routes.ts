@@ -732,6 +732,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Project not found' });
       }
       
+      // For new projects, return an empty array to avoid API calls
+      if (project.isNew) {
+        console.log(`Project ${project.name} is new, returning empty token holders array`);
+        return res.json([]);
+      }
+      
       // Check if force refresh is requested via query param
       const forceRefresh = req.query.refresh === 'true';
       

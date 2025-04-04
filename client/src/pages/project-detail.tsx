@@ -285,7 +285,8 @@ export default function ProjectDetail() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
-          <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-3">
+          {/* Full width for new projects, 3/4 width for established projects */}
+          <div className={`bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 ${project.isNew ? 'md:col-span-4' : 'md:col-span-3'}`}>
             {/* Project Info Tabs */}
             {project.id === 1 ? (
               <ProjectTabs 
@@ -342,16 +343,19 @@ export default function ProjectDetail() {
             )}
           </div>
           
-          <div>
-            <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
-              <CardHeader className="pb-2 pl-0 pr-0">
-                <CardTitle className="text-xs sm:text-sm dark:text-white font-medium text-right">TOP 10 HOLDERS</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0 px-0">
-                <TokenHolders projectId={parseInt(id || "0")} />
-              </CardContent>
-            </Card>
-          </div>
+          {/* Only show token holders for non-new projects */}
+          {!project.isNew && (
+            <div>
+              <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
+                <CardHeader className="pb-2 pl-0 pr-0">
+                  <CardTitle className="text-xs sm:text-sm dark:text-white font-medium text-right">TOP 10 HOLDERS</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0 px-0">
+                  <TokenHolders projectId={parseInt(id || "0")} />
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </div>
