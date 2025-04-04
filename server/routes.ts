@@ -220,17 +220,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For Grand Timeline (GRNDT), get real-time data from GeckoTerminal
-      else if (id === 5) {
+      // For Grand Timeline or Gridlock (GRNDT token), get real-time data from GeckoTerminal
+      // They share the same token (GRNDT) but have different project IDs (3 and 5)
+      else if (id === 3 || id === 5) {
         try {
-          console.log('Fetching real-time data for Grand Timeline (GRNDT) from GeckoTerminal');
+          console.log(`Fetching real-time data for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT) from GeckoTerminal`);
           const tokenStats = await getGeckoTerminalTokenStats(GRNDT_POOL_ADDRESS);
           
           if (tokenStats) {
-            console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', tokenStats);
+            console.log(`Retrieved real-time stats for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT) from GeckoTerminal:`, tokenStats);
             // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
             const realTimeMarketCap = tokenStats.marketCap || tokenStats.fdv;
-            console.log(`Using real-time market cap for GRNDT: ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
+            console.log(`Using real-time market cap for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT): ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
             
             updatedProject = {
               ...updatedProject,
@@ -245,14 +246,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
           } else {
             // Fallback to DexScreener if GeckoTerminal fails
-            console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
+            console.log(`GeckoTerminal data not available for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT), trying DexScreener`);
             const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
             
             if (dexScreenerStats) {
-              console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexScreenerStats);
+              console.log(`Retrieved real-time stats for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT) from DexScreener:`, dexScreenerStats);
               // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
               const realTimeMarketCap = dexScreenerStats.marketCap || dexScreenerStats.fdv;
-              console.log(`Using real-time market cap for GRNDT: ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
+              console.log(`Using real-time market cap for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT): ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
               
               updatedProject = {
                 ...updatedProject,
@@ -264,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
           }
         } catch (err) {
-          console.error('Error fetching real-time token stats for GRNDT:', err);
+          console.error(`Error fetching real-time token stats for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT):`, err);
           // Continue with stored data if real-time fetch fails
         }
       }
@@ -443,10 +444,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Error fetching CTZN token holders:', err);
           tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
         }
-      } else if (id === 5) {
-        // GRNDT token holders (Green Data)
+      } else if (id === 3 || id === 5) {
+        // GRNDT token holders (Grand Timeline or Gridlock)
         try {
-          console.log('Fetching token holders for GRNDT from GeckoTerminal');
+          console.log(`Fetching token holders for ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT) from GeckoTerminal`);
           tokenHolders = await fetchGeckoTokenHolders(GRNDT_TOKEN_ADDRESS);
           
           // If Gecko returns empty, fall back to sample data
@@ -454,7 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
           }
         } catch (err) {
-          console.error('Error fetching GRNDT token holders:', err);
+          console.error(`Error fetching ${id === 3 ? "Grand Timeline" : "Gridlock"} (GRNDT) token holders:`, err);
           tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
         }
       } else if (id === 4) {
@@ -668,28 +669,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For Grand Timeline (GRNDT) project (ID 5), try to fetch real data
-      else if (id === 5) {
-        console.log(`Fetching price data for Grand Timeline (GRNDT) (timeframe: ${timeframe || 'all'})`);
+      // For Grand Timeline or Gridlock (both use GRNDT token), try to fetch real data
+      else if (id === 3 || id === 5) {
+        const projectName = id === 3 ? "Grand Timeline" : "Gridlock";
+        console.log(`Fetching price data for ${projectName} (GRNDT) (timeframe: ${timeframe || 'all'})`);
         
         try {
           // Try GeckoTerminal for historical data
-          console.log('Attempting to fetch historical data from GeckoTerminal for GRNDT');
+          console.log(`Attempting to fetch historical data from GeckoTerminal for ${projectName} (GRNDT)`);
           const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(GRNDT_POOL_ADDRESS, timeframe);
           
           if (geckoTerminalHistory.length > 0) {
-            // Need to update the projectId from the default value (1) to GRNDT's project ID
+            // Need to update the projectId from the default value (1) to the correct project ID
             const updatedHistory = geckoTerminalHistory.map(entry => ({
               ...entry,
-              projectId: 5 // GRNDT project ID
+              projectId: id // Use the requested project ID (3 or 5)
             }));
             
-            console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for GRNDT`);
+            console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for ${projectName} (GRNDT)`);
             return res.json(updatedHistory);
           }
           
           // GeckoTerminal failed, try DexScreener as a fallback
-          console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
+          console.log(`GeckoTerminal data not available for ${projectName} (GRNDT), trying DexScreener`);
           const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
           
           if (dexScreenerStats) {
@@ -697,22 +699,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const dexScreenerHistory = await fetchDexScreenerPriceHistory(GRNDT_PAIR_ADDRESS, timeframe);
             
             if (dexScreenerHistory.length > 0) {
-              // Update the projectId from the default value (1) to GRNDT's project ID
+              // Update the projectId from the default value (1) to the correct project ID
               const updatedHistory = dexScreenerHistory.map(entry => ({
                 ...entry,
-                projectId: 5 // GRNDT project ID
+                projectId: id // Use the requested project ID (3 or 5)
               }));
               
-              console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for GRNDT`);
+              console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for ${projectName} (GRNDT)`);
               return res.json(updatedHistory);
             }
           }
           
           // If both GeckoTerminal and DexScreener fail, fall back to stored data
-          console.log('GeckoTerminal and DexScreener data not available for GRNDT, falling back to stored data');
+          console.log(`GeckoTerminal and DexScreener data not available for ${projectName} (GRNDT), falling back to stored data`);
         } catch (error) {
-          console.error('Error fetching real price data for GRNDT:', error);
-          console.warn('Error occurred while fetching real price data for GRNDT, falling back to stored data');
+          console.error(`Error fetching real price data for ${projectName} (GRNDT):`, error);
+          console.warn(`Error occurred while fetching real price data for ${projectName} (GRNDT), falling back to stored data`);
         }
       }
       
