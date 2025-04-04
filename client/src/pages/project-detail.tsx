@@ -159,56 +159,64 @@ export default function ProjectDetail() {
             
             {/* Right Side - Stats and Buttons */}
             <div className="flex flex-col items-end justify-between">
-              <div className="flex items-center mt-2 space-x-6">
-                <div className="flex flex-col items-end">
-                  {/* Market Cap prominently displayed at the top */}
-                  {!project.isNew && (
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-500 dark:text-gray-400 text-right mb-1">Market Cap</p>
-                      <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
-                        {formatCurrency(project.marketCap, false, true)}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {/* Price with 24h change */}
-                  <div className="flex flex-col items-end">
-                    <p className="text-sm text-gray-500 dark:text-gray-400 text-right mb-1">Price</p>
-                    <div className="flex items-center">
-                      <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(project.price)}
-                      </span>
-                      <PercentageChange value={project.change24h} className="ml-2" />
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
-                    </div>
+              {/* Stats section */}
+              <div className="grid grid-cols-1 gap-3 mt-2">
+                {/* Market Cap prominently displayed at the top for launched projects */}
+                {!project.isNew && (
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
+                    <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(project.marketCap, false, true)}
+                    </p>
                   </div>
-                  
-                  {/* 24h Volume - only for launched projects */}
-                  {!project.isNew && (
-                    <div className="mt-2">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 text-right">
-                        24h Volume: <span className="font-mono">{formatCurrency(project.volume24h)}</span>
-                      </p>
-                    </div>
-                  )}
+                )}
+                
+                {/* Price with 24h change */}
+                <div className="text-right">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
+                  <div className="flex items-center justify-end">
+                    <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
+                      {formatCurrency(project.price)}
+                    </span>
+                    <PercentageChange value={project.change24h} className="ml-2" />
+                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
+                  </div>
                 </div>
+                
+                {/* 24h Volume - only for launched projects */}
+                {!project.isNew && (
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">24h Volume</p>
+                    <p className="font-mono text-base text-gray-900 dark:text-white">
+                      {formatCurrency(project.volume24h)}
+                    </p>
+                  </div>
+                )}
               </div>
               
-              <div className="flex items-center space-x-3 mt-4">
+              {/* Action buttons */}
+              <div className="flex items-center space-x-3 mt-5">
                 {project.isNew ? (
-                  <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                  /* Buy button for new projects */
+                  <button className="px-6 py-2 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
                     Buy {project.tokenSymbol}
                   </button>
                 ) : (
-                  <a 
-                    href={project.swapUrl || "#"} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="px-5 py-2 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
-                  >
-                    <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                    <span>Swap on DEX</span>
-                  </a>
+                  /* Two buttons for launched projects: Buy and Swap */
+                  <>
+                    <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                      Buy
+                    </button>
+                    <a 
+                      href={project.swapUrl || "#"} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-4 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
+                    >
+                      <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                      <span>Swap</span>
+                    </a>
+                  </>
                 )}
               </div>
             </div>
