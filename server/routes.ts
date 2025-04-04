@@ -41,19 +41,249 @@ interface PriceCache {
   };
 }
 
-// Project data cache with a 1-hour expiration
+// Project data cache with a 15-minute expiration
 const projectDataCache: Record<number, PriceCache> = {};
 
-// Check if cache is valid (less than 1 hour old)
+// Check if cache is valid (less than 15 minutes old)
 function isCacheValid(projectId: number): boolean {
   if (!projectDataCache[projectId]) return false;
   
   const now = new Date();
   const cacheTime = projectDataCache[projectId].lastUpdated;
   const diffMs = now.getTime() - cacheTime.getTime();
-  const diffHours = diffMs / (1000 * 60 * 60);
+  const diffMinutes = diffMs / (1000 * 60);
   
-  return diffHours < 1; // Cache is valid if less than 1 hour old
+  return diffMinutes < 15; // Cache is valid if less than 15 minutes old
+}
+
+// Function to update the price cache for all projects
+async function updateAllProjectCaches(): Promise<void> {
+  try {
+    console.log('Refreshing project data cache for all projects');
+    const projects = await storage.getAllProjects();
+    
+    // Process each project to update its cache
+    for (const project of projects) {
+      try {
+        await updateProjectCache(project.id);
+      } catch (error) {
+        console.error(`Error updating cache for project ${project.id}:`, error);
+      }
+    }
+    console.log('Project data cache refresh completed');
+  } catch (error) {
+    console.error('Error refreshing project data cache:', error);
+  }
+}
+
+// Function to update a single project's cache
+async function updateProjectCache(projectId: number): Promise<void> {
+  try {
+    console.log(`Updating cache for project ${projectId}`);
+    const project = await storage.getProjectById(projectId);
+    
+    if (!project) {
+      console.error(`Project with ID ${projectId} not found`);
+      return;
+    }
+    
+    // X23 - Use real-time data from GeckoTerminal or DexScreener
+    if (projectId === 1) {
+      try {
+        // Try GeckoTerminal first
+        const geckoStats = await getGeckoTerminalTokenStats(X23_POOL_ADDRESS);
+        
+        if (geckoStats) {
+          console.log('Retrieved real-time stats for X23 from GeckoTerminal:', geckoStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            }
+          };
+          return;
+        }
+        
+        // If GeckoTerminal fails, try DexScreener
+        console.log('GeckoTerminal data unavailable, trying DexScreener for X23');
+        const dexStats = await getDexScreenerTokenStats(X23_PAIR_ADDRESS, 'X23');
+        
+        if (dexStats) {
+          console.log('Retrieved real-time stats for X23 from DexScreener:', dexStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            }
+          };
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching real-time X23 data:', error);
+      }
+    }
+    // CTZN - Use real-time data if available
+    else if (projectId === 2) {
+      try {
+        // Try GeckoTerminal first
+        const geckoStats = await getGeckoTerminalTokenStats(CTZN_POOL_ADDRESS);
+        
+        if (geckoStats) {
+          console.log('Retrieved real-time stats for CTZN from GeckoTerminal:', geckoStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            }
+          };
+          return;
+        }
+        
+        // If GeckoTerminal fails, try DexScreener
+        console.log('GeckoTerminal data unavailable, trying DexScreener for CTZN');
+        const dexStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS, 'CTZN');
+        
+        if (dexStats) {
+          console.log('Retrieved real-time stats for CTZN from DexScreener:', dexStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            }
+          };
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching real-time CTZN data:', error);
+      }
+    }
+    // GRNDT - Use real-time data if available
+    else if (projectId === 3) {
+      try {
+        // Try GeckoTerminal first
+        const geckoStats = await getGeckoTerminalTokenStats(GRNDT_POOL_ADDRESS);
+        
+        if (geckoStats) {
+          console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', geckoStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            }
+          };
+          return;
+        }
+        
+        // If GeckoTerminal fails, try DexScreener
+        console.log('GeckoTerminal data unavailable, trying DexScreener for GRNDT');
+        const dexStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS, 'GRNDT');
+        
+        if (dexStats) {
+          console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            }
+          };
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching real-time GRNDT data:', error);
+      }
+    }
+    // PRSM - Use real-time data if available
+    else if (projectId === 4) {
+      try {
+        // Try GeckoTerminal first
+        const geckoStats = await getGeckoTerminalTokenStats(PRSM_POOL_ADDRESS);
+        
+        if (geckoStats) {
+          console.log('Retrieved real-time stats for PRSM from GeckoTerminal:', geckoStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: geckoStats.priceUsd,
+              marketCap: geckoStats.marketCap,
+              volume24h: geckoStats.volume24h,
+              change24h: geckoStats.priceChange24h
+            }
+          };
+          return;
+        }
+        
+        // If GeckoTerminal fails, try DexScreener
+        console.log('GeckoTerminal data unavailable, trying DexScreener for PRSM');
+        const dexStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS, 'PRSM');
+        
+        if (dexStats) {
+          console.log('Retrieved real-time stats for PRSM from DexScreener:', dexStats);
+          
+          // Update the cache with the latest API data
+          projectDataCache[projectId] = {
+            lastUpdated: new Date(),
+            data: {
+              price: dexStats.priceUsd,
+              marketCap: dexStats.marketCap || dexStats.fdv || project.marketCap,
+              volume24h: dexStats.volume24h,
+              change24h: dexStats.priceChange24h
+            }
+          };
+          return;
+        }
+      } catch (error) {
+        console.error('Error fetching real-time PRSM data:', error);
+      }
+    }
+    
+    // If we can't get API data or for other projects, use storage data
+    projectDataCache[projectId] = {
+      lastUpdated: new Date(),
+      data: {
+        price: project.price,
+        marketCap: project.marketCap,
+        volume24h: project.volume24h,
+        change24h: project.change24h
+      }
+    };
+    
+    console.log(`Updated cache for project ${projectId} with data from storage`);
+  } catch (error) {
+    console.error(`Error updating cache for project ${projectId}:`, error);
+    throw error;
+  }
 }
 
 // Get cached project data or fetch from storage
@@ -92,6 +322,15 @@ async function getProjectData(projectId: number): Promise<{
 // Dune services removed - no longer using token metrics
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize the project data cache when server starts
+  await updateAllProjectCaches();
+  
+  // Set up a timer to refresh the cache every 15 minutes
+  setInterval(async () => {
+    console.log('Running scheduled cache refresh');
+    await updateAllProjectCaches();
+  }, 15 * 60 * 1000); // 15 minutes in milliseconds
+  
   // put application routes here
   // prefix all routes with /api
   
