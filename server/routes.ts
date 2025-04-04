@@ -228,12 +228,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           if (tokenStats) {
             console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', tokenStats);
+            // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
+            const realTimeMarketCap = tokenStats.marketCap || tokenStats.fdv;
+            console.log(`Using real-time market cap for GRNDT: ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
+            
             updatedProject = {
               ...updatedProject,
               price: tokenStats.priceUsd,
               change24h: tokenStats.priceChange24h,
               volume24h: tokenStats.volume24h,
-              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              marketCap: realTimeMarketCap, // Fixed: Always use real-time value
               // Update more fields if available
               ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
@@ -246,13 +250,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             if (dexScreenerStats) {
               console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexScreenerStats);
+              // GRNDT fix: Always use real-time fdv or marketCap from API, ignoring stored value
+              const realTimeMarketCap = dexScreenerStats.marketCap || dexScreenerStats.fdv;
+              console.log(`Using real-time market cap for GRNDT: ${realTimeMarketCap} (API value) instead of ${updatedProject.marketCap} (stored value)`);
+              
               updatedProject = {
                 ...updatedProject,
                 price: dexScreenerStats.priceUsd,
                 change24h: dexScreenerStats.priceChange24h,
                 volume24h: dexScreenerStats.volume24h,
-                // Use the marketCap property from DexScreener if available, otherwise use fdv
-                marketCap: dexScreenerStats.marketCap || dexScreenerStats.fdv
+                marketCap: realTimeMarketCap // Fixed: Always use real-time value
               };
             }
           }
