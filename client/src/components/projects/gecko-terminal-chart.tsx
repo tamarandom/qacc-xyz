@@ -8,13 +8,12 @@ interface GeckoTerminalChartProps {
   poolAddress?: string;
 }
 
-// Pool address mapping for launched tokens - limit to just X23 and CTZN for now
+// Pool address mapping for launched tokens
 const POOL_ADDRESSES: Record<string, string> = {
   "X23": "0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838",
-  "CTZN": "0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8"
-  // Temporarily disabled to prevent too many embeds causing issues
-  // "PRSM": "0x4dc15edc968eceaec3a5e0f12d0acecacee05e19",
-  // "GRNDT": "0x460a8186aa4574c18709d1eff118efdaa5235c19"
+  "CTZN": "0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8",
+  "PRSM": "0x4dc15edc968eceaec3a5e0f12d0acecacee05e19",
+  "GRNDT": "0x460a8186aa4574c18709d1eff118efdaa5235c19"
 };
 
 export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChartProps) {
@@ -36,8 +35,8 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
     return () => clearTimeout(timer);
   }, [poolAddress]);
 
-  // Limit iframe loading to just X23 and CTZN
-  const showIframe = ["X23", "CTZN"].includes(tokenSymbol);
+  // Show iframe for all tokens with defined pool addresses
+  const showIframe = poolAddress !== null;
 
   if (error || !showIframe) {
     return (
