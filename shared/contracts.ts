@@ -4,7 +4,13 @@
  * across different parts of the application.
  */
 
-export const TOKEN_ADDRESSES = {
+export const TOKEN_ADDRESSES: {
+  [key: string]: string;
+  X23: string;
+  CTZN: string;
+  PRSM: string;
+  GRID: string;
+} = {
   /**
    * X23 Token Contract Address on Polygon
    * 
@@ -26,7 +32,7 @@ export const TOKEN_ADDRESSES = {
    * The API may not have indexed this contract yet or it might be on a network
    * not supported by Covalent's free tier
    */
-  PRSM: '0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68',
+  PRSM: '0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68',
 
   /**
    * Grand Timeline (GRNDT/GRID) Token Contract Address on Polygon
@@ -35,7 +41,7 @@ export const TOKEN_ADDRESSES = {
    * The API may not have indexed this contract yet or it might be on a network
    * not supported by Covalent's free tier
    */
-  GRID: '0xfafb870f1918827fe57ca4b891124606eaa7e6bd'
+  GRID: '0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd'
 };
 
 /**
@@ -75,7 +81,7 @@ export const SWAP_ADDRESSES = {
  * @returns Contract address for the specified token
  */
 export function getContractAddress(symbol: string): string {
-  const upperSymbol = symbol.toUpperCase();
+  const upperSymbol = symbol.toUpperCase() as keyof typeof TOKEN_ADDRESSES;
   if (TOKEN_ADDRESSES[upperSymbol]) {
     return TOKEN_ADDRESSES[upperSymbol];
   }

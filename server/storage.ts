@@ -649,7 +649,7 @@ export class MemStorage implements IStorage {
       shortDescription: "Yield Optimization Protocol",
       blockchain: "Ethereum, BSC, Solana",
       tokenStandard: "ERC-20",
-      contractAddress: "0xfafb870f1918827fe57ca4b891124606eaa7e6bd",
+      contractAddress: "0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd",
       rank: 3, // Updated rank
       websiteUrl: "https://quantumyield.finance",
       whitePaperUrl: "https://quantumyield.finance/whitepaper.pdf",
@@ -680,7 +680,7 @@ export class MemStorage implements IStorage {
       shortDescription: "AI-Powered Blockchain Security Protocol",
       blockchain: "Ethereum, Polygon",
       tokenStandard: "ERC-20",
-      contractAddress: "0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68",
+      contractAddress: "0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68",
       rank: 4, // Updated rank
       websiteUrl: "https://chainguard.io",
       whitePaperUrl: "https://chainguard.io/whitepaper.pdf",

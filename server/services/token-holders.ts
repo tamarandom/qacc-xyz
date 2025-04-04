@@ -185,6 +185,6 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
 export const TOKEN_ADDRESSES = {
   X23: '0xc530b75465ce3c6286e718110a7b2e2b64bdc860',
   CTZN: '0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607',
-  PRSM: '0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68',
-  GRID: '0xfafb870f1918827fe57ca4b891124606eaa7e6bd'
+  PRSM: '0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68',
+  GRID: '0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd'
 };
