@@ -20,8 +20,12 @@ export function TokenHolders({ projectId }: { projectId: number }) {
   const { data: holders, isLoading, error } = useQuery<TokenHolder[]>({
     queryKey: [`/api/projects/${projectId}/token-holders`],
     enabled: !!projectId,
-    // Adding a staleTime of 1 minute to avoid excessive requests
-    staleTime: 60 * 1000
+    // Setting a very short staleTime to ensure fresh data
+    // while still preventing multiple simultaneous requests
+    staleTime: 5 * 1000,
+    // Always refetch when the component is mounted or window is focused
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // Format the address to show only first few characters
