@@ -267,8 +267,8 @@ export default function ProjectDetail() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
-          <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
+          <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-3">
             {/* For New Projects: Showcase key metrics and token sale info */}
             {project.isNew && (
               <div className="mb-8">
@@ -416,10 +416,10 @@ export default function ProjectDetail() {
           
           <div>
             <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-2 pl-0">
                 <CardTitle className="text-lg dark:text-white">TOP 10 HOLDERS</CardTitle>
               </CardHeader>
-              <CardContent className="pt-0">
+              <CardContent className="pt-0 px-0">
                 <TokenHolders projectId={parseInt(id || "0")} />
               </CardContent>
             </Card>
