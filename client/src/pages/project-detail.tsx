@@ -340,21 +340,21 @@ export default function ProjectDetail() {
                   <TabsList className="w-max min-w-full flex justify-start pb-0 bg-white dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="overview" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300 font-medium"
                     >
-                      About
+                      ABOUT
                     </TabsTrigger>
                     <TabsTrigger 
                       value="team" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300 font-medium"
                     >
-                      Team
+                      TEAM
                     </TabsTrigger>
                     <TabsTrigger 
                       value="roadmap" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300"
+                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300 font-medium"
                     >
-                      Roadmap
+                      ROADMAP
                     </TabsTrigger>
                   </TabsList>
                 </div>
