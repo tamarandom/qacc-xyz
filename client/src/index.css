@@ -1,6 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -71,13 +69,13 @@
 
   body {
     @apply antialiased bg-background text-foreground;
-    font-family: 'Space Grotesk', sans-serif;
+    font-family: 'IBM Plex Mono', monospace;
     color: var(--text-primary);
     background-color: var(--background);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Tusker Grotesk', sans-serif;
     text-transform: uppercase;
     font-weight: 700;
   }
@@ -124,20 +122,33 @@
   }
   
   [role="tab"] {
-    @apply text-sm font-bold tracking-wider border-b-2 transition-all duration-300;
-    border-color: transparent;
-    font-family: 'Orbitron', sans-serif;
+    @apply text-sm font-bold transition-all duration-300;
+    border-bottom: 2px solid transparent;
+    font-family: 'Tusker Grotesk', sans-serif;
     letter-spacing: 0.05em;
+    position: relative;
+    margin-bottom: -2px;
   }
   
   [role="tab"][data-state="active"] {
-    @apply bg-gradient-to-r from-[color:var(--color-peach)] to-[color:var(--color-peach-300)] text-black border-[color:var(--color-peach)];
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-    box-shadow: 0 2px 6px rgba(251, 186, 128, 0.3);
+    @apply text-[color:var(--color-peach)];
+    border-bottom: 2px solid var(--color-peach);
+  }
+  
+  [role="tab"][data-state="active"]::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-peach) 0%, var(--color-peach-300) 100%);
+    transform: translateY(2px);
   }
   
   [role="tab"]:hover:not([data-state="active"]) {
-    @apply text-[color:var(--color-peach)] border-[color:var(--color-peach-300)];
+    @apply text-[color:var(--color-peach-300)];
+    border-bottom: 2px solid var(--color-peach-300);
   }
 }
 

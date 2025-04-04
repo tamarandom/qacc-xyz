@@ -336,23 +336,23 @@ export default function ProjectDetail() {
             <div className="mb-6">
               <Tabs defaultValue="about" className="dark:bg-[color:var(--color-black)]">
                 {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
-                <div className="overflow-x-auto no-scrollbar border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
-                  <TabsList className="w-max min-w-full flex justify-start pb-0 bg-white dark:bg-[color:var(--color-black)]">
+                <div className="overflow-x-auto no-scrollbar bg-white dark:bg-[color:var(--color-black)]">
+                  <TabsList className="w-max min-w-full flex justify-start bg-white dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="about" 
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-6 whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
+                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base mr-2 sm:mr-6 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       ABOUT
                     </TabsTrigger>
                     <TabsTrigger 
                       value="team" 
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-6 whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
+                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base mr-2 sm:mr-6 md:mr-8 whitespace-nowrap dark:text-gray-300"
                     >
                       TEAM
                     </TabsTrigger>
                     <TabsTrigger 
                       value="roadmap" 
-                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
+                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base whitespace-nowrap dark:text-gray-300"
                     >
                       ROADMAP
                     </TabsTrigger>
