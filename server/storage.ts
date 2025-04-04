@@ -473,7 +473,7 @@ export class MemStorage implements IStorage {
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
     
     // Define base price and realistic market movements
-    const basePrice = 115.46; // Current price
+    const basePrice = 115.46; // Current price based on market data
     
     // X23 price data (simulated based on real crypto market patterns)
     // Starting from 90 days ago to present
@@ -560,10 +560,10 @@ export class MemStorage implements IStorage {
       description: "x23.ai is a cutting-edge decentralized AI protocol that combines advanced machine learning with blockchain technology to create intelligent and adaptive decentralized applications. By leveraging neural networks and robust data processing capabilities, x23.ai enables smarter, more responsive DeFi platforms and Web3 services.",
       tokenSymbol: "X23",
       tokenName: "X23 Token",
-      price: 1.15,
-      marketCap: 9200000,
-      volume24h: 1100000,
-      change24h: 3.12,
+      price: 115.46,
+      marketCap: 923680000,
+      volume24h: 18700000,
+      change24h: 5.82,
       totalSupply: 10000000,
       circulatingSupply: 6340000,
       category: "AI Protocol",
