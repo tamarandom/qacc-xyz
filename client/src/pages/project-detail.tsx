@@ -182,11 +182,11 @@ export default function ProjectDetail() {
             
             {/* Right Side - Stats and Buttons */}
             <div className="flex flex-col items-end justify-between">
-              {/* Stats section */}
-              <div className="grid grid-cols-1 gap-3 mt-2">
-                {project.isNew ? (
-                  // For new projects, just show price
-                  <div className="text-right">
+              {project.isNew ? (
+                // For new projects: more compact price display and button
+                <>
+                  {/* Stats section */}
+                  <div className="text-right mt-2">
                     <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
                     <div className="flex items-center justify-end">
                       <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
@@ -196,68 +196,64 @@ export default function ProjectDetail() {
                       <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
                     </div>
                   </div>
-                ) : (
-                  // For launched projects: Market Cap above, Price and Volume on the same line
-                  <>
-                    {/* Market Cap prominently displayed */}
-                    <div className="text-right mb-3">
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Market Cap</p>
-                      <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
+                  
+                  {/* Buy button */}
+                  <div className="mt-3">
+                    <button className="px-6 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                      Buy {project.tokenSymbol}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                // For launched projects: all stats on one line
+                <>
+                  {/* Compact stats row */}
+                  <div className="flex items-center space-x-4 mt-2">
+                    {/* Market Cap */}
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
+                      <p className="font-mono text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(project.marketCap, false, true, true)}
                       </p>
                     </div>
                     
-                    {/* Price and Volume in a 2-column grid */}
-                    <div className="grid grid-cols-2 gap-4">
-                      {/* Price with 24h change */}
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Price</p>
-                        <div className="flex items-center justify-end">
-                          <span className="font-mono text-base font-medium text-gray-900 dark:text-white">
-                            {formatCurrency(project.price)}
-                          </span>
-                          <PercentageChange value={project.change24h} className="ml-2" />
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
-                        </div>
-                      </div>
-                      
-                      {/* 24h Volume */}
-                      <div className="text-right">
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">24h Volume</p>
-                        <p className="font-mono text-base text-gray-900 dark:text-white">
-                          {formatCurrency(project.volume24h, false, false, true)}
-                        </p>
+                    {/* Price with 24h change */}
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
+                      <div className="flex items-center justify-end">
+                        <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                          {formatCurrency(project.price)}
+                        </span>
+                        <PercentageChange value={project.change24h} className="ml-1 text-xs" />
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
-              
-              {/* Action buttons */}
-              <div className="flex items-center space-x-3 mt-5">
-                {project.isNew ? (
-                  /* Buy button for new projects */
-                  <button className="px-6 py-2 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
-                    Buy {project.tokenSymbol}
-                  </button>
-                ) : (
-                  /* Two buttons for launched projects: Buy and Swap */
-                  <>
-                    <button className="px-4 py-1.5 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                    
+                    {/* 24h Volume */}
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</p>
+                      <p className="font-mono text-sm text-gray-900 dark:text-white">
+                        {formatCurrency(project.volume24h, false, false, true)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Action buttons */}
+                  <div className="flex items-center space-x-3 mt-3">
+                    <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
                       Buy
                     </button>
                     <a 
                       href={project.swapUrl || "#"} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="px-4 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
+                      className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
                     >
                       <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
                       <span>Swap</span>
                     </a>
-                  </>
-                )}
-              </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
