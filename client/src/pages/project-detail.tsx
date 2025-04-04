@@ -72,8 +72,8 @@ export default function ProjectDetail() {
         </Link>
       </div>
       
-      <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg shadow-sm overflow-hidden">
-        <div className="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-[color:var(--color-black-200)] bg-white dark:bg-[color:var(--color-black)]">
+      <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg shadow-sm overflow-hidden border-b-0">
+        <div className="px-4 py-5 sm:px-6 bg-white dark:bg-[color:var(--color-black)]">
           <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0">
             {/* Left Side - Project Info */}
             <div className="flex items-start">
@@ -208,9 +208,9 @@ export default function ProjectDetail() {
                 // For launched projects: all stats on one line
                 <>
                   {/* Compact stats row */}
-                  <div className="flex items-center space-x-4 mt-2">
+                  <div className="flex items-center mt-2">
                     {/* Market Cap */}
-                    <div className="text-right">
+                    <div className="text-right mr-8">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
                       <p className="font-mono text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(project.marketCap, false, true, true)}
@@ -218,9 +218,9 @@ export default function ProjectDetail() {
                     </div>
                     
                     {/* Price with 24h change */}
-                    <div className="text-right">
+                    <div className="text-left mr-8">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
-                      <div className="flex items-center justify-end">
+                      <div className="flex items-center">
                         <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">
                           {formatCurrency(project.price)}
                         </span>
@@ -229,7 +229,7 @@ export default function ProjectDetail() {
                     </div>
                     
                     {/* 24h Volume */}
-                    <div className="text-right">
+                    <div className="text-left">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</p>
                       <p className="font-mono text-sm text-gray-900 dark:text-white">
                         {formatCurrency(project.volume24h, false, false, true)}
@@ -260,7 +260,7 @@ export default function ProjectDetail() {
         
         {/* Chart for all launched projects */}
         {!project.isNew && (
-          <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)]">
+          <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)] border-t-0">
             <div className="mx-auto max-w-5xl overflow-hidden">
               <GeckoTerminalChart projectId={project.id} tokenSymbol={project.tokenSymbol} />
             </div>

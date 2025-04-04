@@ -64,7 +64,7 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
       {poolAddress && (
         <div className="w-full h-[400px]">
           <iframe
-            src={`https://www.geckoterminal.com/polygon_pos/pools/${poolAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h`}
+            src={`https://www.geckoterminal.com/polygon_pos/pools/${poolAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h&chartvalues=1&toolbar=0&theme=dark`}
             title={`${tokenSymbol} Price Chart`}
             frameBorder="0"
             width="100%" 
