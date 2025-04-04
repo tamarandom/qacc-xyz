@@ -247,14 +247,13 @@ export async function getTokenStats(pairAddress: string, tokenName: string = 'to
       console.error('Error fetching market cap from GeckoTerminal:', error);
     }
     
-    // Calculate market cap based on the circulatingSupply percentage of total supply if we don't have it from GeckoTerminal
-    // For these tokens, we'll use a default of 45% of tokens in circulation for marketing cap
-    // This is a common ratio for new tokens where a portion is locked
-    const circulatingRatio = 0.45; // 45% of tokens in circulation
-    const calculatedMarketCap = pair.fdv ? Math.round(pair.fdv * circulatingRatio) : 0;
+    // For X23 and other tokens in this application, we want to display the FDV (Fully Diluted Valuation)
+    // as the market cap, as that matches what's shown on GeckoTerminal
     
-    // Use the market cap from GeckoTerminal if available, otherwise use the calculated one
-    let finalMarketCap = marketCap || calculatedMarketCap;
+    // Use the market cap from GeckoTerminal if available, otherwise use FDV directly 
+    let finalMarketCap = marketCap || pair.fdv || 0;
+    
+    console.log(`For ${tokenName}: Using market cap value from GeckoTerminal: ${marketCap} or FDV from DexScreener: ${pair.fdv}`);
     
     // No hardcoding - we need a reliable data source
     

@@ -27,37 +27,68 @@ interface GeckoTerminalPoolResponse {
       address: string;
       name: string;
       pool_created_at: string;
-      fdv_usd: number;
-      market_cap_usd: number;
-      price_usd: number;
-      price_native: number;
-      volume_usd: {
-        h24: number;
-        h6: number;
-        h1: number;
-      };
+      fdv_usd: string; // Updated to string as seen in the API response
+      market_cap_usd: number | null; // Can be null
+      base_token_price_usd: string; // Added as seen in the API response
+      base_token_price_native_currency: string;
+      quote_token_price_usd: string;
+      quote_token_price_native_currency: string;
       reserve_in_usd: number;
-      token_price_usd: number;
+      volume_usd: {
+        m5: string;
+        m15: string;
+        m30: string;
+        h1: string;
+        h6: string;
+        h24: string;
+      };
       price_change_percentage: {
-        h24: number;
-        h6: number;
-        h1: number;
+        m5: string;
+        m15: string;
+        m30: string;
+        h1: string;
+        h6: string;
+        h24: string;
       };
       transactions: {
-        h24: {
+        m5: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
         };
-        h6: {
+        m15: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        m30: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
         };
         h1: {
           buys: number;
           sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        h6: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
+        };
+        h24: {
+          buys: number;
+          sells: number;
+          buyers: number;
+          sellers: number;
         };
       };
-      base_token_data: {
+      base_token_data?: { // Make optional as it can be missing
         id: string;
         address: string;
         name: string;
@@ -68,13 +99,54 @@ interface GeckoTerminalPoolResponse {
         fdv_usd: number;
         market_cap_usd: number;
       };
-      quote_token_data: {
+      quote_token_data?: { // Make optional as it might also be missing
         id: string;
         address: string;
         name: string;
         symbol: string;
         decimals: number;
         price_usd: number;
+      };
+      // Add relationships as seen in the API response
+      relationships?: {
+        base_token: {
+          data: {
+            id: string;
+            type: string;
+          }
+        };
+        quote_token: {
+          data: {
+            id: string;
+            type: string;
+          }
+        };
+        dex: {
+          data: {
+            id: string;
+            type: string;
+          }
+        };
+      };
+    };
+    relationships?: {
+      base_token: {
+        data: {
+          id: string;
+          type: string;
+        }
+      };
+      quote_token: {
+        data: {
+          id: string;
+          type: string;
+        }
+      };
+      dex: {
+        data: {
+          id: string;
+          type: string;
+        }
       };
     };
   };
@@ -187,18 +259,64 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
     
     const attributes = data.data.attributes;
     
+    let tokenSymbol = 'Unknown';
+    let tokenName = 'Unknown Token';
+    let tokenPrice = 0;
+    let totalSupply = 0;
+    let tokenFdv = 0;
+    let tokenMarketCap = 0;
+
+    // Try to extract token info from relationships if base_token_data is missing
     if (!attributes.base_token_data) {
-      console.error('Missing base_token_data in GeckoTerminal response');
-      return null;
+      console.log('Missing base_token_data in GeckoTerminal response, extracting from attributes');
+      
+      // For tokens like CTZN that have the price in the top level
+      if (attributes.base_token_price_usd) {
+        tokenPrice = parseFloat(attributes.base_token_price_usd);
+        console.log(`Using base_token_price_usd: ${tokenPrice}`);
+        
+        // Try to get token symbol from pool name (e.g., "CTZN / WPOL 0.01%")
+        if (attributes.name && attributes.name.includes('/')) {
+          tokenSymbol = attributes.name.split('/')[0].trim();
+          tokenName = tokenSymbol;
+          console.log(`Extracted token symbol from pool name: ${tokenSymbol}`);
+        }
+        
+        // If fdv_usd is available, use it
+        if (attributes.fdv_usd) {
+          tokenFdv = parseFloat(attributes.fdv_usd);
+          // For tokens where market_cap_usd is null, use fdv_usd as an estimate
+          tokenMarketCap = tokenFdv;
+          console.log(`Using fdv_usd as market cap: ${tokenMarketCap}`);
+        }
+      } else {
+        console.error('Missing base_token_price_usd in GeckoTerminal response');
+        return null;
+      }
+    } else {
+      // Normal case where base_token_data is available
+      const baseToken = attributes.base_token_data;
+      
+      // Check for required fields
+      if (baseToken.price_usd === undefined) {
+        console.error('Missing price_usd in base_token_data');
+        return null;
+      }
+      
+      tokenSymbol = baseToken.symbol || 'Unknown';
+      tokenName = baseToken.name || 'Unknown Token';
+      tokenPrice = baseToken.price_usd;
+      tokenFdv = baseToken.fdv_usd || 0;
+      tokenMarketCap = baseToken.market_cap_usd || 0;
+      totalSupply = baseToken.total_supply 
+        ? parseInt(baseToken.total_supply) / Math.pow(10, baseToken.decimals || 18)
+        : 0;
     }
     
-    const baseToken = attributes.base_token_data;
-    
-    // Check for required fields to prevent errors
-    if (baseToken.price_usd === undefined || 
-        attributes.price_change_percentage?.h24 === undefined || 
-        attributes.volume_usd?.h24 === undefined) {
-      console.error('Missing required data fields in GeckoTerminal response');
+    // Check for required fields in attributes that we need regardless of base_token_data
+    if (attributes.price_change_percentage === undefined || 
+        attributes.volume_usd === undefined) {
+      console.error('Missing required fields in attributes');
       return null;
     }
     
@@ -208,24 +326,22 @@ export async function getTokenStats(poolAddress: string = X23_POOL_ADDRESS, netw
     // For tokens like CTZN where market_cap_usd is null but fdv_usd is available
     // use the top-level fdv_usd value as the market cap
     const finalMarketCap = marketCap || 
-                           baseToken.market_cap_usd || 
+                           tokenMarketCap || 
                            (attributes.fdv_usd ? Math.round(parseFloat(attributes.fdv_usd.toString())) : 0);
     
-    console.log(`Market cap sources - Web scrape: ${marketCap}, API base_token: ${baseToken.market_cap_usd}, API fdv_usd: ${attributes.fdv_usd}`);
+    console.log(`Market cap sources - Web scrape: ${marketCap}, API token market cap: ${tokenMarketCap}, API fdv_usd: ${attributes.fdv_usd}`);
     
     return {
-      priceUsd: baseToken.price_usd,
-      priceChange24h: attributes.price_change_percentage.h24 || 0,
-      volume24h: attributes.volume_usd.h24 || 0,
+      priceUsd: tokenPrice,
+      priceChange24h: parseFloat(attributes.price_change_percentage.h24 || '0'),
+      volume24h: parseFloat(attributes.volume_usd.h24 || '0'),
       liquidity: attributes.reserve_in_usd || 0,
-      fdv: baseToken.fdv_usd || attributes.fdv_usd || 0,
+      fdv: tokenFdv || (attributes.fdv_usd ? parseFloat(attributes.fdv_usd) : 0),
       // Use the most reliable market cap source available
       marketCap: finalMarketCap,
-      totalSupply: baseToken.total_supply 
-        ? parseInt(baseToken.total_supply) / Math.pow(10, baseToken.decimals || 18)
-        : 0,
-      tokenSymbol: baseToken.symbol || 'X23',
-      tokenName: baseToken.name || 'X23.ai',
+      totalSupply: totalSupply,
+      tokenSymbol: tokenSymbol,
+      tokenName: tokenName,
     };
   } catch (error) {
     console.error('Error fetching data from GeckoTerminal:', error);
