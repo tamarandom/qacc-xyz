@@ -340,28 +340,27 @@ export default function ProjectDetail() {
                   <TabsList className="w-max min-w-full flex justify-start pb-0 bg-white dark:bg-[color:var(--color-black)]">
                     <TabsTrigger 
                       value="about" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300 font-medium"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-6 whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
                     >
                       ABOUT
                     </TabsTrigger>
                     <TabsTrigger 
                       value="team" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-8 whitespace-nowrap dark:text-gray-300 font-medium"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm mr-2 sm:mr-4 md:mr-6 whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
                     >
                       TEAM
                     </TabsTrigger>
                     <TabsTrigger 
                       value="roadmap" 
-                      className="data-[state=active]:border-[color:var(--color-peach)] data-[state=active]:text-[color:var(--color-black)] dark:data-[state=active]:text-white data-[state=active]:shadow-none rounded-none border-b-2 border-transparent px-3 sm:px-4 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300 font-medium"
+                      className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[color:var(--color-peach)] data-[state=active]:to-[color:var(--color-peach-300)] data-[state=active]:text-[color:var(--color-black)] data-[state=active]:shadow rounded-t-md border-b-2 border-transparent px-4 sm:px-5 md:px-6 py-3 text-xs sm:text-sm whitespace-nowrap dark:text-gray-300 font-bold tracking-wider"
                     >
                       ROADMAP
                     </TabsTrigger>
                   </TabsList>
                 </div>
                 
-                <TabsContent value="about" className="pt-4 dark:bg-[color:var(--color-black)]">
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">About {project.name}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                <TabsContent value="about" className="pt-6 dark:bg-[color:var(--color-black)]">
+                  <p className="text-gray-600 dark:text-gray-300 mb-5">
                     x23.ai is dedicated to enhancing the accessibility and efficiency of Decentralized Autonomous Organizations (DAOs) by developing AI-enabled coordination tools. Their mission focuses on increasing participation and adoption of decentralized governance.
                   </p>
                   
@@ -382,49 +381,43 @@ export default function ProjectDetail() {
                   </ul>
                 </TabsContent>
                 
-                <TabsContent value="team" className="dark:bg-[color:var(--color-black)]">
-                  <div className="py-4 dark:bg-[color:var(--color-black)]">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Team</h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      The founder of x23.ai is David Truong, a full-stack developer with experience at Aave's Genesis team in 2020 and Coinbase in 2015, bringing a background in consumer, crypto, and AI sectors.
-                    </p>
-                  </div>
+                <TabsContent value="team" className="pt-6 dark:bg-[color:var(--color-black)]">
+                  <p className="text-gray-600 dark:text-gray-300">
+                    The founder of x23.ai is David Truong, a full-stack developer with experience at Aave's Genesis team in 2020 and Coinbase in 2015, bringing a background in consumer, crypto, and AI sectors.
+                  </p>
                 </TabsContent>
                 
-                <TabsContent value="roadmap" className="dark:bg-[color:var(--color-black)]">
-                  <div className="py-4 dark:bg-[color:var(--color-black)]">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Development Roadmap</h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      x23.ai's roadmap aligns with their three-phase strategy:
-                    </p>
-                    
-                    <div className="space-y-6 mb-4">
-                      <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                        <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase One</h5>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          Develop and deploy tools like Newsfeed and Governance bots to streamline information consumption and decision-making within DAOs.
-                        </p>
-                      </div>
-                      
-                      <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                        <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Two</h5>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          Implement AI-driven automation for tasks such as due diligence, enhancing productivity and efficiency for DAO participants.
-                        </p>
-                      </div>
-                      
-                      <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                        <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Three</h5>
-                        <p className="text-gray-600 dark:text-gray-300">
-                          Establish frameworks for effective human and AI collaboration, expanding the operational capabilities of DAOs beyond traditional human labor limitations.
-                        </p>
-                      </div>
+                <TabsContent value="roadmap" className="pt-6 dark:bg-[color:var(--color-black)]">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    x23.ai's roadmap aligns with their three-phase strategy:
+                  </p>
+                  
+                  <div className="space-y-6 mb-4">
+                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase One</h5>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Develop and deploy tools like Newsfeed and Governance bots to streamline information consumption and decision-making within DAOs.
+                      </p>
                     </div>
                     
-                    <p className="text-gray-600 dark:text-gray-300">
-                      This structured approach aims to transform DAO participation, making decentralized governance more accessible and effective.
-                    </p>
+                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Two</h5>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Implement AI-driven automation for tasks such as due diligence, enhancing productivity and efficiency for DAO participants.
+                      </p>
+                    </div>
+                    
+                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
+                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Three</h5>
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Establish frameworks for effective human and AI collaboration, expanding the operational capabilities of DAOs beyond traditional human labor limitations.
+                      </p>
+                    </div>
                   </div>
+                  
+                  <p className="text-gray-600 dark:text-gray-300">
+                    This structured approach aims to transform DAO participation, making decentralized governance more accessible and effective.
+                  </p>
                 </TabsContent>
               </Tabs>
             </div>

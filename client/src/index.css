@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -69,13 +71,13 @@
 
   body {
     @apply antialiased bg-background text-foreground;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Space Grotesk', sans-serif;
     color: var(--text-primary);
     background-color: var(--background);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Tusker Grotesk', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     text-transform: uppercase;
     font-weight: 700;
   }
@@ -114,6 +116,28 @@
     border-color: var(--color-peach);
     background-color: var(--card-background);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Enhanced tabs styling */
+  [role="tablist"] {
+    @apply border-b-2 border-[#282828] pb-0;
+  }
+  
+  [role="tab"] {
+    @apply text-sm font-bold tracking-wider border-b-2 transition-all duration-300;
+    border-color: transparent;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  
+  [role="tab"][data-state="active"] {
+    @apply bg-gradient-to-r from-[color:var(--color-peach)] to-[color:var(--color-peach-300)] text-black border-[color:var(--color-peach)];
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(251, 186, 128, 0.3);
+  }
+  
+  [role="tab"]:hover:not([data-state="active"]) {
+    @apply text-[color:var(--color-peach)] border-[color:var(--color-peach-300)];
   }
 }
 
