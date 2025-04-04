@@ -94,9 +94,14 @@ export function TokenHolders({ projectId }: { projectId: number }) {
             <TableRow key={holder.address}>
               <TableCell className="py-3">
                 <div className="flex flex-col">
-                  <span className="font-mono text-gray-500">
+                  <a 
+                    href={getAddressUrl(holder.address)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] font-mono"
+                  >
                     {formatAddress(holder.address)}
-                  </span>
+                  </a>
                   {holder.label && (
                     <span className="text-xs text-gray-500 mt-0.5">
                       {holder.label}

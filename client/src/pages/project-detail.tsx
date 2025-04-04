@@ -415,7 +415,7 @@ export default function ProjectDetail() {
           </div>
           
           <div>
-            <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+            <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg dark:text-white">TOP 10 HOLDERS</CardTitle>
               </CardHeader>
