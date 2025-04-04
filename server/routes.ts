@@ -179,7 +179,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // For Prismo Technology (PRSM), get real-time data from GeckoTerminal
-      else if (id === 6) {
+      else if (id === 4) {
         try {
           console.log('Fetching real-time data for Prismo Technology (PRSM) from GeckoTerminal');
           const tokenStats = await getGeckoTerminalTokenStats(PRSM_POOL_ADDRESS);
@@ -450,7 +450,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.error('Error fetching GRNDT token holders:', err);
           tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
         }
-      } else if (id === 6) {
+      } else if (id === 4) {
         // PRSM token holders (Prism Protocol)
         try {
           console.log('Fetching token holders for PRSM from GeckoTerminal');
@@ -613,8 +613,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For Prismo Technology (PRSM) project (ID 6), try to fetch real data
-      else if (id === 6) {
+      // For Prismo Technology (PRSM) project (ID 4), try to fetch real data
+      else if (id === 4) {
         console.log(`Fetching price data for Prismo Technology (PRSM) (timeframe: ${timeframe || 'all'})`);
         
         try {
@@ -626,7 +626,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Need to update the projectId from the default value (1) to PRSM's project ID
             const updatedHistory = geckoTerminalHistory.map(entry => ({
               ...entry,
-              projectId: 6 // PRSM project ID
+              projectId: 4 // PRSM project ID
             }));
             
             console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for PRSM`);
@@ -645,7 +645,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               // Update the projectId from the default value (1) to PRSM's project ID
               const updatedHistory = dexScreenerHistory.map(entry => ({
                 ...entry,
-                projectId: 6 // PRSM project ID
+                projectId: 4 // PRSM project ID
               }));
               
               console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for PRSM`);
