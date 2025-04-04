@@ -605,7 +605,7 @@ export class MemStorage implements IStorage {
     // Project 3: Citizen Wallet
     const citizenWallet = await this.createProject({
       name: "Citizen Wallet",
-      description: "Citizen Wallet is a comprehensive DeFi hub that unifies lending, borrowing, yield farming, and asset management in one platform. Our protocol uses a unique risk assessment model to optimize returns while protecting user funds.",
+      description: "Citizen Wallet is an open-source platform designed to empower communities by facilitating the creation and management of local currencies. The platform emphasizes a user-friendly experience, ensuring smooth onboarding and accessibility for all community members, including those without smartphones or a preference against installing additional applications.",
       tokenSymbol: "CTZN",
       tokenName: "Citizen Wallet Token",
       price: 0.92,
@@ -615,21 +615,21 @@ export class MemStorage implements IStorage {
       totalSupply: 50000000,
       circulatingSupply: 22500000,
       category: "Infra / Tooling",
-      shortDescription: "Decentralized Finance Hub",
+      shortDescription: "Community Currency Platform",
       blockchain: "Polygon",
       tokenStandard: "ERC-20",
       contractAddress: "0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607",
       rank: 2, // Updated rank
-      websiteUrl: "https://nexusfi.io",
-      whitePaperUrl: "https://nexusfi.io/whitepaper.pdf",
-      githubUrl: "https://github.com/nexusfi",
-      twitterUrl: "https://twitter.com/NexusFi",
-      discordUrl: "https://discord.gg/nexusfi",
+      websiteUrl: "https://citizenwallet.xyz",
+      whitePaperUrl: "https://citizenwallet.xyz/whitepaper.pdf",
+      githubUrl: "https://github.com/citizenwallet",
+      twitterUrl: "https://twitter.com/citizenwallet",
+      discordUrl: "https://discord.gg/citizenwallet",
       avatarBg: "#FBBA80",
-      avatarText: "NF",
+      avatarText: "CW",
       avatarColor: "#101010",
       isFeatured: false,
-      imageUrl: "/project-logos/nexus-finance.svg",
+      imageUrl: "/project-logos/citizen-wallet.svg",
       swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607"
     });
 
@@ -828,15 +828,17 @@ export class MemStorage implements IStorage {
     // These are already added above by specific calls for x23.id
     
     // Add features for Citizen Wallet
-    await this.addProjectFeature({ projectId: 2, feature: "Integrated lending and borrowing markets" });
-    await this.addProjectFeature({ projectId: 2, feature: "Automated yield farming strategies" });
-    await this.addProjectFeature({ projectId: 2, feature: "Cross-chain asset management" });
-    await this.addProjectFeature({ projectId: 2, feature: "Risk assessment scoring for all protocols" });
+    await this.addProjectFeature({ projectId: 2, feature: "Simple Transactions for ERC20 tokens" });
+    await this.addProjectFeature({ projectId: 2, feature: "Voucher System for wallet-less users" });
+    await this.addProjectFeature({ projectId: 2, feature: "Web Burner Wallet for temporary usage" });
+    await this.addProjectFeature({ projectId: 2, feature: "NFC Wallets for hardware-free transactions" });
+    await this.addProjectFeature({ projectId: 2, feature: "Point of Sale (POS) for Merchants" });
+    await this.addProjectFeature({ projectId: 2, feature: "Multicurrency Support" });
 
     // Add technical details for Citizen Wallet
-    await this.addProjectTechnicalDetail({ projectId: 2, label: "Total Value Locked", value: "$73.9M" });
-    await this.addProjectTechnicalDetail({ projectId: 2, label: "Average Yield", value: "7.4%" });
-    await this.addProjectTechnicalDetail({ projectId: 2, label: "Integrated Protocols", value: "12" });
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Supported Networks", value: "Polygon, Optimism, Celo, Base" });
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Active Communities", value: "24+" });
+    await this.addProjectTechnicalDetail({ projectId: 2, label: "Open Source Status", value: "MIT License" });
     
     // Add features for Grand Timeline
     await this.addProjectFeature({ projectId: 3, feature: "Secure encrypted file storage on the blockchain" });

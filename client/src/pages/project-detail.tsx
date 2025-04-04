@@ -18,6 +18,7 @@ import { GridlockAboutContent, GridlockRoadmapContent } from "@/components/proje
 import { Web3PacksAboutContent, Web3PacksTeamContent, Web3PacksRoadmapContent } from "@/components/projects/web3packs-content";
 import { HowToDAOAboutContent, HowToDAOTeamContent, HowToDAORoadmapContent } from "@/components/projects/howtodao-content";
 import { ToDaMoonAboutContent, ToDaMoonTeamContent, ToDaMoonRoadmapContent } from "@/components/projects/todamoon-content";
+import { CitizenWalletAboutContent, CitizenWalletTeamContent, CitizenWalletRoadmapContent } from "@/components/projects/citizenwallet-content";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
@@ -293,6 +294,14 @@ export default function ProjectDetail() {
                 aboutContent={<X23AboutContent />}
                 teamContent={<X23TeamContent />}
                 roadmapContent={<X23RoadmapContent />}
+              />
+            ) : project.id === 2 ? (
+              <ProjectTabs 
+                projectId={project.id}
+                projectName={project.name}
+                aboutContent={<CitizenWalletAboutContent />}
+                teamContent={<CitizenWalletTeamContent />}
+                roadmapContent={<CitizenWalletRoadmapContent />}
               />
             ) : project.id === 5 ? (
               <ProjectTabs 
