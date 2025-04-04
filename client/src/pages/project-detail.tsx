@@ -205,20 +205,39 @@ export default function ProjectDetail() {
                   </div>
                 </>
               ) : (
-                // For launched projects: all stats on one line
+                // For launched projects: New two-row layout
                 <>
-                  {/* Compact stats row */}
-                  <div className="flex items-center mt-2">
+                  {/* First row: Market Cap + Action buttons */}
+                  <div className="flex items-center justify-between mb-3 mt-2">
                     {/* Market Cap */}
-                    <div className="text-right mr-8">
+                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Market Cap</p>
                       <p className="font-mono text-base font-bold text-gray-900 dark:text-white">
                         {formatCurrency(project.marketCap, false, true, true)}
                       </p>
                     </div>
                     
+                    {/* Action buttons */}
+                    <div className="flex items-center space-x-3">
+                      <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                        Buy
+                      </button>
+                      <a 
+                        href={project.swapUrl || "#"} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
+                      >
+                        <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
+                        <span>Swap</span>
+                      </a>
+                    </div>
+                  </div>
+                  
+                  {/* Second row: Price + 24h volume */}
+                  <div className="flex items-center space-x-8">
                     {/* Price with 24h change */}
-                    <div className="text-left mr-8">
+                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Price</p>
                       <div className="flex items-center">
                         <span className="font-mono text-sm font-medium text-gray-900 dark:text-white">
@@ -229,28 +248,12 @@ export default function ProjectDetail() {
                     </div>
                     
                     {/* 24h Volume */}
-                    <div className="text-left">
+                    <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">24h Volume</p>
                       <p className="font-mono text-sm text-gray-900 dark:text-white">
                         {formatCurrency(project.volume24h, false, false, true)}
                       </p>
                     </div>
-                  </div>
-                  
-                  {/* Action buttons */}
-                  <div className="flex items-center space-x-3 mt-3">
-                    <button className="px-4 py-1 text-sm font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
-                      Buy
-                    </button>
-                    <a 
-                      href={project.swapUrl || "#"} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="px-4 py-1 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
-                    >
-                      <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
-                      <span>Swap</span>
-                    </a>
                   </div>
                 </>
               )}
