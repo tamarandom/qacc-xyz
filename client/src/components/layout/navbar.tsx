@@ -1,48 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { X, Menu, LogOut } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo-light.png";
 import { useTheme } from "@/contexts/theme-context";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState({ username: "Satoshi Fan", email: "satoshi@example.com" });
+  const { user, logoutMutation } = useAuth();
   const { toggleTheme } = useTheme(); // Keep for compatibility
-
-  // Initialize authentication state from localStorage on component mount
-  useEffect(() => {
-    const savedAuthState = localStorage.getItem('isAuthenticated') === 'true';
-    if (savedAuthState) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  // Mock authentication functions
-  const handleLogin = () => {
-    console.log("Login clicked");
-    setIsAuthenticated(true);
-    localStorage.setItem('isAuthenticated', 'true');
-    // Create a storage event for other components to detect
-    window.dispatchEvent(new Event('storage'));
-  };
-  
-  const handleSignUp = () => {
-    console.log("Sign up clicked");
-    setIsAuthenticated(true);
-    localStorage.setItem('isAuthenticated', 'true');
-    // Create a storage event for other components to detect
-    window.dispatchEvent(new Event('storage'));
-  };
   
   const handleLogout = () => {
-    console.log("Logout clicked");
-    setIsAuthenticated(false);
-    localStorage.setItem('isAuthenticated', 'false');
-    // Create a storage event for other components to detect
-    window.dispatchEvent(new Event('storage'));
+    logoutMutation.mutate();
+  };
+  
+  const handleRedirectToAuth = () => {
+    window.location.href = "/auth";
   };
 
   const toggleMobileMenu = () => {
@@ -90,15 +65,15 @@ export default function Navbar() {
           
           {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
-            {isAuthenticated ? (
+            {user ? (
               <>                
                 <div className="flex items-center space-x-3">
                   <div className="flex flex-col items-end">
                     <span className="text-sm font-medium text-[color:var(--text-primary)]">
-                      {user.username}
+                      {user?.username}
                     </span>
                     <span className="text-xs text-[color:var(--text-secondary)]">
-                      {user.email}
+                      {user?.email}
                     </span>
                   </div>
                   
@@ -110,7 +85,9 @@ export default function Navbar() {
                       onClick={handleLogout}
                     >
                       <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
-                        <span className="font-['IBM_Plex_Mono'] font-medium">SF</span>
+                        <span className="font-['IBM_Plex_Mono'] font-medium">
+                          {user?.username ? user.username.substring(0, 2).toUpperCase() : ""}
+                        </span>
                       </div>
                     </Button>
                   </div>
@@ -118,23 +95,25 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleLogin}
-                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                >
-                  Log In
-                </Button>
+                <Link href="/auth">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                  >
+                    Log In
+                  </Button>
+                </Link>
                 
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  onClick={handleSignUp}
-                  className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
-                >
-                  Sign Up
-                </Button>
+                <Link href="/auth?tab=register">
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
               </>
             )}
           </div>
@@ -198,12 +177,14 @@ export default function Navbar() {
           
           {/* Auth area - Mobile */}
           <div className="border-t border-[color:var(--border-color)] pt-4 pb-3 px-4">
-            {isAuthenticated ? (
+            {user ? (
               <>
                 <div className="flex items-center">
                   <div className="flex-shrink-0">
                     <div className="h-10 w-10 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
-                      <span className="font-['IBM_Plex_Mono'] font-medium">SF</span>
+                      <span className="font-['IBM_Plex_Mono'] font-medium">
+                        {user.username.substring(0, 2).toUpperCase()}
+                      </span>
                     </div>
                   </div>
                   <div className="ml-3">
@@ -228,27 +209,23 @@ export default function Navbar() {
               </>
             ) : (
               <div className="space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                  onClick={() => {
-                    handleLogin();
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Log In
-                </Button>
+                <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                  >
+                    Log In
+                  </Button>
+                </Link>
                 
-                <Button 
-                  variant="default" 
-                  className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
-                  onClick={() => {
-                    handleSignUp();
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Sign Up
-                </Button>
+                <Link href="/auth?tab=register" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button 
+                    variant="default" 
+                    className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
               </div>
             )}
           </div>

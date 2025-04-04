@@ -9,7 +9,10 @@ import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
+import AuthPage from "@/pages/auth-page";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ProtectedRoute } from "@/lib/protected-route";
 import { useEffect } from "react";
 
 function Router() {
@@ -18,8 +21,9 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
-      <Route path="/user-score" component={UserScorePage} />
-      <Route path="/portfolio" component={PortfolioPage} />
+      <ProtectedRoute path="/user-score" component={UserScorePage} />
+      <ProtectedRoute path="/portfolio" component={PortfolioPage} />
+      <Route path="/auth" component={AuthPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
@@ -41,16 +45,18 @@ function InitDarkMode() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <InitDarkMode />
-        <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
-          <Navbar />
-          <main className="flex-1 bg-[color:var(--background)]">
-            <Router />
-          </main>
-        </div>
-        <Toaster />
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <InitDarkMode />
+          <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
+            <Navbar />
+            <main className="flex-1 bg-[color:var(--background)]">
+              <Router />
+            </main>
+          </div>
+          <Toaster />
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

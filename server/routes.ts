@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { 
   insertUserSchema, 
@@ -606,6 +607,9 @@ async function getProjectData(projectId: number): Promise<{
 // No additional imports needed here
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup authentication routes and middleware
+  setupAuth(app);
+  
   // Initialize the project data cache when server starts
   await updateAllProjectCaches();
   

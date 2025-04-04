@@ -2,6 +2,14 @@ import { pgTable, text, serial, integer, boolean, numeric, doublePrecision, fore
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Project Status Enum
+export enum ProjectStatus {
+  LAUNCHED = 'launched',   // Live projects with tokens already trading
+  UPCOMING = 'upcoming',   // Coming soon, in waitlist phase
+  DEVELOPMENT = 'development', // In active development
+  INACTIVE = 'inactive'    // No longer active
+}
+
 // Project table for storing DeFi projects
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
@@ -20,6 +28,8 @@ export const projects = pgTable("projects", {
   blockchain: text("blockchain").notNull(),
   tokenStandard: text("token_standard").notNull(),
   contractAddress: text("contract_address").notNull(),
+  status: text("status").notNull().default(ProjectStatus.UPCOMING), // New field for project status
+  launchDate: timestamp("launch_date"), // When the project will/did launch
   rank: integer("rank").notNull(),
   websiteUrl: text("website_url").notNull(),
   whitePaperUrl: text("white_paper_url").notNull(),
@@ -30,9 +40,11 @@ export const projects = pgTable("projects", {
   avatarText: text("avatar_text").notNull().default(""),
   avatarColor: text("avatar_color").notNull(),
   isFeatured: boolean("is_featured").notNull().default(false),
-  isNew: boolean("is_new").notNull().default(false),
+  isNew: boolean("is_new").notNull().default(false), // Keeping for backward compatibility
   imageUrl: text("image_url"),
   swapUrl: text("swap_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Project features/highlights
@@ -78,6 +90,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  password: text("password").notNull(),
   avatarUrl: text("avatar_url"),
   points: integer("points").notNull().default(0),
   rank: integer("rank"),

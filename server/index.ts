@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { db } from "./db";
+import { storage, DatabaseStorage } from "./storage";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import * as schema from "@shared/schema";
 
 const app = express();
 app.use(express.json());
@@ -37,6 +41,26 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize database if using PostgreSQL
+  if (process.env.DATABASE_URL) {
+    try {
+      log("Initializing database...", "db");
+      
+      // Push schema to database using drizzle-kit
+      await migrate(db, { migrationsFolder: "./node_modules/.temp/migrations" });
+      log("Database schema updated", "db");
+      
+      // Seed database if we're using the DatabaseStorage class
+      if (storage instanceof DatabaseStorage) {
+        log("Seeding database with initial data...", "db");
+        await (storage as DatabaseStorage).seedDatabase();
+        log("Database seeded successfully", "db");
+      }
+    } catch (err) {
+      console.error("Database initialization error:", err);
+    }
+  }
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

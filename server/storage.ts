@@ -3,6 +3,9 @@ import {
   projectFeatures,
   projectTechnicalDetails,
   priceHistory,
+  users,
+  pointTransactions,
+  ProjectStatus,
   type Project,
   type InsertProject, 
   type ProjectFeature,
@@ -18,10 +21,18 @@ import {
   type PriceHistory,
   type InsertPriceHistory
 } from "@shared/schema";
+import { db, pool } from "./db";
+import { eq, desc, gte } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+import createMemoryStore from "memorystore";
 
 // modify the interface with any CRUD methods
 // you might need
 export interface IStorage {
+  // Session store for authentication
+  sessionStore: session.Store;
+  
   // Project methods
   getAllProjects(): Promise<Project[]>;
   getProjectById(id: number): Promise<Project | undefined>;
@@ -63,8 +74,17 @@ export class MemStorage implements IStorage {
   private nextUserId: number;
   private nextTransactionId: number;
   private nextPriceHistoryId: number;
+  
+  // For session storage
+  sessionStore: session.Store;
 
   constructor() {
+    // Initialize in-memory session store
+    const MemoryStore = require('memorystore')(session);
+    this.sessionStore = new MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+    
     this.projects = new Map();
     this.projectFeatures = new Map();
     this.projectTechnicalDetails = new Map();
@@ -165,6 +185,7 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id, 
+      status: insertProject.status || ProjectStatus.UPCOMING,
       avatarText: insertProject.avatarText || "",
       isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false,
       isNew: insertProject.isNew !== undefined ? insertProject.isNew : false,
@@ -949,6 +970,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "cryptowhale",
       email: "whale@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=cryptowhale",
       points: 12450,
     });
@@ -956,6 +978,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "hodler123",
       email: "hodl@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=hodler123",
       points: 8920,
     });
@@ -963,6 +986,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "satoshifan",
       email: "satoshi@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=satoshifan",
       points: 7340,
     });
@@ -970,6 +994,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "tokenmasterx",
       email: "tokenmaster@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=tokenmasterx",
       points: 5100,
     });
@@ -977,6 +1002,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "defi_guru",
       email: "defiguru@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=defi_guru",
       points: 4320,
     });
@@ -984,6 +1010,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "blockchain_dev",
       email: "blockdev@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=blockchain_dev",
       points: 3840,
     });
@@ -991,6 +1018,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "ethinvestor",
       email: "eth@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=ethinvestor",
       points: 2950,
     });
@@ -998,6 +1026,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "nftcollector",
       email: "nft@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=nftcollector",
       points: 1750,
     });
@@ -1005,6 +1034,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "web3builder",
       email: "web3@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=web3builder",
       points: 1320,
     });
@@ -1012,6 +1042,7 @@ export class MemStorage implements IStorage {
     await this.createUser({
       username: "metaversefan",
       email: "meta@example.com",
+      password: "password123",
       avatarUrl: "https://i.pravatar.cc/150?u=metaversefan",
       points: 980,
     });
@@ -1150,4 +1181,598 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // For session storage
+  sessionStore: session.Store;
+
+  constructor() {
+    // Create PostgreSQL session store
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({
+      pool: pool, // Use the exported pool
+      createTableIfMissing: true
+    });
+  }
+
+  // Project methods
+  async getAllProjects(): Promise<Project[]> {
+    const result = await db.select().from(projects);
+    return result;
+  }
+
+  async getProjectById(id: number): Promise<Project | undefined> {
+    const [result] = await db.select().from(projects).where(eq(projects.id, id));
+    return result;
+  }
+
+  async getProjectFeatures(projectId: number): Promise<ProjectFeature[]> {
+    return db.select().from(projectFeatures).where(eq(projectFeatures.projectId, projectId));
+  }
+
+  async getProjectTechnicalDetails(projectId: number): Promise<ProjectTechnicalDetail[]> {
+    return db.select().from(projectTechnicalDetails).where(eq(projectTechnicalDetails.projectId, projectId));
+  }
+
+  async createProject(project: InsertProject): Promise<Project> {
+    // Ensure status field is set
+    const projectWithStatus = {
+      ...project,
+      status: project.status || ProjectStatus.UPCOMING
+    };
+    
+    const [result] = await db.insert(projects).values(projectWithStatus).returning();
+    return result;
+  }
+
+  async updateProject(id: number, updates: Partial<Project>): Promise<Project | undefined> {
+    const [result] = await db
+      .update(projects)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(projects.id, id))
+      .returning();
+    return result;
+  }
+
+  async addProjectFeature(feature: InsertProjectFeature): Promise<ProjectFeature> {
+    const [result] = await db.insert(projectFeatures).values(feature).returning();
+    return result;
+  }
+
+  async addProjectTechnicalDetail(detail: InsertProjectTechnicalDetail): Promise<ProjectTechnicalDetail> {
+    const [result] = await db.insert(projectTechnicalDetails).values(detail).returning();
+    return result;
+  }
+
+  // User methods
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    const [result] = await db.select().from(users).where(eq(users.id, id));
+    return result;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [result] = await db.select().from(users).where(eq(users.username, username));
+    return result;
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [result] = await db.insert(users).values(user).returning();
+    return result;
+  }
+
+  async updateUserPoints(userId: number, points: number): Promise<User> {
+    const [result] = await db
+      .update(users)
+      .set({
+        points: points,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    if (!result) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    // Update user ranks after point change
+    await this.updateUserRanks();
+    
+    return result;
+  }
+
+  // Points methods
+  async getUserPoints(userId: number): Promise<number> {
+    const [result] = await db
+      .select({ points: users.points })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    if (!result) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    return result.points;
+  }
+
+  async getTopUsers(limit: number = 10): Promise<User[]> {
+    // Update all user ranks first
+    await this.updateUserRanks();
+    
+    // Get all users, sort by points in descending order, and take the top 'limit'
+    return db
+      .select()
+      .from(users)
+      .orderBy(desc(users.points))
+      .limit(limit);
+  }
+
+  async addPointTransaction(transaction: InsertPointTransaction): Promise<PointTransaction> {
+    const [result] = await db
+      .insert(pointTransactions)
+      .values(transaction)
+      .returning();
+
+    // Update user's points
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, transaction.userId));
+    
+    if (user) {
+      await this.updateUserPoints(user.id, user.points + transaction.amount);
+    }
+    
+    return result;
+  }
+
+  async getUserTransactions(userId: number): Promise<PointTransaction[]> {
+    return db
+      .select()
+      .from(pointTransactions)
+      .where(eq(pointTransactions.userId, userId))
+      .orderBy(desc(pointTransactions.createdAt));
+  }
+
+  // Price history methods
+  async getProjectPriceHistory(projectId: number, timeframe?: string): Promise<PriceHistory[]> {
+    let query = db
+      .select()
+      .from(priceHistory)
+      .where(eq(priceHistory.projectId, projectId))
+      .orderBy(priceHistory.timestamp);
+    
+    if (timeframe) {
+      // Filter based on timeframe
+      const now = new Date();
+      let startDate = new Date();
+      
+      switch (timeframe) {
+        case '24h':
+          startDate.setDate(now.getDate() - 1);
+          break;
+        case '7d':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case '30d':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case '90d':
+          startDate.setDate(now.getDate() - 90);
+          break;
+        case '1y':
+          startDate.setFullYear(now.getFullYear() - 1);
+          break;
+      }
+      
+      query = query.where(gte(priceHistory.timestamp, startDate));
+    }
+    
+    return query;
+  }
+
+  async addPriceHistoryEntry(entry: InsertPriceHistory): Promise<PriceHistory> {
+    const [result] = await db
+      .insert(priceHistory)
+      .values(entry)
+      .returning();
+    return result;
+  }
+
+  // Helper method to update all user ranks based on points
+  private async updateUserRanks(): Promise<void> {
+    // Get all users sorted by points
+    const allUsers = await db
+      .select()
+      .from(users)
+      .orderBy(desc(users.points));
+    
+    // Update ranks in transaction
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < allUsers.length; i++) {
+        await tx
+          .update(users)
+          .set({ rank: i + 1 })
+          .where(eq(users.id, allUsers[i].id));
+      }
+    });
+  }
+
+  // Method to seed initial data
+  async seedDatabase(): Promise<void> {
+    // Check if we already have data
+    const existingProjects = await this.getAllProjects();
+    if (existingProjects.length > 0) {
+      console.log("Database already has projects, skipping seed");
+      return;
+    }
+    
+    // Create a sample admin user for testing
+    console.log("Creating sample admin user...");
+    const adminUser = await this.createUser({
+      username: "admin",
+      email: "admin@qacc.xyz",
+      password: "admin123", // This will be hashed by auth.ts
+      avatarUrl: "https://i.pravatar.cc/150?u=admin",
+      points: 15000,
+    });
+
+    // Project X23: Launched Project
+    const x23 = await this.createProject({
+      name: "x23.ai",
+      description: "x23.ai is a cutting-edge AI protocol that allows for zero-knowledge proof of AI computation, enabling verifiable AI insights with privacy preservation and aligned economic incentives.",
+      shortDescription: "Zero-knowledge AI protocol",
+      tokenSymbol: "X23",
+      tokenName: "X23 Token",
+      price: 115.46,
+      marketCap: 923680000,
+      volume24h: 21000000,
+      change24h: 5.2,
+      totalSupply: 8000000,
+      circulatingSupply: 2000000,
+      category: "Artificial Intelligence",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0xc530b75465ce3c6286e718110a7b2e2b64bdc860",
+      rank: 1,
+      status: ProjectStatus.LAUNCHED,
+      launchDate: new Date("2023-05-15"),
+      websiteUrl: "https://x23.ai",
+      whitePaperUrl: "https://x23.ai/whitepaper",
+      githubUrl: "https://github.com/x23ai",
+      twitterUrl: "https://twitter.com/x23ai",
+      discordUrl: "https://discord.gg/x23ai",
+      avatarBg: "#f97316",
+      avatarText: "X23",
+      avatarColor: "#ffffff",
+      isFeatured: true,
+      isNew: false,
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0xc530b75465ce3c6286e718110a7b2e2b64bdc860"
+    });
+
+    // Project 2: Citizen Wallet - Launched Project
+    const ctzn = await this.createProject({
+      name: "Citizen Wallet",
+      description: "Citizen Wallet is a revolutionary web3 wallet with social recovery, focused on accessibility and usability for mainstream adoption. It features seamless multi-chain support and native built-in swaps.",
+      shortDescription: "Social recovery multi-chain wallet",
+      tokenSymbol: "CTZN",
+      tokenName: "Citizen Token",
+      price: 0.92,
+      marketCap: 7300000,
+      volume24h: 430000,
+      change24h: -3.1,
+      totalSupply: 10000000,
+      circulatingSupply: 5000000,
+      category: "Wallet",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607",
+      rank: 2,
+      status: ProjectStatus.LAUNCHED,
+      launchDate: new Date("2023-09-10"),
+      websiteUrl: "https://citizenwallet.xyz",
+      whitePaperUrl: "https://citizenwallet.xyz/whitepaper",
+      githubUrl: "https://github.com/citizen-wallet",
+      twitterUrl: "https://twitter.com/citizenwallet",
+      discordUrl: "https://discord.gg/citizenwallet",
+      avatarBg: "#4b5563",
+      avatarText: "CTZN",
+      avatarColor: "#ffffff",
+      isFeatured: true,
+      isNew: false,
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607"
+    });
+
+    // Project 3: Grand Timeline - Launched Project
+    const grndt = await this.createProject({
+      name: "Grand Timeline",
+      description: "Grand Timeline is building a decentralized coordination platform for communities and DAOs, featuring powerful tools for governance, resource allocation, and milestone tracking.",
+      shortDescription: "Decentralized DAO tooling",
+      tokenSymbol: "GRNDT",
+      tokenName: "Grid Token",
+      price: 0.65,
+      marketCap: 5100000,
+      volume24h: 280000,
+      change24h: 1.8,
+      totalSupply: 12000000,
+      circulatingSupply: 4000000,
+      category: "DAO Infrastructure",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd",
+      rank: 3,
+      status: ProjectStatus.LAUNCHED,
+      launchDate: new Date("2024-01-25"),
+      websiteUrl: "https://grandtimeline.xyz",
+      whitePaperUrl: "https://grandtimeline.xyz/whitepaper",
+      githubUrl: "https://github.com/grandtimeline",
+      twitterUrl: "https://twitter.com/grandtimeline",
+      discordUrl: "https://discord.gg/grandtimeline",
+      avatarBg: "#0ea5e9",
+      avatarText: "GRNDT",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: false,
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd"
+    });
+
+    // Project 4: Prismo Technology - Launched Project
+    const prsm = await this.createProject({
+      name: "Prismo Technology",
+      description: "Prismo is developing a decentralized identity protocol that combines zero-knowledge proofs with account abstraction, enabling both privacy and programmability for decentralized identities.",
+      shortDescription: "Zero-knowledge identity protocol",
+      tokenSymbol: "PRSM",
+      tokenName: "Prismo Token",
+      price: 0.18,
+      marketCap: 1200000,
+      volume24h: 85000,
+      change24h: -0.9,
+      totalSupply: 20000000,
+      circulatingSupply: 3000000,
+      category: "Identity",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68",
+      rank: 4,
+      status: ProjectStatus.LAUNCHED,
+      launchDate: new Date("2024-02-28"),
+      websiteUrl: "https://prismo.tech",
+      whitePaperUrl: "https://prismo.tech/whitepaper",
+      githubUrl: "https://github.com/prismotechnology",
+      twitterUrl: "https://twitter.com/prismo_tech",
+      discordUrl: "https://discord.gg/prismotechnology",
+      avatarBg: "#a855f7",
+      avatarText: "PRSM",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: false,
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68"
+    });
+
+    // Project 5: Gridlock - Upcoming Project
+    const gridlock = await this.createProject({
+      name: "Gridlock",
+      description: "Gridlock is creating a decentralized identity solution for web3 gaming, allowing gamers to maintain a consistent identity and reputation across multiple gaming platforms and metaverses.",
+      shortDescription: "Gaming identity protocol",
+      tokenSymbol: "GRDL",
+      tokenName: "Gridlock Token",
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 15000000,
+      circulatingSupply: 0,
+      category: "Gaming",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000000000000000000000000000000000000000",
+      rank: 5,
+      status: ProjectStatus.UPCOMING,
+      launchDate: new Date("2025-06-15"),
+      websiteUrl: "https://gridlock.xyz",
+      whitePaperUrl: "https://gridlock.xyz/whitepaper",
+      githubUrl: "https://github.com/gridlock",
+      twitterUrl: "https://twitter.com/gridlockxyz",
+      discordUrl: "https://discord.gg/gridlock",
+      avatarBg: "#22c55e",
+      avatarText: "GRDL",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: true
+    });
+
+    // Add more upcoming projects
+    const todamoon = await this.createProject({
+      name: "To Da Moon",
+      description: "To Da Moon is building a decentralized derivatives protocol that enables leveraged trading without liquidations through an innovative bonding curve mechanism.",
+      shortDescription: "Decentralized derivatives protocol",
+      tokenSymbol: "TDM",
+      tokenName: "To Da Moon Token",
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 20000000,
+      circulatingSupply: 0,
+      category: "DeFi",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000000000000000000000000000000000000000",
+      rank: 6,
+      status: ProjectStatus.UPCOMING,
+      launchDate: new Date("2025-07-01"),
+      websiteUrl: "https://todamoon.finance",
+      whitePaperUrl: "https://todamoon.finance/whitepaper",
+      githubUrl: "https://github.com/todamoon",
+      twitterUrl: "https://twitter.com/todamoon_finance",
+      discordUrl: "https://discord.gg/todamoon",
+      avatarBg: "#eab308",
+      avatarText: "TDM",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: true
+    });
+
+    // Project 7: How to DAO - Development
+    await this.createProject({
+      name: "How to DAO",
+      description: "How to DAO is creating an educational platform for DAO formation and operations, with built-in templates, governance tooling, and best practices for decentralized organizations.",
+      shortDescription: "DAO educational platform",
+      tokenSymbol: "HDAO",
+      tokenName: "How to DAO Token",
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 10000000,
+      circulatingSupply: 0,
+      category: "Education",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000000000000000000000000000000000000000",
+      rank: 7,
+      status: ProjectStatus.DEVELOPMENT,
+      launchDate: new Date("2025-08-15"),
+      websiteUrl: "https://howtodao.xyz",
+      whitePaperUrl: "https://howtodao.xyz/whitepaper",
+      githubUrl: "https://github.com/howtodao",
+      twitterUrl: "https://twitter.com/howtodao",
+      discordUrl: "https://discord.gg/howtodao",
+      avatarBg: "#ec4899",
+      avatarText: "HDAO",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: true
+    });
+
+    // Project 8: Web3 Packs - Development
+    await this.createProject({
+      name: "Web3 Packs",
+      description: "Web3 Packs is developing a toolkit for creators to package and sell digital content through NFTs with built-in revenue sharing and collaborative ownership models.",
+      shortDescription: "Creator toolkit",
+      tokenSymbol: "PACK",
+      tokenName: "Web3 Packs Token",
+      price: 0.069,
+      marketCap: 400000,
+      volume24h: 0,
+      change24h: 0,
+      totalSupply: 25000000,
+      circulatingSupply: 0,
+      category: "Content",
+      blockchain: "Polygon",
+      tokenStandard: "ERC-20",
+      contractAddress: "0x0000000000000000000000000000000000000000",
+      rank: 8,
+      status: ProjectStatus.DEVELOPMENT,
+      launchDate: new Date("2025-09-30"),
+      websiteUrl: "https://web3packs.xyz",
+      whitePaperUrl: "https://web3packs.xyz/whitepaper",
+      githubUrl: "https://github.com/web3packs",
+      twitterUrl: "https://twitter.com/web3packs",
+      discordUrl: "https://discord.gg/web3packs",
+      avatarBg: "#8b5cf6",
+      avatarText: "PACK",
+      avatarColor: "#ffffff",
+      isFeatured: false,
+      isNew: true
+    });
+
+    // Add features for each project
+    const x23Features = [
+      { projectId: x23.id, feature: "Zero-knowledge proof verification of AI model outputs" },
+      { projectId: x23.id, feature: "Privacy-preserving AI insights with cryptographic guarantees" },
+      { projectId: x23.id, feature: "Decentralized network of AI compute providers" },
+      { projectId: x23.id, feature: "Native token incentive mechanism for high-quality AI results" },
+      { projectId: x23.id, feature: "SDK for developers to integrate ZK-verified AI" }
+    ];
+
+    const ctznFeatures = [
+      { projectId: ctzn.id, feature: "Social recovery mechanism with trusted guardians" },
+      { projectId: ctzn.id, feature: "Seamless multi-chain support for all major blockchains" },
+      { projectId: ctzn.id, feature: "Built-in DEX aggregator for optimal swaps" },
+      { projectId: ctzn.id, feature: "Hardware wallet integration for enhanced security" },
+      { projectId: ctzn.id, feature: "User-friendly interface with minimal web3 jargon" }
+    ];
+
+    const grndtFeatures = [
+      { projectId: grndt.id, feature: "Intuitive DAO formation and management tools" },
+      { projectId: grndt.id, feature: "Milestone and objective tracking for contributors" },
+      { projectId: grndt.id, feature: "Customizable governance frameworks" },
+      { projectId: grndt.id, feature: "Treasury management and resource allocation" },
+      { projectId: grndt.id, feature: "Reputation-based contribution metrics" }
+    ];
+
+    const prsmFeatures = [
+      { projectId: prsm.id, feature: "Self-sovereign identity with zero-knowledge privacy" },
+      { projectId: prsm.id, feature: "Account abstraction for programmable identities" },
+      { projectId: prsm.id, feature: "Decentralized identity attestations" },
+      { projectId: prsm.id, feature: "Cross-chain identity recognition" },
+      { projectId: prsm.id, feature: "Integration with existing identity standards" }
+    ];
+
+    // Add features for all projects
+    for (const feature of [...x23Features, ...ctznFeatures, ...grndtFeatures, ...prsmFeatures]) {
+      await this.addProjectFeature(feature);
+    }
+
+    // Add technical details
+    const x23Details = [
+      { projectId: x23.id, label: "Total Validators", value: "128" },
+      { projectId: x23.id, label: "Proof Generation Time", value: "1.5s" },
+      { projectId: x23.id, label: "Models Supported", value: "15" },
+      { projectId: x23.id, label: "Daily Active Users", value: "34,500" }
+    ];
+
+    const ctznDetails = [
+      { projectId: ctzn.id, label: "Blockchain Networks", value: "12" },
+      { projectId: ctzn.id, label: "Token Standards", value: "ERC-20, ERC-721, ERC-1155" },
+      { projectId: ctzn.id, label: "Average Recovery Time", value: "4.5 minutes" },
+      { projectId: ctzn.id, label: "Wallets Created", value: "78,900" }
+    ];
+
+    // Add technical details for all projects
+    for (const detail of [...x23Details, ...ctznDetails]) {
+      await this.addProjectTechnicalDetail(detail);
+    }
+
+    // Add point transactions for admin user
+    await this.addPointTransaction({
+      userId: adminUser.id,
+      projectId: x23.id,
+      amount: 850,
+      tokenAmount: 350,
+      transactionHash: "0x3456...7890",
+      description: "Purchased X23 tokens - Round 1"
+    });
+    
+    await this.addPointTransaction({
+      userId: adminUser.id,
+      projectId: ctzn.id,
+      amount: 450,
+      tokenAmount: 55,
+      transactionHash: "0xabcd...ef01",
+      description: "Purchased CTZN tokens"
+    });
+    
+    await this.addPointTransaction({
+      userId: adminUser.id,
+      projectId: prsm.id,
+      amount: 600,
+      tokenAmount: 150,
+      transactionHash: "0xdef0...1234",
+      description: "Purchased PRSM tokens"
+    });
+    
+    console.log("Database seeded successfully with initial projects and related data");
+  }
+}
+
+// Create storage instance (database or in-memory based on environment)
+export const storage = process.env.DATABASE_URL 
+  ? new DatabaseStorage() 
+  : new MemStorage();
