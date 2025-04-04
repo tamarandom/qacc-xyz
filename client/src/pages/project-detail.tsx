@@ -14,6 +14,7 @@ import { GeckoTerminalChart } from "@/components/projects/gecko-terminal-chart";
 import { TokenHolders } from "@/components/projects/token-holders";
 import { ProjectTabs } from "@/components/projects/project-tabs";
 import { X23AboutContent, X23TeamContent, X23RoadmapContent } from "@/components/projects/x23-content";
+import { GridlockAboutContent, GridlockRoadmapContent } from "@/components/projects/gridlock-content";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
@@ -289,6 +290,13 @@ export default function ProjectDetail() {
                 aboutContent={<X23AboutContent />}
                 teamContent={<X23TeamContent />}
                 roadmapContent={<X23RoadmapContent />}
+              />
+            ) : project.id === 5 ? (
+              <ProjectTabs 
+                projectId={project.id}
+                projectName={project.name}
+                aboutContent={<GridlockAboutContent />}
+                roadmapContent={<GridlockRoadmapContent />}
               />
             ) : (
               <ProjectTabs 
