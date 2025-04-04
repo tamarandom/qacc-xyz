@@ -6,11 +6,15 @@ const GECKO_TERMINAL_API_BASE = 'https://api.geckoterminal.com/api/v2';
 // Project pool addresses on Polygon
 export const X23_POOL_ADDRESS = '0x0de6da16d5181a9fe2543ce1eeb4bfd268d68838';
 export const CTZN_POOL_ADDRESS = '0x746cf1baaa81e6f2dee39bd4e3cb5e9f0edf98a8';
+export const PRSM_POOL_ADDRESS = '0x4dc15edc968eceaec3a5e0f12d0acecacee05e25';
+export const GRNDT_POOL_ADDRESS = '0x460a8186aa4574c18709d1eff118efdaa5235c19';
 export const NETWORK_ID = 'polygon_pos';
 
 // Token contract addresses on Polygon
 export const X23_TOKEN_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860';
 export const CTZN_TOKEN_ADDRESS = '0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B';
+export const PRSM_TOKEN_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860'; // Placeholder, replace with actual address
+export const GRNDT_TOKEN_ADDRESS = '0x83F20F44474A2F4c32C9e8a841A9dB2121c4D46f'; // Placeholder, replace with actual address
 
 /**
  * Interface for pool information from GeckoTerminal

@@ -242,5 +242,8 @@ export async function getTokenStats(pairAddress: string) {
   }
 }
 
-// X23 pool address on QuickSwap (Polygon)
+// Pool addresses on QuickSwap (Polygon)
 export const X23_PAIR_ADDRESS = 'polygon/0x0De6dA16D5181a9Fe2543cE1eeb4bFD268D68838';
+export const CTZN_PAIR_ADDRESS = 'polygon/0x0d9b0790e97e3426c161580df4ee853e4a7c4607';
+export const PRSM_PAIR_ADDRESS = 'polygon/0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68';
+export const GRNDT_PAIR_ADDRESS = 'polygon/0xfafb870f1918827fe57ca4b891124606eaa7e6bd';

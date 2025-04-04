@@ -6,7 +6,14 @@ import {
   insertPointTransactionSchema,
   type Project
 } from "@shared/schema";
-import { fetchDexScreenerPriceHistory, getTokenStats as getDexScreenerTokenStats, X23_PAIR_ADDRESS } from "./services/dexscreener";
+import { 
+  fetchDexScreenerPriceHistory, 
+  getTokenStats as getDexScreenerTokenStats, 
+  X23_PAIR_ADDRESS,
+  CTZN_PAIR_ADDRESS,
+  PRSM_PAIR_ADDRESS,
+  GRNDT_PAIR_ADDRESS
+} from "./services/dexscreener";
 import { generateRealisticX23Data } from "./services/sample-data";
 import { fetchTopTokenHolders as fetchOriginalTokenHolders } from "./services/token-holders";
 import { 
@@ -15,8 +22,12 @@ import {
   fetchTopTokenHolders as fetchGeckoTokenHolders, 
   X23_POOL_ADDRESS,
   CTZN_POOL_ADDRESS,
+  PRSM_POOL_ADDRESS,
+  GRNDT_POOL_ADDRESS,
   X23_TOKEN_ADDRESS,
-  CTZN_TOKEN_ADDRESS 
+  CTZN_TOKEN_ADDRESS,
+  PRSM_TOKEN_ADDRESS,
+  GRNDT_TOKEN_ADDRESS
 } from "./services/geckoterminal";
 // Dune services removed - no longer using token metrics
 
@@ -144,9 +155,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
               ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
               ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
             };
+          } else {
+            // Fallback to DexScreener if GeckoTerminal fails
+            console.log('GeckoTerminal data not available for CTZN, trying DexScreener');
+            const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS);
+            
+            if (dexScreenerStats) {
+              console.log('Retrieved real-time stats for CTZN from DexScreener:', dexScreenerStats);
+              updatedProject = {
+                ...updatedProject,
+                price: dexScreenerStats.priceUsd,
+                change24h: dexScreenerStats.priceChange24h,
+                volume24h: dexScreenerStats.volume24h,
+                // Only update other values if they exist
+                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+              };
+            }
           }
         } catch (err) {
           console.error('Error fetching real-time token stats for CTZN:', err);
+          // Continue with stored data if real-time fetch fails
+        }
+      }
+      
+      // For Prismo Technology (PRSM), get real-time data from GeckoTerminal
+      else if (id === 6) {
+        try {
+          console.log('Fetching real-time data for Prismo Technology (PRSM) from GeckoTerminal');
+          const tokenStats = await getGeckoTerminalTokenStats(PRSM_POOL_ADDRESS);
+          
+          if (tokenStats) {
+            console.log('Retrieved real-time stats for PRSM from GeckoTerminal:', tokenStats);
+            updatedProject = {
+              ...updatedProject,
+              price: tokenStats.priceUsd,
+              change24h: tokenStats.priceChange24h,
+              volume24h: tokenStats.volume24h,
+              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              // Update more fields if available
+              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
+              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
+              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
+            };
+          } else {
+            // Fallback to DexScreener if GeckoTerminal fails
+            console.log('GeckoTerminal data not available for PRSM, trying DexScreener');
+            const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS);
+            
+            if (dexScreenerStats) {
+              console.log('Retrieved real-time stats for PRSM from DexScreener:', dexScreenerStats);
+              updatedProject = {
+                ...updatedProject,
+                price: dexScreenerStats.priceUsd,
+                change24h: dexScreenerStats.priceChange24h,
+                volume24h: dexScreenerStats.volume24h,
+                // Only update other values if they exist
+                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+              };
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching real-time token stats for PRSM:', err);
+          // Continue with stored data if real-time fetch fails
+        }
+      }
+      
+      // For Grand Timeline (GRNDT), get real-time data from GeckoTerminal
+      else if (id === 5) {
+        try {
+          console.log('Fetching real-time data for Grand Timeline (GRNDT) from GeckoTerminal');
+          const tokenStats = await getGeckoTerminalTokenStats(GRNDT_POOL_ADDRESS);
+          
+          if (tokenStats) {
+            console.log('Retrieved real-time stats for GRNDT from GeckoTerminal:', tokenStats);
+            updatedProject = {
+              ...updatedProject,
+              price: tokenStats.priceUsd,
+              change24h: tokenStats.priceChange24h,
+              volume24h: tokenStats.volume24h,
+              marketCap: tokenStats.marketCap || tokenStats.fdv,
+              // Update more fields if available
+              ...(tokenStats.totalSupply ? { totalSupply: tokenStats.totalSupply } : {}),
+              ...(tokenStats.tokenName ? { tokenName: tokenStats.tokenName } : {}),
+              ...(tokenStats.tokenSymbol ? { tokenSymbol: tokenStats.tokenSymbol } : {})
+            };
+          } else {
+            // Fallback to DexScreener if GeckoTerminal fails
+            console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
+            const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS);
+            
+            if (dexScreenerStats) {
+              console.log('Retrieved real-time stats for GRNDT from DexScreener:', dexScreenerStats);
+              updatedProject = {
+                ...updatedProject,
+                price: dexScreenerStats.priceUsd,
+                change24h: dexScreenerStats.priceChange24h,
+                volume24h: dexScreenerStats.volume24h,
+                // Only update other values if they exist
+                ...(dexScreenerStats.fdv ? { marketCap: dexScreenerStats.fdv } : {})
+              };
+            }
+          }
+        } catch (err) {
+          console.error('Error fetching real-time token stats for GRNDT:', err);
           // Continue with stored data if real-time fetch fails
         }
       }
@@ -446,11 +557,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.json(updatedHistory);
           }
           
-          // If GeckoTerminal fails, fall back to stored data
-          console.log('GeckoTerminal data not available for CTZN, falling back to stored data');
+          // GeckoTerminal failed, try DexScreener as a fallback
+          console.log('GeckoTerminal data not available for CTZN, trying DexScreener');
+          const dexScreenerStats = await getDexScreenerTokenStats(CTZN_PAIR_ADDRESS);
+          
+          if (dexScreenerStats) {
+            // Try DexScreener for historical data
+            const dexScreenerHistory = await fetchDexScreenerPriceHistory(CTZN_PAIR_ADDRESS, timeframe);
+            
+            if (dexScreenerHistory.length > 0) {
+              // Update the projectId from the default value (1) to CTZN's project ID
+              const updatedHistory = dexScreenerHistory.map(entry => ({
+                ...entry,
+                projectId: 4 // CTZN project ID
+              }));
+              
+              console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for CTZN`);
+              return res.json(updatedHistory);
+            }
+          }
+          
+          // If both GeckoTerminal and DexScreener fail, fall back to stored data
+          console.log('GeckoTerminal and DexScreener data not available for CTZN, falling back to stored data');
         } catch (error) {
           console.error('Error fetching real price data for CTZN:', error);
           console.warn('Error occurred while fetching real price data for CTZN, falling back to stored data');
+        }
+      }
+      
+      // For Prismo Technology (PRSM) project (ID 6), try to fetch real data
+      else if (id === 6) {
+        console.log(`Fetching price data for Prismo Technology (PRSM) (timeframe: ${timeframe || 'all'})`);
+        
+        try {
+          // Try GeckoTerminal for historical data
+          console.log('Attempting to fetch historical data from GeckoTerminal for PRSM');
+          const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(PRSM_POOL_ADDRESS, timeframe);
+          
+          if (geckoTerminalHistory.length > 0) {
+            // Need to update the projectId from the default value (1) to PRSM's project ID
+            const updatedHistory = geckoTerminalHistory.map(entry => ({
+              ...entry,
+              projectId: 6 // PRSM project ID
+            }));
+            
+            console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for PRSM`);
+            return res.json(updatedHistory);
+          }
+          
+          // GeckoTerminal failed, try DexScreener as a fallback
+          console.log('GeckoTerminal data not available for PRSM, trying DexScreener');
+          const dexScreenerStats = await getDexScreenerTokenStats(PRSM_PAIR_ADDRESS);
+          
+          if (dexScreenerStats) {
+            // Try DexScreener for historical data
+            const dexScreenerHistory = await fetchDexScreenerPriceHistory(PRSM_PAIR_ADDRESS, timeframe);
+            
+            if (dexScreenerHistory.length > 0) {
+              // Update the projectId from the default value (1) to PRSM's project ID
+              const updatedHistory = dexScreenerHistory.map(entry => ({
+                ...entry,
+                projectId: 6 // PRSM project ID
+              }));
+              
+              console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for PRSM`);
+              return res.json(updatedHistory);
+            }
+          }
+          
+          // If both GeckoTerminal and DexScreener fail, fall back to stored data
+          console.log('GeckoTerminal and DexScreener data not available for PRSM, falling back to stored data');
+        } catch (error) {
+          console.error('Error fetching real price data for PRSM:', error);
+          console.warn('Error occurred while fetching real price data for PRSM, falling back to stored data');
+        }
+      }
+      
+      // For Grand Timeline (GRNDT) project (ID 5), try to fetch real data
+      else if (id === 5) {
+        console.log(`Fetching price data for Grand Timeline (GRNDT) (timeframe: ${timeframe || 'all'})`);
+        
+        try {
+          // Try GeckoTerminal for historical data
+          console.log('Attempting to fetch historical data from GeckoTerminal for GRNDT');
+          const geckoTerminalHistory = await fetchGeckoTerminalPriceHistory(GRNDT_POOL_ADDRESS, timeframe);
+          
+          if (geckoTerminalHistory.length > 0) {
+            // Need to update the projectId from the default value (1) to GRNDT's project ID
+            const updatedHistory = geckoTerminalHistory.map(entry => ({
+              ...entry,
+              projectId: 5 // GRNDT project ID
+            }));
+            
+            console.log(`Retrieved ${updatedHistory.length} price points from GeckoTerminal for GRNDT`);
+            return res.json(updatedHistory);
+          }
+          
+          // GeckoTerminal failed, try DexScreener as a fallback
+          console.log('GeckoTerminal data not available for GRNDT, trying DexScreener');
+          const dexScreenerStats = await getDexScreenerTokenStats(GRNDT_PAIR_ADDRESS);
+          
+          if (dexScreenerStats) {
+            // Try DexScreener for historical data
+            const dexScreenerHistory = await fetchDexScreenerPriceHistory(GRNDT_PAIR_ADDRESS, timeframe);
+            
+            if (dexScreenerHistory.length > 0) {
+              // Update the projectId from the default value (1) to GRNDT's project ID
+              const updatedHistory = dexScreenerHistory.map(entry => ({
+                ...entry,
+                projectId: 5 // GRNDT project ID
+              }));
+              
+              console.log(`Retrieved ${updatedHistory.length} price points from DexScreener for GRNDT`);
+              return res.json(updatedHistory);
+            }
+          }
+          
+          // If both GeckoTerminal and DexScreener fail, fall back to stored data
+          console.log('GeckoTerminal and DexScreener data not available for GRNDT, falling back to stored data');
+        } catch (error) {
+          console.error('Error fetching real price data for GRNDT:', error);
+          console.warn('Error occurred while fetching real price data for GRNDT, falling back to stored data');
         }
       }
       
