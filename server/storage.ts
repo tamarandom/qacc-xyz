@@ -695,12 +695,12 @@ export class MemStorage implements IStorage {
       swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x4dc15edc968eceaec3a5e0f12d0acecacee05e25"
     });
     
-    // Project 8: Gridlock
+    // Project 5: Gridlock
     const zkVault = await this.createProject({
       name: "Gridlock",
       description: "Gridlock is a next-generation blockchain infrastructure that enhances network security and scalability through innovative grid-based node architecture. Our solution enables parallel transaction processing for improved throughput while maintaining decentralization.",
       tokenSymbol: "GRID",
-      tokenName: "Gridlock Token",
+      tokenName: "GRID Token",
       price: 0.18,
       marketCap: 1200000,
       volume24h: 180000,
@@ -1041,7 +1041,7 @@ export class MemStorage implements IStorage {
       amount: 450,
       tokenAmount: 120,
       transactionHash: "0xabcd...ef01",
-      description: "Purchased GRNDT tokens"
+      description: "Purchased GRID tokens"
     });
     
     // Add transactions for the additional tokens in portfolio
