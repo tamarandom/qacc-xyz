@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 interface TokenHolder {
   address: string;
   percentage: number;
+  label?: string;
 }
 
 export function TokenHolders({ projectId }: { projectId: number }) {
@@ -66,14 +67,21 @@ export function TokenHolders({ projectId }: { projectId: number }) {
           {holders.map((holder) => (
             <TableRow key={holder.address}>
               <TableCell className="py-3">
-                <a 
-                  href={getAddressUrl(holder.address)} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] font-mono"
-                >
-                  {formatAddress(holder.address)}
-                </a>
+                <div className="flex flex-col">
+                  <a 
+                    href={getAddressUrl(holder.address)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] font-mono"
+                  >
+                    {formatAddress(holder.address)}
+                  </a>
+                  {holder.label && (
+                    <span className="text-xs text-gray-500 mt-0.5">
+                      {holder.label}
+                    </span>
+                  )}
+                </div>
               </TableCell>
               <TableCell className="text-right py-3 text-gray-900 dark:text-white font-semibold">
                 {holder.percentage.toFixed(2)}%
