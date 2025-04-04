@@ -50,8 +50,8 @@ export function TokenHolders({ projectId }: { projectId: number }) {
   // If there are no holders, show placeholders with dashes
   if (!holders || holders.length === 0) {
     return (
-      <div className="pt-2 flex justify-center">
-        <Table className="border-collapse w-[200px]">
+      <div className="pt-2">
+        <Table className="border-collapse w-[200px] ml-auto">
           <TableHeader className="hidden">
             <TableRow>
               <TableHead></TableHead>
@@ -81,8 +81,8 @@ export function TokenHolders({ projectId }: { projectId: number }) {
   const topHolders = holders.slice(0, 10);
   
   return (
-    <div className="pt-2 flex justify-center">
-      <Table className="border-collapse w-[200px]">
+    <div className="pt-2">
+      <Table className="border-collapse w-[200px] ml-auto">
         <TableHeader className="hidden">
           <TableRow>
             <TableHead></TableHead>
