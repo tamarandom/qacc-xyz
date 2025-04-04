@@ -41,10 +41,26 @@ interface PriceCache {
   };
 }
 
+// Cache for project token holders data
+interface TokenHolderData {
+  address: string;
+  balance?: string;
+  percentage: number;
+  label?: string;
+}
+
+interface TokenHoldersCache {
+  lastUpdated: Date;
+  data: TokenHolderData[];
+}
+
 // Project data cache with a 15-minute expiration
 const projectDataCache: Record<number, PriceCache> = {};
 
-// Check if cache is valid (less than 15 minutes old)
+// Token holders cache with a 15-minute expiration
+const tokenHoldersCache: Record<number, TokenHoldersCache> = {};
+
+// Check if price cache is valid (less than 15 minutes old)
 function isCacheValid(projectId: number): boolean {
   if (!projectDataCache[projectId]) return false;
   
@@ -54,6 +70,97 @@ function isCacheValid(projectId: number): boolean {
   const diffMinutes = diffMs / (1000 * 60);
   
   return diffMinutes < 15; // Cache is valid if less than 15 minutes old
+}
+
+// Check if token holders cache is valid (less than 15 minutes old)
+function isTokenHoldersCacheValid(projectId: number): boolean {
+  if (!tokenHoldersCache[projectId]) return false;
+  
+  const now = new Date();
+  const cacheTime = tokenHoldersCache[projectId].lastUpdated;
+  const diffMs = now.getTime() - cacheTime.getTime();
+  const diffMinutes = diffMs / (1000 * 60);
+  
+  return diffMinutes < 15; // Cache is valid if less than 15 minutes old
+}
+
+// Function to update token holders cache for a project
+async function updateTokenHoldersCache(projectId: number): Promise<void> {
+  try {
+    console.log(`Updating token holders cache for project ${projectId}`);
+    const project = await storage.getProjectById(projectId);
+    
+    if (!project) {
+      console.error(`Project with ID ${projectId} not found`);
+      return;
+    }
+    
+    // Only update token holders for launched projects
+    if (project.isNew) {
+      return;
+    }
+    
+    let tokenHolders = [];
+    
+    if (projectId === 1) {
+      // X23 token holders
+      console.log('Fetching token holders for X23 from GeckoTerminal');
+      tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
+    } else if (projectId === 2) {
+      // CTZN token holders
+      try {
+        console.log('Fetching token holders for CTZN from GeckoTerminal');
+        tokenHolders = await fetchGeckoTokenHolders(CTZN_TOKEN_ADDRESS);
+        
+        if (tokenHolders.length === 0) {
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } catch (err) {
+        console.error('Error fetching CTZN token holders:', err);
+        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      }
+    } else if (projectId === 3) {
+      // GRNDT token holders
+      try {
+        console.log("Fetching token holders for GRNDT from GeckoTerminal");
+        tokenHolders = await fetchGeckoTokenHolders(GRNDT_TOKEN_ADDRESS);
+        
+        if (tokenHolders.length === 0) {
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } catch (err) {
+        console.error("Error fetching GRNDT token holders:", err);
+        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      }
+    } else if (projectId === 4) {
+      // PRSM token holders
+      try {
+        console.log('Fetching token holders for PRSM from GeckoTerminal');
+        tokenHolders = await fetchGeckoTokenHolders(PRSM_TOKEN_ADDRESS);
+        
+        if (tokenHolders.length === 0) {
+          tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+        }
+      } catch (err) {
+        console.error('Error fetching PRSM token holders:', err);
+        tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      }
+    } else {
+      // Other projects
+      tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+    }
+    
+    if (tokenHolders.length > 0) {
+      // Cache the token holders data
+      tokenHoldersCache[projectId] = {
+        lastUpdated: new Date(),
+        data: tokenHolders
+      };
+      console.log(`Updated token holders cache for project ${projectId} with ${tokenHolders.length} holders`);
+    }
+  } catch (error) {
+    console.error(`Error updating token holders cache for project ${projectId}:`, error);
+  }
 }
 
 // Function to update the price cache for all projects
@@ -66,6 +173,11 @@ async function updateAllProjectCaches(): Promise<void> {
     for (const project of projects) {
       try {
         await updateProjectCache(project.id);
+        
+        // Also update token holders cache for launched projects
+        if (!project.isNew) {
+          await updateTokenHoldersCache(project.id);
+        }
       } catch (error) {
         console.error(`Error updating cache for project ${project.id}:`, error);
       }
@@ -650,11 +762,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Project not found' });
       }
       
+      // Check if we have valid cached token holder data
+      if (isTokenHoldersCacheValid(id)) {
+        console.log(`Using cached token holders for project ${id} from ${tokenHoldersCache[id].lastUpdated}`);
+        return res.json(tokenHoldersCache[id].data);
+      }
+      
       // Fetch token holders - use different methods based on project ID
       let tokenHolders = [];
       
       if (id === 1) {
         // X23 token holders
+        console.log('Fetching token holders for X23 from GeckoTerminal');
         tokenHolders = await fetchGeckoTokenHolders(X23_TOKEN_ADDRESS);
       } else if (id === 2) {
         // CTZN token holders (Citizen Wallet)
@@ -702,6 +821,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Other projects
         tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
       }
+      
+      // Cache the token holders data
+      tokenHoldersCache[id] = {
+        lastUpdated: new Date(),
+        data: tokenHolders
+      };
+      
+      console.log(`Cached token holders for project ${id}`);
       res.json(tokenHolders);
     } catch (error) {
       console.error('Error fetching token holders:', error);
