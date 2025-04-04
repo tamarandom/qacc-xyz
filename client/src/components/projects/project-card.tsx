@@ -82,19 +82,29 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
             <>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.price)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+                  {project.price > 0 ? formatCurrency(project.price) : "-"}
+                </p>
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
-                <PercentageChange value={project.change24h} />
+                {project.change24h !== null && project.change24h !== undefined ? (
+                  <PercentageChange value={project.change24h} />
+                ) : (
+                  <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">-</p>
+                )}
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.marketCap, false, true, true)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+                  {project.marketCap > 0 ? formatCurrency(project.marketCap, false, true, true) : "-"}
+                </p>
               </div>
               <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
                 <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(project.volume24h, false, false, true)}</p>
+                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+                  {project.volume24h > 0 ? formatCurrency(project.volume24h, false, false, true) : "-"}
+                </p>
               </div>
             </>
           )}

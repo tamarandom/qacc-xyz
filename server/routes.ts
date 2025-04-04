@@ -350,21 +350,49 @@ async function updateProjectCache(projectId: number): Promise<void> {
       }
     }
     
-    // If we can't get API data or for other projects, use storage data
+    // If we can't get API data or for other projects, check if storage data is reliable
+    // Only use storage data if it appears to be valid (non-zero or reasonable values)
+    const hasValidPrice = project.price > 0;
+    const hasValidMarketCap = project.marketCap > 0;
+    const hasValidData = hasValidPrice && hasValidMarketCap;
+    
+    if (hasValidData) {
+      projectDataCache[projectId] = {
+        lastUpdated: new Date(),
+        data: {
+          price: project.price,
+          marketCap: project.marketCap,
+          volume24h: project.volume24h,
+          change24h: project.change24h
+        }
+      };
+      console.log(`Updated cache for project ${projectId} with valid data from storage`);
+    } else {
+      // If storage data also appears invalid, store null values to trigger the fallback UI display
+      projectDataCache[projectId] = {
+        lastUpdated: new Date(),
+        data: {
+          price: 0,
+          marketCap: 0,
+          volume24h: 0,
+          change24h: 0
+        }
+      };
+      console.log(`Stored placeholder values for project ${projectId} due to invalid data`);
+    }
+  } catch (error) {
+    console.error(`Error updating cache for project ${projectId}:`, error);
+    
+    // On error, ensure we don't crash but still store safe default values
     projectDataCache[projectId] = {
       lastUpdated: new Date(),
       data: {
-        price: project.price,
-        marketCap: project.marketCap,
-        volume24h: project.volume24h,
-        change24h: project.change24h
+        price: 0,
+        marketCap: 0,
+        volume24h: 0,
+        change24h: 0
       }
     };
-    
-    console.log(`Updated cache for project ${projectId} with data from storage`);
-  } catch (error) {
-    console.error(`Error updating cache for project ${projectId}:`, error);
-    throw error;
   }
 }
 
@@ -387,18 +415,37 @@ async function getProjectData(projectId: number): Promise<{
     throw new Error(`Project with ID ${projectId} not found`);
   }
   
-  // Update the cache
-  projectDataCache[projectId] = {
-    lastUpdated: new Date(),
-    data: {
-      price: project.price,
-      marketCap: project.marketCap,
-      volume24h: project.volume24h,
-      change24h: project.change24h
-    }
-  };
+  // Check if the storage data appears valid before caching it
+  const hasValidPrice = project.price > 0;
+  const hasValidMarketCap = project.marketCap > 0;
+  const hasValidData = hasValidPrice && hasValidMarketCap;
   
-  console.log(`Updated cache for project ${projectId} with data from storage`);
+  if (hasValidData) {
+    // Update the cache with valid data
+    projectDataCache[projectId] = {
+      lastUpdated: new Date(),
+      data: {
+        price: project.price,
+        marketCap: project.marketCap,
+        volume24h: project.volume24h,
+        change24h: project.change24h
+      }
+    };
+    console.log(`Updated cache for project ${projectId} with valid data from storage`);
+  } else {
+    // If storage data appears invalid, use placeholder values
+    projectDataCache[projectId] = {
+      lastUpdated: new Date(),
+      data: {
+        price: 0,
+        marketCap: 0,
+        volume24h: 0,
+        change24h: 0
+      }
+    };
+    console.log(`Stored placeholder values for project ${projectId} due to invalid storage data`);
+  }
+  
   return projectDataCache[projectId].data;
 }
 // Dune services removed - no longer using token metrics
