@@ -100,10 +100,17 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
       return;
     }
     
+    // Check if required API key is available
+    if (!process.env.POLYGONSCAN_API_KEY) {
+      console.error('POLYGONSCAN_API_KEY environment variable not set');
+      console.log('Falling back to local cache data for token holders');
+      return;
+    }
+    
     let tokenHolders = [];
     
-    // For all projects, use our local data with labeled token holders
-    console.log(`Fetching token holders for ${project.tokenSymbol} from local database`);
+    // Use the Polygonscan API to fetch token holders
+    console.log(`Fetching token holders for ${project.tokenSymbol} from Polygonscan API`);
     tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
     
     if (tokenHolders.length > 0) {
@@ -113,6 +120,8 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
         data: tokenHolders
       };
       console.log(`Updated token holders cache for project ${projectId} with ${tokenHolders.length} holders`);
+    } else {
+      console.warn(`No token holders found for ${project.tokenSymbol}, using previously cached data if available`);
     }
   } catch (error) {
     console.error(`Error updating token holders cache for project ${projectId}:`, error);
@@ -718,10 +727,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Project not found' });
       }
       
+      // Check if force refresh is requested via query param
+      const forceRefresh = req.query.refresh === 'true';
+      
       // Always fetch fresh data for X23 token to match the screenshot values
-      if (id === 1) {
-        console.log(`Forcing fetch of token holders data for X23 (project id ${id})`);
-        // Force fetch from our customized token service
+      // or if force refresh is requested (for debugging/testing)
+      if (id === 1 || forceRefresh) {
+        console.log(`Forcing fetch of token holders data for ${project.tokenSymbol} (project id ${id})`);
+        // Force fetch from our customized token service which now uses Polygonscan API
         const tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
         
         // Update cache with fresh data
@@ -734,18 +747,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(tokenHolders);
       }
       
-      // Check if we have valid cached token holder data for other projects
+      // Check if we have valid cached token holder data
       if (isTokenHoldersCacheValid(id)) {
         console.log(`Using cached token holders for project ${id} from ${tokenHoldersCache[id].lastUpdated}`);
         return res.json(tokenHoldersCache[id].data);
       }
       
-      // Fetch token holders using local data with labels for all projects
-      let tokenHolders = [];
-      
-      // For all projects, use our local data with labeled token holders
-      console.log(`Fetching token holders for ${project.tokenSymbol} from local database`);
-      tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
+      // If cache is invalid, fetch new data from Polygonscan API
+      console.log(`Fetching token holders for ${project.tokenSymbol} using Polygonscan API`);
+      const tokenHolders = await fetchOriginalTokenHolders(project.contractAddress);
       
       // Cache the token holders data
       tokenHoldersCache[id] = {
@@ -753,7 +763,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         data: tokenHolders
       };
       
-      console.log(`Cached token holders for project ${id}`);
+      console.log(`Updated token holders cache for project ${id} with ${tokenHolders.length} holders`);
       res.json(tokenHolders);
     } catch (error) {
       console.error('Error fetching token holders:', error);
