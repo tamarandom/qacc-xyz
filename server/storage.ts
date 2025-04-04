@@ -618,7 +618,7 @@ export class MemStorage implements IStorage {
       shortDescription: "Decentralized Finance Hub",
       blockchain: "Polygon",
       tokenStandard: "ERC-20",
-      contractAddress: "0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B",
+      contractAddress: "0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607",
       rank: 2, // Updated rank
       websiteUrl: "https://nexusfi.io",
       whitePaperUrl: "https://nexusfi.io/whitepaper.pdf",
@@ -630,7 +630,7 @@ export class MemStorage implements IStorage {
       avatarColor: "#101010",
       isFeatured: false,
       imageUrl: "/project-logos/nexus-finance.svg",
-      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B"
+      swapUrl: "https://quickswap.exchange/#/swap?outputCurrency=0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607"
     });
 
     // Project 5: Grand Timeline

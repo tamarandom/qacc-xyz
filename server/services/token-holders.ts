@@ -129,8 +129,8 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
     ];
   }
   
-  // CTZN token: 0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B
-  else if (address === '0xc2b0f088a0b242fd5cb46c9de92ccea6823e264b') {
+  // CTZN token: 0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607
+  else if (address === '0x0d9b0790e97e3426c161580df4ee853e4a7c4607') {
     return [
       { address: '0x7d36cce46dd2b0d3b00fa41d95a6574030cce2ca', percentage: 35.2 },
       { address: '0x9f06db332e30ca40040cba6aed8f231e312f37c0', percentage: 22.7 },
@@ -184,7 +184,7 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
 // Export token addresses for convenience
 export const TOKEN_ADDRESSES = {
   X23: '0xc530b75465ce3c6286e718110a7b2e2b64bdc860',
-  CTZN: '0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B',
+  CTZN: '0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607',
   PRSM: '0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68',
   GRID: '0xfafb870f1918827fe57ca4b891124606eaa7e6bd'
 };
