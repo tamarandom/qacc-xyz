@@ -90,7 +90,7 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
             )}
           </div>
           <iframe
-            src={`https://www.geckoterminal.com/polygon_pos/pools/${poolAddress}/embed?theme=dark&info=true&swaps=true`}
+            src={`https://www.geckoterminal.com/polygon_pos/pools/${poolAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h`}
             title={`${tokenSymbol} Price Chart`}
             frameBorder="0"
             width="100%" 
@@ -98,6 +98,7 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
             onLoad={() => setIsLoading(false)}
             className="rounded-md"
             allow="clipboard-write"
+            allowFullScreen
           ></iframe>
         </div>
       )}
