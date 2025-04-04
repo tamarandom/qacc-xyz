@@ -161,16 +161,36 @@ export default function ProjectDetail() {
             <div className="flex flex-col items-end justify-between">
               <div className="flex items-center mt-2 space-x-6">
                 <div className="flex flex-col items-end">
-                  <div className="flex items-center mb-2">
-                    <span className="text-gray-500 dark:text-gray-400 mr-2 text-sm">Market Cap</span>
-                    <span className="font-mono text-gray-900 dark:text-white text-lg font-semibold">{formatCurrency(project.marketCap, false, true)}</span>
+                  {/* Market Cap prominently displayed at the top */}
+                  {!project.isNew && (
+                    <div className="mb-3">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 text-right mb-1">Market Cap</p>
+                      <p className="font-mono text-2xl font-bold text-gray-900 dark:text-white">
+                        {formatCurrency(project.marketCap, false, true)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Price with 24h change */}
+                  <div className="flex flex-col items-end">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 text-right mb-1">Price</p>
+                    <div className="flex items-center">
+                      <span className="font-mono text-lg font-medium text-gray-900 dark:text-white">
+                        {formatCurrency(project.price)}
+                      </span>
+                      <PercentageChange value={project.change24h} className="ml-2" />
+                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <span className="text-gray-500 dark:text-gray-400 mr-2">Price</span>
-                    <span className="font-mono text-gray-900 dark:text-white">{formatCurrency(project.price)}</span>
-                    <PercentageChange value={project.change24h} className="ml-2" />
-                    <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">(24h)</span>
-                  </div>
+                  
+                  {/* 24h Volume - only for launched projects */}
+                  {!project.isNew && (
+                    <div className="mt-2">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 text-right">
+                        24h Volume: <span className="font-mono">{formatCurrency(project.volume24h)}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -184,7 +204,7 @@ export default function ProjectDetail() {
                     href={project.swapUrl || "#"} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="px-4 py-1.5 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
+                    className="px-5 py-2 text-sm font-medium bg-[#4A89DC] text-white hover:bg-[#3A79CC] rounded-md transition-colors shadow-sm inline-flex items-center gap-1"
                   >
                     <img src={quickswapLogo} alt="DEX" className="h-4 w-4 rounded-full" />
                     <span>Swap on DEX</span>
@@ -206,34 +226,64 @@ export default function ProjectDetail() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
           <div className="bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 md:col-span-2">
+            {/* For New Projects: Showcase key metrics and token sale info */}
             {project.isNew && (
-              <div className="mb-6">
+              <div className="mb-8">
                 <Card className="dark:bg-[color:var(--color-black)] dark:border-[color:var(--color-black-200)]">
+                  <CardHeader className="border-b border-gray-100 dark:border-[color:var(--color-black-200)]">
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <Rocket className="h-5 w-5 text-[color:var(--color-peach)]" />
+                      <span>Token Launch Information</span>
+                    </CardTitle>
+                  </CardHeader>
                   <CardContent className="py-6">
-                    <div className="flex items-center justify-center flex-col sm:flex-row gap-6 sm:gap-12">
-                      <div className="flex items-center">
-                        <Rocket className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Token Launch Status</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">DEX listing after this round</p>
-                        </div>
+                    {/* Status banner */}
+                    <div className="mb-6 bg-[color:var(--color-peach)]/10 border border-[color:var(--color-peach)]/20 rounded-md p-3 flex items-center">
+                      <div className="bg-[color:var(--color-peach)] rounded-full p-1 mr-3">
+                        <Rocket className="h-4 w-4 text-black" />
+                      </div>
+                      <span className="text-sm font-medium">Token currently in accelerator phase. Will be listed on DEX after this round.</span>
+                    </div>
+                    
+                    {/* Key details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Project Stage</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">Pre-sale Round</span>
                       </div>
                       
-                      <div className="flex items-center">
-                        <Calendar className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Supply</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">6.4M</p>
-                        </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Token Supply</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">{formatNumber(project.totalSupply)}</span>
                       </div>
                       
-                      <div className="flex items-center">
-                        <Timer className="h-10 w-10 text-[color:var(--color-peach)] mr-4" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Chain</p>
-                          <p className="text-lg font-bold text-gray-900 dark:text-white mt-1">Polygon</p>
-                        </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Blockchain</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">{project.blockchain}</span>
                       </div>
+                      
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Token Standard</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">{project.tokenStandard}</span>
+                      </div>
+                      
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Initial Token Price</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">{formatCurrency(project.price)}</span>
+                      </div>
+                      
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Token Type</span>
+                        <span className="text-lg font-bold text-gray-900 dark:text-white">Utility & Governance</span>
+                      </div>
+                    </div>
+                    
+                    {/* Participation CTA */}
+                    <div className="mt-6 pt-6 border-t border-gray-100 dark:border-[color:var(--color-black-200)] text-center">
+                      <button className="px-6 py-2 text-base font-medium bg-[color:var(--color-peach)] text-black hover:bg-[color:var(--color-peach-dark)] rounded-md transition-colors shadow-sm">
+                        Participate in Token Sale
+                      </button>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Only available to qualified project backers</p>
                     </div>
                   </CardContent>
                 </Card>
