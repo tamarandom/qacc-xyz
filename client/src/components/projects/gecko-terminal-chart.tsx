@@ -46,17 +46,6 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
             <p className="text-muted-foreground dark:text-gray-400 mb-4">
               {error || "Chart temporarily unavailable for this token"}
             </p>
-            {geckoTerminalUrl && (
-              <a 
-                href={geckoTerminalUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span>View on GeckoTerminal</span>
-              </a>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -74,20 +63,6 @@ export function GeckoTerminalChart({ projectId, tokenSymbol }: GeckoTerminalChar
       
       {poolAddress && (
         <div className="w-full h-[400px]">
-          <div className="flex justify-between items-center mb-2 px-4 pt-4">
-            <h3 className="text-lg font-semibold dark:text-white">Price Chart ({tokenSymbol})</h3>
-            {geckoTerminalUrl && (
-              <a 
-                href={geckoTerminalUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-sm text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] transition-colors"
-              >
-                <ExternalLink className="h-4 w-4" />
-                <span>View on GeckoTerminal</span>
-              </a>
-            )}
-          </div>
           <iframe
             src={`https://www.geckoterminal.com/polygon_pos/pools/${poolAddress}?embed=1&info=0&swaps=0&grayscale=1&light_chart=0&chart_type=price&resolution=1h`}
             title={`${tokenSymbol} Price Chart`}
