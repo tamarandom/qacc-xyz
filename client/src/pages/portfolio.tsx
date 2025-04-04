@@ -183,6 +183,11 @@ export default function PortfolioPage() {
     return acc;
   }, {}) || {};
   
+  // Filter out unlocks for projects 9, 11, and 12
+  const filteredUnlocks = tokenUnlocks.filter(unlock => 
+    unlock.projectId !== 9 && unlock.projectId !== 11 && unlock.projectId !== 12
+  );
+  
   // Create a unified list of portfolio items with projects and their unlocks
   const portfolioItems: PortfolioItem[] = [];
   
@@ -191,14 +196,20 @@ export default function PortfolioPage() {
     const projectId = parseInt(projectIdStr);
     
     // Skip Project #0 to remove it from portfolio display
-    if (projectId === 0) {
+    // Also skip Projects #9, #11, and #12 as requested
+    if (projectId === 0 || projectId === 9 || projectId === 11 || projectId === 12) {
       return;
     }
     
     const project = projects?.find(p => p.id === projectId);
     
-    // Find all unlocks for this project
-    const unlocks = tokenUnlocks.filter((t: TokenUnlock) => t.projectId === projectId);
+    // Only proceed if we have a valid project
+    if (!project) {
+      return;
+    }
+    
+    // Find all unlocks for this project from filtered unlocks
+    const unlocks = filteredUnlocks.filter((t: TokenUnlock) => t.projectId === projectId);
     
     // Calculate total token amount across all transactions for this project
     const totalTokens = unlocks.reduce((sum, unlock) => sum + unlock.amount, 0);
@@ -233,9 +244,12 @@ export default function PortfolioPage() {
   
   const projectsCount = new Set(portfolioItems?.map(item => item.transaction.projectId)).size || 0;
   
+  // Check if there are any tokens available to claim
+  const hasClaimableTokens = filteredUnlocks.some((t: TokenUnlock) => t.claimable && !t.claimed);
+  
   // Handle claiming tokens for a specific unlock
   const handleClaimTokens = (tokenId: string) => {
-    const unlock = tokenUnlocks.find((t: TokenUnlock) => t.id === tokenId);
+    const unlock = filteredUnlocks.find((t: TokenUnlock) => t.id === tokenId);
     if (!unlock?.claimable) return;
     
     // In a real app, this would be an API call
@@ -255,7 +269,7 @@ export default function PortfolioPage() {
   
   // Handle claiming all available tokens
   const handleClaimAllTokens = () => {
-    const claimableTokens = tokenUnlocks
+    const claimableTokens = filteredUnlocks
       .filter((t: TokenUnlock) => t.claimable && !t.claimed);
       
     if (claimableTokens.length === 0) return;
@@ -273,9 +287,6 @@ export default function PortfolioPage() {
       description: `Successfully claimed tokens for ${claimableTokens.length} token unlocks`,
     });
   };
-  
-  // Check if there are any tokens available to claim
-  const hasClaimableTokens = tokenUnlocks.some((t: TokenUnlock) => t.claimable && !t.claimed);
   
   // Format dates helper
   const formatDate = (date: Date) => {
