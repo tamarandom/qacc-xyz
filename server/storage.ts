@@ -28,6 +28,7 @@ export interface IStorage {
   getProjectFeatures(projectId: number): Promise<ProjectFeature[]>;
   getProjectTechnicalDetails(projectId: number): Promise<ProjectTechnicalDetail[]>;
   createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, updates: Partial<Project>): Promise<Project | undefined>;
   addProjectFeature(feature: InsertProjectFeature): Promise<ProjectFeature>;
   addProjectTechnicalDetail(detail: InsertProjectTechnicalDetail): Promise<ProjectTechnicalDetail>;
   
@@ -1129,6 +1130,21 @@ export class MemStorage implements IStorage {
     await this.generateSamplePriceHistory(9, 0.069, 0.0, 7); // To Da Moon
     await this.generateSamplePriceHistory(11, 0.069, 0.0, 7); // How to DAO
     await this.generateSamplePriceHistory(12, 0.069, 0.0, 7); // Web3 Packs
+  }
+  
+  async updateProject(id: number, updates: Partial<Project>): Promise<Project | undefined> {
+    const project = this.projects.get(id);
+    if (!project) {
+      return undefined;
+    }
+    
+    const updatedProject: Project = {
+      ...project,
+      ...updates
+    };
+    
+    this.projects.set(id, updatedProject);
+    return updatedProject;
   }
 }
 

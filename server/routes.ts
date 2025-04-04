@@ -1003,13 +1003,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // API endpoint to clear the caches
-  app.post('/api/cache/clear', (req, res) => {
+  app.post('/api/cache/clear', async (req, res) => {
     console.log('Clearing all caches');
     // Clear all properties of the caches while maintaining the reference
     Object.keys(projectDataCache).forEach(key => delete projectDataCache[Number(key)]);
     Object.keys(tokenHoldersCache).forEach(key => delete tokenHoldersCache[Number(key)]);
+    
+    // Immediately rebuild the cache with fresh data
+    await updateAllProjectCaches();
+    
     console.log('All caches cleared successfully');
     res.json({ success: true, message: 'All caches cleared successfully' });
+  });
+  
+  // Update a project (admin route)
+  app.patch('/api/projects/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ error: 'Invalid project ID' });
+      }
+      
+      // Get the fields to update from the request body
+      const updates = req.body;
+      
+      // Update the project in storage
+      const updatedProject = await storage.updateProject(id, updates);
+      
+      if (!updatedProject) {
+        return res.status(404).json({ error: 'Project not found' });
+      }
+      
+      // Project updated successfully
+      return res.status(200).json(updatedProject);
+    } catch (error) {
+      console.error('Error updating project:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
   });
   
   const httpServer = createServer(app);

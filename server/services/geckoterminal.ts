@@ -11,10 +11,10 @@ export const GRNDT_POOL_ADDRESS = '0x460a8186aa4574c18709d1eff118efdaa5235c19';
 export const NETWORK_ID = 'polygon_pos';
 
 // Token contract addresses on Polygon
-export const X23_TOKEN_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860';
-export const CTZN_TOKEN_ADDRESS = '0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B';
-export const PRSM_TOKEN_ADDRESS = '0xc530b75465ce3c6286e718110a7b2e2b64bdc860'; // Placeholder, replace with actual address
-export const GRNDT_TOKEN_ADDRESS = '0x83F20F44474A2F4c32C9e8a841A9dB2121c4D46f'; // Placeholder, replace with actual address
+export const X23_TOKEN_ADDRESS = '0xc530B75465Ce3c6286e718110A7B2e2B64Bdc860';
+export const CTZN_TOKEN_ADDRESS = '0x0D9B0790E97e3426C161580dF4Ee853E4A7C4607';
+export const PRSM_TOKEN_ADDRESS = '0x0b7a46E1af45E1EaadEeD34B55b6FC00A85c7c68';
+export const GRNDT_TOKEN_ADDRESS = '0xfAFB870F1918827fe57Ca4b891124606EaA7e6bd';
 
 /**
  * Interface for pool information from GeckoTerminal
