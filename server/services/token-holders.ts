@@ -1,12 +1,15 @@
 import fetch from 'node-fetch';
+import { fetchTokenHolders as fetchCovalentTokenHolders } from './covalent';
 
 /**
  * Interface for token holder data
  */
 export interface TokenHolderData {
   address: string;
+  quantity?: string;
   balance?: string;
   percentage: number;
+  value?: number;
   label?: string;
 }
 
@@ -36,19 +39,36 @@ const KNOWN_ADDRESSES: Record<string, string> = {
 };
 
 /**
- * Interface for the Polygonscan API response format
+ * Get token symbol from token address
  */
-interface PolygonscanResponse {
-  status: string;
-  message: string;
-  result?: Array<{
-    TokenHolderAddress: string;
-    TokenHolderQuantity: string;
-  }>;
+function getTokenSymbolFromAddress(tokenAddress: string): string {
+  const normalizedAddress = tokenAddress.toLowerCase();
+  
+  if (normalizedAddress === TOKEN_ADDRESSES.X23.toLowerCase()) {
+    return 'X23';
+  } else if (normalizedAddress === TOKEN_ADDRESSES.CTZN.toLowerCase()) {
+    return 'CTZN';
+  } else if (normalizedAddress === TOKEN_ADDRESSES.PRSM.toLowerCase()) {
+    return 'PRSM';
+  } else if (normalizedAddress === TOKEN_ADDRESSES.GRID.toLowerCase()) {
+    return 'GRNDT';
+  }
+  
+  return 'UNKNOWN';
 }
 
 /**
- * Fetches token holders from the Polygonscan API
+ * Get current token price
+ * This is a simplified function that should be replaced with actual price data
+ */
+function getTokenPrice(tokenSymbol: string): number {
+  // Default price for testing
+  return 0.09;
+}
+
+/**
+ * Fetches token holders using Covalent API
+ * Falls back to default data if API fails
  * 
  * @param tokenAddress - The contract address of the token
  * @returns An array of token holder data
@@ -57,46 +77,29 @@ export async function fetchTokenHolders(tokenAddress: string): Promise<TokenHold
   try {
     // Lowercasing the address for consistency
     const normalizedAddress = tokenAddress.toLowerCase();
-    console.log(`Fetching token holders for ${normalizedAddress}`);
+    const tokenSymbol = getTokenSymbolFromAddress(normalizedAddress);
+    const tokenPrice = getTokenPrice(tokenSymbol);
     
-    // Polygonscan API for token holders (requires API Pro tier)
-    const apiKey = process.env.POLYGONSCAN_API_KEY;
-    const url = `https://api.polygonscan.com/api?module=token&action=tokenholderlist&contractaddress=${normalizedAddress}&page=1&offset=10&apikey=${apiKey}`;
+    console.log(`Fetching token holders for ${tokenSymbol} from Covalent API`);
     
-    const response = await fetch(url);
+    // Try to fetch data from Covalent API
+    const covalentHolders = await fetchCovalentTokenHolders(normalizedAddress, tokenSymbol, tokenPrice);
     
-    if (!response.ok) {
-      console.error(`Polygonscan API returned status: ${response.status}`);
-      return getDefaultTokenHolders(normalizedAddress);
-    }
-    
-    // Cast the response to the expected format
-    const data = await response.json() as PolygonscanResponse;
-    
-    if (data.status !== '1' || !data.result) {
-      console.error('Polygonscan API error:', data.message || 'Unknown error');
-      return getDefaultTokenHolders(normalizedAddress);
-    }
-    
-    // Calculate total supply from holders
-    const totalSupply = data.result.reduce((sum: number, holder) => {
-      return sum + parseFloat(holder.TokenHolderQuantity);
-    }, 0);
-    
-    const holders: TokenHolderData[] = data.result.map((holder) => {
-      const address = holder.TokenHolderAddress.toLowerCase();
-      const balance = holder.TokenHolderQuantity;
-      const percentage = (parseFloat(balance) / totalSupply) * 100;
+    if (covalentHolders.length > 0) {
+      console.log(`Successfully fetched ${covalentHolders.length} holders from Covalent API`);
       
-      return {
-        address,
-        balance,
-        percentage,
-        label: KNOWN_ADDRESSES[address]
-      };
-    });
+      // Add labels to known addresses
+      return covalentHolders.map(holder => {
+        const address = holder.address.toLowerCase();
+        if (KNOWN_ADDRESSES[address]) {
+          return { ...holder, label: KNOWN_ADDRESSES[address] };
+        }
+        return holder;
+      });
+    }
     
-    return holders;
+    console.warn(`Covalent API failed to return holders for ${tokenSymbol}, using fallback data`);
+    return getDefaultTokenHolders(normalizedAddress);
   } catch (error) {
     console.error('Error fetching token holders:', error);
     return getDefaultTokenHolders(tokenAddress);
@@ -126,8 +129,8 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
     ];
   }
   
-  // CTZN token: 0x6df8c18d8b9f674e29c32eb487ea2e4233aa3af6
-  else if (address === '0x6df8c18d8b9f674e29c32eb487ea2e4233aa3af6') {
+  // CTZN token: 0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B
+  else if (address === '0xc2b0f088a0b242fd5cb46c9de92ccea6823e264b') {
     return [
       { address: '0x7d36cce46dd2b0d3b00fa41d95a6574030cce2ca', percentage: 35.2 },
       { address: '0x9f06db332e30ca40040cba6aed8f231e312f37c0', percentage: 22.7 },
@@ -142,8 +145,8 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
     ];
   }
   
-  // PRSM token: 0x6b50c916fc9a1c933a2601634ef4e44c36e1c8bd
-  else if (address === '0x6b50c916fc9a1c933a2601634ef4e44c36e1c8bd') {
+  // PRSM token: 0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68
+  else if (address === '0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68') {
     return [
       { address: '0xf41aaa7001aea7ab852be7a889818ec3e7391b94', percentage: 34.8 },
       { address: '0x8ed99e57b37deb710d48775d6743c5ccd045327e', percentage: 23.1 },
@@ -158,8 +161,8 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
     ];
   }
   
-  // GRNDT/GRID token: 0x3c383fb4ffe112f6412a351cf108b6af61c4c561
-  else if (address === '0x3c383fb4ffe112f6412a351cf108b6af61c4c561') {
+  // GRNDT/GRID token: 0xfafb870f1918827fe57ca4b891124606eaa7e6bd
+  else if (address === '0xfafb870f1918827fe57ca4b891124606eaa7e6bd') {
     return [
       { address: '0x9c915c8c78bac667b544a4de95cc750f6b1e4ea9', percentage: 32.5 },
       { address: '0x0cc703c1acd3d069e511b33e60c5e1a0cb713902', percentage: 24.6 },
@@ -181,7 +184,7 @@ function getDefaultTokenHolders(tokenAddress: string): TokenHolderData[] {
 // Export token addresses for convenience
 export const TOKEN_ADDRESSES = {
   X23: '0xc530b75465ce3c6286e718110a7b2e2b64bdc860',
-  CTZN: '0x6df8c18d8b9f674e29c32eb487ea2e4233aa3af6',
-  PRSM: '0x6b50c916fc9a1c933a2601634ef4e44c36e1c8bd',
-  GRID: '0x3c383fb4ffe112f6412a351cf108b6af61c4c561'
+  CTZN: '0xc2B0f088a0B242fD5CB46c9de92cceA6823E264B',
+  PRSM: '0x0b7a46e1af45e1eaadeed34b55b6fc00a85c7c68',
+  GRID: '0xfafb870f1918827fe57ca4b891124606eaa7e6bd'
 };

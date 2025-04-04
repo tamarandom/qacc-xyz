@@ -99,16 +99,16 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
     }
     
     // Check if required API key is available
-    if (!process.env.POLYGONSCAN_API_KEY) {
-      console.error('POLYGONSCAN_API_KEY environment variable not set');
+    if (!process.env.COVALENT_API_KEY) {
+      console.error('COVALENT_API_KEY environment variable not set');
       console.log('Falling back to local cache data for token holders');
       return;
     }
     
     let tokenHolders = [];
     
-    // Use the Polygonscan API to fetch token holders
-    console.log(`Fetching token holders for ${project.tokenSymbol} from Polygonscan API`);
+    // Use the Covalent API to fetch token holders
+    console.log(`Fetching token holders for ${project.tokenSymbol} from Covalent API`);
     tokenHolders = await fetchTokenHolders(project.contractAddress);
     
     if (tokenHolders.length > 0) {
@@ -732,7 +732,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // or if force refresh is requested (for debugging/testing)
       if (id === 1 || forceRefresh) {
         console.log(`Forcing fetch of token holders data for ${project.tokenSymbol} (project id ${id})`);
-        // Force fetch from our customized token service which now uses Polygonscan API
+        // Force fetch from our customized token service which now uses Covalent API
         const tokenHolders = await fetchTokenHolders(project.contractAddress);
         
         // Update cache with fresh data
@@ -751,8 +751,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(tokenHoldersCache[id].data);
       }
       
-      // If cache is invalid, fetch new data from Polygonscan API
-      console.log(`Fetching token holders for ${project.tokenSymbol} using Polygonscan API`);
+      // If cache is invalid, fetch new data from Covalent API
+      console.log(`Fetching token holders for ${project.tokenSymbol} using Covalent API`);
       const tokenHolders = await fetchTokenHolders(project.contractAddress);
       
       // Cache the token holders data
