@@ -295,7 +295,14 @@ export function BrandGuidelines() {
 }
 
 // Helper component for displaying color swatches
-function ColorCard({ name, hex, description, className = "" }) {
+interface ColorCardProps {
+  name: string;
+  hex: string;
+  description: string;
+  className?: string;
+}
+
+function ColorCard({ name, hex, description, className = "" }: ColorCardProps) {
   return (
     <div className={`rounded-lg p-4 ${className}`}>
       <h3 className="font-bold mb-1">{name}</h3>

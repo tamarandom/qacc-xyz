@@ -2,7 +2,6 @@ import { useParams, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +12,8 @@ import { ArrowLeft, Rocket, Calendar, Timer, Copy, ExternalLink } from "lucide-r
 import { PriceChart } from "@/components/projects/price-chart";
 import { GeckoTerminalChart } from "@/components/projects/gecko-terminal-chart";
 import { TokenHolders } from "@/components/projects/token-holders";
+import { ProjectTabs } from "@/components/projects/project-tabs";
+import { X23AboutContent, X23TeamContent, X23RoadmapContent } from "@/components/projects/x23-content";
 import quickswapLogo from "@assets/quickswap-logo.jpg";
 
 import { Project, ProjectFeature, ProjectTechnicalDetail } from "@shared/schema";
@@ -333,94 +334,21 @@ export default function ProjectDetail() {
               </div>
             )}
             
-            <div className="mb-6">
-              <Tabs defaultValue="about" className="dark:bg-[color:var(--color-black)]">
-                {/* Wrap TabsList in a div to enable horizontal scrolling on mobile */}
-                <div className="overflow-x-auto no-scrollbar bg-white dark:bg-[color:var(--color-black)]">
-                  <TabsList className="w-max min-w-full flex justify-start bg-white dark:bg-[color:var(--color-black)]">
-                    <TabsTrigger 
-                      value="about" 
-                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base mr-2 sm:mr-6 md:mr-8 whitespace-nowrap dark:text-gray-300"
-                    >
-                      ABOUT
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="team" 
-                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base mr-2 sm:mr-6 md:mr-8 whitespace-nowrap dark:text-gray-300"
-                    >
-                      TEAM
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="roadmap" 
-                      className="px-4 sm:px-6 md:px-8 py-3 text-sm sm:text-base whitespace-nowrap dark:text-gray-300"
-                    >
-                      ROADMAP
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-                
-                <TabsContent value="about" className="pt-6 dark:bg-[color:var(--color-black)]">
-                  <p className="text-gray-600 dark:text-gray-300 mb-5">
-                    x23.ai is dedicated to enhancing the accessibility and efficiency of Decentralized Autonomous Organizations (DAOs) by developing AI-enabled coordination tools. Their mission focuses on increasing participation and adoption of decentralized governance.
-                  </p>
-                  
-                  <h4 className="text-md font-medium text-gray-900 dark:text-white mb-2 mt-4">Project Summary</h4>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    The company's strategy involves a three-phase approach:
-                  </p>
-                  <ul className="list-disc pl-5 text-gray-600 dark:text-gray-300 mb-4 space-y-2">
-                    <li>
-                      <span className="font-medium">Lowering Participation Barriers:</span> By introducing tools like Newsfeed and Governance bots, x23.ai aims to reduce the time required for individuals to become active contributors in DAOs from months to days or even hours.
-                    </li>
-                    <li>
-                      <span className="font-medium">Automating Routine Tasks:</span> Leveraging AI to handle time-consuming activities such as due diligence, allowing DAO participants to focus on more strategic initiatives.
-                    </li>
-                    <li>
-                      <span className="font-medium">Facilitating Human-AI Collaboration:</span> Developing frameworks that enable seamless cooperation between humans and AI agents, ensuring the sustainable operation and growth of DAOs.
-                    </li>
-                  </ul>
-                </TabsContent>
-                
-                <TabsContent value="team" className="pt-6 dark:bg-[color:var(--color-black)]">
-                  <p className="text-gray-600 dark:text-gray-300">
-                    The founder of x23.ai is David Truong, a full-stack developer with experience at Aave's Genesis team in 2020 and Coinbase in 2015, bringing a background in consumer, crypto, and AI sectors.
-                  </p>
-                </TabsContent>
-                
-                <TabsContent value="roadmap" className="pt-6 dark:bg-[color:var(--color-black)]">
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    x23.ai's roadmap aligns with their three-phase strategy:
-                  </p>
-                  
-                  <div className="space-y-6 mb-4">
-                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase One</h5>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Develop and deploy tools like Newsfeed and Governance bots to streamline information consumption and decision-making within DAOs.
-                      </p>
-                    </div>
-                    
-                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Two</h5>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Implement AI-driven automation for tasks such as due diligence, enhancing productivity and efficiency for DAO participants.
-                      </p>
-                    </div>
-                    
-                    <div className="border-l-2 border-[color:var(--color-peach)] pl-4 py-1">
-                      <h5 className="font-medium text-gray-900 dark:text-white mb-2">Phase Three</h5>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Establish frameworks for effective human and AI collaboration, expanding the operational capabilities of DAOs beyond traditional human labor limitations.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <p className="text-gray-600 dark:text-gray-300">
-                    This structured approach aims to transform DAO participation, making decentralized governance more accessible and effective.
-                  </p>
-                </TabsContent>
-              </Tabs>
-            </div>
+{/* Project Info Tabs */}
+            {project.id === 1 ? (
+              <ProjectTabs 
+                projectId={project.id}
+                projectName={project.name}
+                aboutContent={<X23AboutContent />}
+                teamContent={<X23TeamContent />}
+                roadmapContent={<X23RoadmapContent />}
+              />
+            ) : (
+              <ProjectTabs 
+                projectId={project.id}
+                projectName={project.name}
+              />
+            )}
           </div>
           
           <div>
