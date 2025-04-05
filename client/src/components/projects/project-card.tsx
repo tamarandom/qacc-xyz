@@ -4,6 +4,7 @@ import { ProjectAvatar } from "@/components/ui/project-avatar";
 import PercentageChange from "@/components/ui/percentage-change";
 import { formatCurrency } from "@/lib/formatters";
 import { ArrowUpRight, ExternalLink } from "lucide-react";
+import { ProjectStatus } from "@shared/schema";
 import type { Project } from "@shared/schema";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -14,6 +15,89 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project, onClick }: ProjectCardProps) {
   const isMobile = useIsMobile();
+
+  // Determine status tag appearance
+  const renderStatusTag = () => {
+    switch(project.status) {
+      case ProjectStatus.PRE_ABC:
+        return (
+          <div className="bg-[#6F4FE8] text-white text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+            pre-ABC
+          </div>
+        );
+      case ProjectStatus.PRE_LAUNCH:
+        return (
+          <div className="bg-[#FBBA80] text-[#101010] text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
+            New
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  // Render metrics based on project status
+  const renderMetrics = () => {
+    if (project.status === ProjectStatus.LAUNCHED) {
+      return (
+        <>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+              {project.price > 0 ? formatCurrency(project.price) : "-"}
+            </p>
+          </div>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
+            {project.change24h !== null && project.change24h !== undefined ? (
+              <PercentageChange value={project.change24h} />
+            ) : (
+              <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">-</p>
+            )}
+          </div>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+              {project.marketCap > 0 ? formatCurrency(project.marketCap, false, true, true) : "-"}
+            </p>
+          </div>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
+              {project.volume24h > 0 ? formatCurrency(project.volume24h, false, false, true) : "-"}
+            </p>
+          </div>
+        </>
+      );
+    } else if (project.status === ProjectStatus.PRE_LAUNCH || project.status === ProjectStatus.PRE_ABC) {
+      return (
+        <>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(0.069)}</p>
+          </div>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, false, true, true)}</p>
+          </div>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-2">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
+          </div>
+        </>
+      );
+    } else {
+      // Fallback for other statuses
+      return (
+        <>
+          <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-2">
+            <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Status</p>
+            <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">Inactive</p>
+          </div>
+        </>
+      );
+    }
+  };
 
   return (
     <Card 
@@ -41,11 +125,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
                   <h3 className="font-medium text-[color:var(--text-primary)] font-['IBM_Plex_Mono'] group-hover:text-[color:var(--color-peach)] transition-colors truncate">
                     {project.name}
                   </h3>
-                  {project.isNew && (
-                    <div className="bg-[#FBBA80] text-[#101010] text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
-                      New
-                    </div>
-                  )}
+                  {renderStatusTag()}
                 </div>
                 <p className="text-xs text-[color:var(--text-secondary)] font-['IBM_Plex_Mono'] line-clamp-2">
                   {project.shortDescription}
@@ -63,51 +143,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
         
         {/* Project metrics */}
         <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3 text-sm">
-          {project.isNew ? (
-            <>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(0.069)}</p>
-              </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">{formatCurrency(400000, false, true, true)}</p>
-              </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors col-span-2">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Token</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">${project.tokenSymbol}</p>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Price</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
-                  {project.price > 0 ? formatCurrency(project.price) : "-"}
-                </p>
-              </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">24h</p>
-                {project.change24h !== null && project.change24h !== undefined ? (
-                  <PercentageChange value={project.change24h} />
-                ) : (
-                  <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm">-</p>
-                )}
-              </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Market Cap</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
-                  {project.marketCap > 0 ? formatCurrency(project.marketCap, false, true, true) : "-"}
-                </p>
-              </div>
-              <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
-                <p className="text-[#a0a0a0] text-xs font-['IBM_Plex_Mono'] uppercase">Volume (24h)</p>
-                <p className="font-medium text-white font-['IBM_Plex_Mono'] text-sm truncate">
-                  {project.volume24h > 0 ? formatCurrency(project.volume24h, false, false, true) : "-"}
-                </p>
-              </div>
-            </>
-          )}
+          {renderMetrics()}
         </div>
         
         {/* View details button indicator */}
