@@ -19,13 +19,13 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
   // Determine status tag appearance
   const renderStatusTag = () => {
     switch(project.status) {
-      case ProjectStatus.PRE_ABC:
+      case 'pre-abc':
         return (
           <div className="bg-[#6F4FE8] text-white text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
             pre-ABC
           </div>
         );
-      case ProjectStatus.PRE_LAUNCH:
+      case 'pre-launch':
         return (
           <div className="bg-[#FBBA80] text-[#101010] text-xs px-2 py-0.5 rounded-full uppercase font-bold shadow-sm">
             New
@@ -38,7 +38,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
 
   // Render metrics based on project status
   const renderMetrics = () => {
-    if (project.status === ProjectStatus.LAUNCHED) {
+    if (project.status === 'launched') {
       return (
         <>
           <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">
@@ -69,7 +69,7 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
           </div>
         </>
       );
-    } else if (project.status === ProjectStatus.PRE_LAUNCH || project.status === ProjectStatus.PRE_ABC) {
+    } else if (project.status === 'pre-launch' || project.status === 'pre-abc') {
       return (
         <>
           <div className="bg-[#1e1e1e] p-2 rounded-md group-hover:bg-[#282828] transition-colors">

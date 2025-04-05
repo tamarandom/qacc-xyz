@@ -83,12 +83,12 @@ export default function ProjectDetail() {
           <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:space-y-0">
             {/* Left Side - Project Info */}
             <div className="flex items-start">
-              {project.status === ProjectStatus.PRE_LAUNCH && (
+              {project.status === 'pre-launch' && (
                 <Badge className="mr-4 bg-[#FBBA80] text-[#101010] hover:bg-[#FBBA80] dark:bg-[#FBBA80] text-sm py-1 px-3 self-center">
                   NEW
                 </Badge>
               )}
-              {project.status === ProjectStatus.PRE_ABC && (
+              {project.status === 'pre-abc' && (
                 <Badge className="mr-4 bg-[#6F4FE8] text-white hover:bg-[#6F4FE8] dark:bg-[#6F4FE8] text-sm py-1 px-3 self-center">
                   pre-ABC
                 </Badge>
@@ -204,7 +204,7 @@ export default function ProjectDetail() {
             
             {/* Right Side - Stats and Buttons */}
             <div className="flex flex-col items-end justify-between">
-              {(project.status === ProjectStatus.PRE_LAUNCH || project.status === ProjectStatus.PRE_ABC) ? (
+              {(project.status === 'pre-launch' || project.status === 'pre-abc') ? (
                 // For new projects: more compact price display and button
                 <>
                   {/* Stats section */}
@@ -281,7 +281,7 @@ export default function ProjectDetail() {
         </div>
         
         {/* Chart for all launched projects */}
-        {project.status === ProjectStatus.LAUNCHED && (
+        {project.status === 'launched' && (
           <div className="px-4 py-4 bg-white dark:bg-[color:var(--color-black)] border-t-0">
             <div className="mx-auto max-w-5xl overflow-hidden">
               <GeckoTerminalChart projectId={project.id} tokenSymbol={project.tokenSymbol} />
@@ -291,7 +291,7 @@ export default function ProjectDetail() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white dark:bg-[color:var(--color-black)]">
           {/* Full width for new projects, 3/4 width for established projects */}
-          <div className={`bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 ${(project.status === ProjectStatus.PRE_LAUNCH || project.status === ProjectStatus.PRE_ABC) ? 'md:col-span-4' : 'md:col-span-3'}`}>
+          <div className={`bg-white dark:bg-[color:var(--color-black)] rounded-lg p-4 ${(project.status === 'pre-launch' || project.status === 'pre-abc') ? 'md:col-span-4' : 'md:col-span-3'}`}>
             {/* Project Info Tabs */}
             {project.id === 1 ? (
               <ProjectTabs 
@@ -349,7 +349,7 @@ export default function ProjectDetail() {
           </div>
           
           {/* Only show token holders for launched projects */}
-          {project.status === ProjectStatus.LAUNCHED && (
+          {project.status === 'launched' && (
             <div>
               <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
                 <CardHeader className="pb-2 pl-0 pr-0">
