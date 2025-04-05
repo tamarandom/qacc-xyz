@@ -4,10 +4,10 @@ import { z } from "zod";
 
 // Project Status Enum
 export enum ProjectStatus {
-  LAUNCHED = 'launched',   // Live projects with tokens already trading
-  UPCOMING = 'upcoming',   // Coming soon, in waitlist phase
-  DEVELOPMENT = 'development', // In active development
-  INACTIVE = 'inactive'    // No longer active
+  LAUNCHED = 'launched',    // Live projects with tokens already trading
+  PRE_LAUNCH = 'pre-launch',  // Coming soon, ready for launch phase
+  PRE_ABC = 'pre-abc',      // In early development/concept phase
+  INACTIVE = 'inactive'     // No longer active
 }
 
 // Project table for storing DeFi projects
@@ -28,7 +28,7 @@ export const projects = pgTable("projects", {
   blockchain: text("blockchain").notNull(),
   tokenStandard: text("token_standard").notNull(),
   contractAddress: text("contract_address").notNull(),
-  status: text("status").notNull().default(ProjectStatus.UPCOMING), // New field for project status
+  status: text("status").notNull().default(ProjectStatus.PRE_LAUNCH), // Project status
   launchDate: timestamp("launch_date"), // When the project will/did launch
   rank: integer("rank").notNull(),
   websiteUrl: text("website_url").notNull(),
