@@ -9,11 +9,13 @@ import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
+import WalletPage from "@/pages/wallet-page";
 import AuthPage from "@/pages/auth-page";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { useEffect } from "react";
+import { HelmetProvider } from "react-helmet-async";
 
 function Router() {
   return (
@@ -23,6 +25,7 @@ function Router() {
       <Route path="/points" component={PointsPage} />
       <ProtectedRoute path="/user-score" component={UserScorePage} />
       <ProtectedRoute path="/portfolio" component={PortfolioPage} />
+      <ProtectedRoute path="/wallet" component={WalletPage} />
       <Route path="/auth" component={AuthPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
@@ -47,14 +50,16 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeProvider>
-          <InitDarkMode />
-          <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
-            <Navbar />
-            <main className="flex-1 bg-[color:var(--background)]">
-              <Router />
-            </main>
-          </div>
-          <Toaster />
+          <HelmetProvider>
+            <InitDarkMode />
+            <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
+              <Navbar />
+              <main className="flex-1 bg-[color:var(--background)]">
+                <Router />
+              </main>
+            </div>
+            <Toaster />
+          </HelmetProvider>
         </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>

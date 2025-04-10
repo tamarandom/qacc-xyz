@@ -97,7 +97,7 @@ export function PurchaseTokenDialog({ project, fundingRound }: PurchaseTokenDial
     if (amountNumber < roundMinimum) {
       toast({
         title: "Below minimum",
-        description: `The minimum purchase amount is ${formatCurrency(roundMinimum, "USD")}.`,
+        description: `The minimum purchase amount is ${formatCurrency(roundMinimum)}.`,
         variant: "destructive",
       });
       return;
@@ -106,7 +106,7 @@ export function PurchaseTokenDialog({ project, fundingRound }: PurchaseTokenDial
     if (amountNumber > roundMaximum) {
       toast({
         title: "Above maximum",
-        description: `The maximum purchase amount is ${formatCurrency(roundMaximum, "USD")}.`,
+        description: `The maximum purchase amount is ${formatCurrency(roundMaximum)}.`,
         variant: "destructive",
       });
       return;
@@ -158,7 +158,7 @@ export function PurchaseTokenDialog({ project, fundingRound }: PurchaseTokenDial
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Token Price</Label>
               <div className="col-span-3 text-sm text-muted-foreground">
-                {formatCurrency(tokenPrice, "USD")} per {project.tokenSymbol}
+                {formatCurrency(tokenPrice)} per {project.tokenSymbol}
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -171,7 +171,7 @@ export function PurchaseTokenDialog({ project, fundingRound }: PurchaseTokenDial
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Min Purchase</Label>
                 <div className="col-span-3 text-sm text-muted-foreground">
-                  {formatCurrency(roundMinimum, "USD")}
+                  {formatCurrency(roundMinimum)}
                 </div>
               </div>
             )}
@@ -179,14 +179,14 @@ export function PurchaseTokenDialog({ project, fundingRound }: PurchaseTokenDial
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right">Max Purchase</Label>
                 <div className="col-span-3 text-sm text-muted-foreground">
-                  {formatCurrency(roundMaximum, "USD")}
+                  {formatCurrency(roundMaximum)}
                 </div>
               </div>
             )}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right">Wallet Balance</Label>
               <div className="col-span-3 text-sm">
-                {formatCurrency(userBalance, "USD")}
+                {formatCurrency(userBalance)}
               </div>
             </div>
           </div>
