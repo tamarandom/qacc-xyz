@@ -60,6 +60,13 @@ export default function Navbar() {
                 }`}>
                 POINTS
               </Link>
+              <Link href="/wallet" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
+                  location === "/wallet" 
+                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
+                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
+                }`}>
+                WALLET
+              </Link>
             </div>
           </div>
           
@@ -172,6 +179,17 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               POINTS
+            </Link>
+            <Link 
+              href="/wallet" 
+              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
+                location === "/wallet"
+                  ? "bg-[color:var(--border-color)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--border-color)] hover:text-[color:var(--text-primary)]"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              WALLET
             </Link>
           </div>
           
