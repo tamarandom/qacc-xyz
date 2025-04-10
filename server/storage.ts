@@ -59,6 +59,25 @@ export interface IStorage {
   // Price history methods
   getProjectPriceHistory(projectId: number, timeframe?: string): Promise<PriceHistory[]>;
   addPriceHistoryEntry(entry: InsertPriceHistory): Promise<PriceHistory>;
+  
+  // Wallet methods
+  getUserWalletBalance(userId: number): Promise<string>;
+  updateUserWalletBalance(userId: number, newBalance: string): Promise<User>;
+  addWalletTransaction(transaction: InsertWalletTransaction): Promise<WalletTransaction>;
+  getUserWalletTransactions(userId: number): Promise<WalletTransaction[]>;
+  
+  // Funding round methods
+  getProjectFundingRounds(projectId: number): Promise<FundingRound[]>;
+  getActiveFundingRounds(): Promise<FundingRound[]>;
+  getFundingRoundById(roundId: number): Promise<FundingRound | undefined>;
+  createFundingRound(round: InsertFundingRound): Promise<FundingRound>;
+  updateFundingRound(id: number, updates: Partial<FundingRound>): Promise<FundingRound | undefined>;
+  
+  // Token holdings methods
+  getUserTokenHoldings(userId: number): Promise<TokenHolding[]>;
+  getProjectTokenHoldings(projectId: number): Promise<TokenHolding[]>;
+  addTokenHolding(holding: InsertTokenHolding): Promise<TokenHolding>;
+  updateTokenHolding(id: number, updates: Partial<TokenHolding>): Promise<TokenHolding | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -68,12 +87,18 @@ export class MemStorage implements IStorage {
   private priceHistory: Map<number, PriceHistory[]>;
   private users: Map<number, User>;
   private pointTransactions: Map<number, PointTransaction[]>;
+  private walletTransactions: Map<number, WalletTransaction[]>;
+  private fundingRounds: Map<number, FundingRound[]>;
+  private tokenHoldings: Map<number, TokenHolding[]>;
   private nextProjectId: number;
   private nextFeatureId: number;
   private nextDetailId: number;
   private nextUserId: number;
   private nextTransactionId: number;
   private nextPriceHistoryId: number;
+  private nextWalletTransactionId: number;
+  private nextFundingRoundId: number;
+  private nextTokenHoldingId: number;
   
   // For session storage
   sessionStore: session.Store;

@@ -94,6 +94,7 @@ export const users = pgTable("users", {
   avatarUrl: text("avatar_url"),
   points: integer("points").notNull().default(0),
   rank: integer("rank"),
+  walletBalance: numeric("wallet_balance", { precision: 18, scale: 6 }).notNull().default("20000"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -156,4 +157,74 @@ export type ProjectWithDetails = Project & {
 // Extended user type with transaction history
 export type UserWithTransactions = User & {
   transactions: PointTransaction[];
+  tokenHoldings?: TokenHolding[];
 };
+
+// Funding rounds table to track when projects are accepting investments
+export const fundingRounds = pgTable("funding_rounds", {
+  id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  name: text("name").notNull(), // e.g., "Seed Round", "Series A", etc.
+  status: text("status").notNull(), // "active" or "inactive"
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  tokenPrice: numeric("token_price", { precision: 18, scale: 6 }).notNull(),
+  tokensAvailable: numeric("tokens_available", { precision: 18, scale: 6 }).notNull(),
+  minimumInvestment: numeric("minimum_investment", { precision: 18, scale: 2 }),
+  maximumInvestment: numeric("maximum_investment", { precision: 18, scale: 2 }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertFundingRoundSchema = createInsertSchema(fundingRounds).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type FundingRound = typeof fundingRounds.$inferSelect;
+export type InsertFundingRound = z.infer<typeof insertFundingRoundSchema>;
+
+// User token holdings table to track purchased tokens
+export const tokenHoldings = pgTable("token_holdings", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  roundId: integer("round_id").references(() => fundingRounds.id),
+  tokenAmount: numeric("token_amount", { precision: 18, scale: 6 }).notNull(),
+  purchasePrice: numeric("purchase_price", { precision: 18, scale: 6 }).notNull(), // Price per token at purchase time
+  investmentAmount: numeric("investment_amount", { precision: 18, scale: 2 }).notNull(), // Total amount invested
+  purchaseDate: timestamp("purchase_date").notNull().defaultNow(),
+  isLocked: boolean("is_locked").notNull().default(true), // Whether tokens are still in vesting period
+  unlockDate: timestamp("unlock_date"), // When tokens become available
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertTokenHoldingSchema = createInsertSchema(tokenHoldings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type TokenHolding = typeof tokenHoldings.$inferSelect;
+export type InsertTokenHolding = z.infer<typeof insertTokenHoldingSchema>;
+
+// Transaction history for user wallet activities
+export const walletTransactions = pgTable("wallet_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  projectId: integer("project_id").references(() => projects.id),
+  type: text("type").notNull(), // "purchase", "deposit", "withdrawal"
+  amount: numeric("amount", { precision: 18, scale: 6 }).notNull(),
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertWalletTransactionSchema = createInsertSchema(walletTransactions).omit({
+  id: true,
+  createdAt: true
+});
+
+export type WalletTransaction = typeof walletTransactions.$inferSelect;
+export type InsertWalletTransaction = z.infer<typeof insertWalletTransactionSchema>;
