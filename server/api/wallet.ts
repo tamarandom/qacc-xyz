@@ -35,14 +35,14 @@ export function registerWalletRoutes(app: Express) {
   // Get token holdings
   app.get('/api/token-holdings', async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
       
       const holdings = await storage.getUserTokenHoldings(req.user.id);
       res.json(holdings);
     } catch (error) {
-      console.error(`Error fetching token holdings for user ${req.user.id}:`, error);
+      console.error(`Error fetching token holdings:`, error);
       res.status(500).json({ error: "Failed to fetch token holdings" });
     }
   });
@@ -50,7 +50,7 @@ export function registerWalletRoutes(app: Express) {
   // Get project token holdings
   app.get('/api/projects/:id/token-holdings', async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
       
@@ -70,7 +70,7 @@ export function registerWalletRoutes(app: Express) {
   // Purchase tokens during a funding round
   app.post('/api/projects/:id/purchase', async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
       
