@@ -58,7 +58,7 @@ export default function Navbar() {
                     ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
                     : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
                 }`}>
-                POINTS
+                LEADERBOARD
               </Link>
 
             </div>
@@ -166,7 +166,7 @@ export default function Navbar() {
               }`}
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              POINTS
+              LEADERBOARD
             </Link>
 
           </div>
