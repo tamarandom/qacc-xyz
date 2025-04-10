@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Calendar, Coins, ArrowUpRight, Check, LockOpen } from "lucide-react";
-import { type Project, type User, type PointTransaction } from "@shared/schema";
+import { type Project, type User, type PointTransaction, type TokenHolding } from "@shared/schema";
 import { formatNumber, formatCurrency } from "@/lib/formatters";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { queryClient, apiRequest } from "@/lib/queryClient";
 
 // Token unlock structure
 interface TokenUnlock {
@@ -39,22 +41,10 @@ interface PortfolioItem {
 }
 
 export default function PortfolioPage() {
-  // In a real app, this would come from authentication
-  const userId = 1; // Mock logged in user ID for cryptowhale
+  // Get authenticated user
+  const { user } = useAuth();
   
-  // Get user data
-  const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: ['/api/users', userId],
-    queryFn: async () => {
-      const res = await fetch(`/api/users/${userId}`);
-      if (!res.ok) {
-        throw new Error('Failed to fetch user');
-      }
-      return await res.json() as User & { transactions: PointTransaction[] };
-    }
-  });
-  
-  // Get all projects data to join with transactions
+  // Get all projects data
   const { data: projects, isLoading: projectsLoading } = useQuery({
     queryKey: ['/api/projects'],
     queryFn: async () => {
@@ -66,7 +56,34 @@ export default function PortfolioPage() {
     }
   });
   
-  const isLoading = userLoading || projectsLoading;
+  // Get token holdings from database
+  const { data: tokenHoldings, isLoading: holdingsLoading } = useQuery({
+    queryKey: ['/api/wallet/holdings'],
+    queryFn: async () => {
+      const res = await fetch('/api/wallet/holdings');
+      if (!res.ok) {
+        throw new Error('Failed to fetch token holdings');
+      }
+      return await res.json() as TokenHolding[];
+    },
+    // Only fetch if user is logged in
+    enabled: !!user
+  });
+  
+  // Get point transactions for the user
+  const { data: transactions, isLoading: transactionsLoading } = useQuery({
+    queryKey: ['/api/wallet/transactions'],
+    queryFn: async () => {
+      const res = await fetch('/api/wallet/transactions');
+      if (!res.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      return await res.json() as PointTransaction[];
+    },
+    enabled: !!user
+  });
+  
+  const isLoading = projectsLoading || holdingsLoading || transactionsLoading || !user;
   
   // For token claiming
   const { toast } = useToast();
