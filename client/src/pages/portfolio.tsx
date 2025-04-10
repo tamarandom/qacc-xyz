@@ -278,24 +278,54 @@ export default function PortfolioPage() {
   };
   
   // Handle claiming all available tokens
-  const handleClaimAllTokens = () => {
+  const handleClaimAllTokens = async () => {
     const claimableTokens = filteredUnlocks
       .filter((t: TokenUnlock) => t.claimable && !t.claimed);
       
     if (claimableTokens.length === 0) return;
     
-    // In a real app, this would be an API call
-    const newClaimedTokens = { ...claimedTokens };
-    claimableTokens.forEach((unlock: TokenUnlock) => {
-      newClaimedTokens[unlock.id] = true;
-    });
-    
-    setClaimedTokens(newClaimedTokens);
-    
-    toast({
-      title: "All Tokens Claimed!",
-      description: `Successfully claimed tokens for ${claimableTokens.length} token unlocks`,
-    });
+    try {
+      // Call the API to claim all tokens
+      const response = await fetch('/api/wallet/claim-all-tokens', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to claim tokens');
+      }
+      
+      const responseData = await response.json();
+      
+      // Update local state to show all tokens as claimed
+      const newClaimedTokens = { ...claimedTokens };
+      claimableTokens.forEach((unlock: TokenUnlock) => {
+        newClaimedTokens[unlock.id] = true;
+      });
+      
+      setClaimedTokens(newClaimedTokens);
+      
+      // Show success message
+      toast({
+        title: "All Tokens Claimed!",
+        description: responseData.message || `Successfully claimed tokens for ${claimableTokens.length} token unlocks`,
+      });
+      
+      // Invalidate relevant queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/transactions'] });
+      
+    } catch (error) {
+      console.error('Error claiming all tokens:', error);
+      toast({
+        title: "Error Claiming Tokens",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive"
+      });
+    }
   };
   
   // Format dates helper
