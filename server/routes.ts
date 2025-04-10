@@ -49,6 +49,7 @@ import {
   GRNDT_TOKEN_ADDRESS
 } from "./services/geckoterminal";
 import { registerAdminRoutes } from "./api/admin";
+import { registerWalletRoutes } from "./api/wallet";
 
 // Deprecated caches - use the centralized cache from './cache.ts' instead
 // These are kept for backward compatibility with existing code
@@ -621,6 +622,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register admin endpoints
   registerAdminRoutes(app);
+  
+  // Register wallet endpoints
+  registerWalletRoutes(app);
   
   // put application routes here
   // prefix all routes with /api
