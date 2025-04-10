@@ -93,8 +93,8 @@ export default function PortfolioPage() {
   
   // Convert the token holdings from database into the TokenUnlock structure
   const tokenUnlocks: TokenUnlock[] = tokenHoldings?.map(holding => {
-    // Generate a unique ID for each holding
-    const id = `${holding.projectId}-${holding.roundId || 0}`;
+    // Generate a unique ID for each holding using the database holding id
+    const id = `${holding.id}-${holding.projectId}-${holding.roundId || 0}`;
     
     // Calculate cliff and end dates - assume 6 month cliff and 12 month vesting
     const purchaseDate = new Date(holding.purchaseDate || holding.createdAt);
@@ -203,37 +203,15 @@ export default function PortfolioPage() {
     const unlock = filteredUnlocks.find((t: TokenUnlock) => t.id === tokenId);
     if (!unlock?.claimable) return;
     
-    // Extract the database ID from the tokenId (which is in format projectId-roundId)
-    const [projectId, roundId] = tokenId.split('-');
+    // Extract the database ID from the tokenId (which is now in format holdingId-projectId-roundId)
+    const [holdingId, projectId, roundId] = tokenId.split('-');
     
     try {
-      // Find the matching token holding in our database
-      const holdings = await queryClient.fetchQuery({ 
-        queryKey: ['/api/wallet/holdings'],
-        queryFn: async () => {
-          const res = await fetch('/api/wallet/holdings');
-          if (!res.ok) throw new Error('Failed to fetch holdings');
-          return await res.json();
-        }
-      });
-      
-      // Find the token holding that matches this project and round
-      const holding = holdings.find((h: any) => 
-        h.projectId === parseInt(projectId) && 
-        (h.roundId === parseInt(roundId) || (h.roundId === null && roundId === '0'))
-      );
-      
-      if (!holding) {
-        toast({
-          title: "Error",
-          description: "Could not find matching token holding",
-          variant: "destructive"
-        });
-        return;
-      }
+      // We can directly use the holdingId from the token ID
+      // No need to find the holding from the list since we already have its ID
       
       // Call the API to claim this token
-      const response = await fetch(`/api/wallet/claim-token/${holding.id}`, {
+      const response = await fetch(`/api/wallet/claim-token/${holdingId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -494,8 +472,8 @@ export default function PortfolioPage() {
                             </tr>
                           </thead>
                           <tbody>
-                            {item.allUnlocks.map((unlock) => (
-                              <tr key={unlock.id} className="border-b border-gray-700 last:border-b-0">
+                            {item.allUnlocks.map((unlock, unlockIndex) => (
+                              <tr key={`${item.project?.id || 'project'}-${unlock.id}-${unlockIndex}`} className="border-b border-gray-700 last:border-b-0">
                                 <td className="py-2 pl-0 text-white">
                                   {unlock.buyDate ? formatDate(unlock.buyDate) : 'N/A'}
                                 </td>
