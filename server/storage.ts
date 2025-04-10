@@ -5,6 +5,9 @@ import {
   priceHistory,
   users,
   pointTransactions,
+  fundingRounds,
+  tokenHoldings,
+  walletTransactions,
   ProjectStatus,
   type Project,
   type InsertProject, 
@@ -19,7 +22,13 @@ import {
   type InsertPointTransaction,
   type UserWithTransactions,
   type PriceHistory,
-  type InsertPriceHistory
+  type InsertPriceHistory,
+  type FundingRound,
+  type InsertFundingRound,
+  type TokenHolding,
+  type InsertTokenHolding,
+  type WalletTransaction,
+  type InsertWalletTransaction
 } from "@shared/schema";
 import { db, pool } from "./db";
 import { eq, desc, gte } from "drizzle-orm";
@@ -116,12 +125,19 @@ export class MemStorage implements IStorage {
     this.priceHistory = new Map();
     this.users = new Map();
     this.pointTransactions = new Map();
+    this.walletTransactions = new Map();
+    this.fundingRounds = new Map();
+    this.tokenHoldings = new Map();
+    
     this.nextProjectId = 1;
     this.nextFeatureId = 1;
     this.nextDetailId = 1;
     this.nextUserId = 1;
     this.nextTransactionId = 1;
     this.nextPriceHistoryId = 1;
+    this.nextWalletTransactionId = 1;
+    this.nextFundingRoundId = 1;
+    this.nextTokenHoldingId = 1;
     
     // Initialize with sample data - need to handle async initialization
     // Since constructors can't be async, we need to call it and catch errors
@@ -265,6 +281,7 @@ export class MemStorage implements IStorage {
       points: insertUser.points || 0,
       rank: null,
       avatarUrl: insertUser.avatarUrl || null,
+      walletBalance: insertUser.walletBalance || "20000",
       createdAt: now,
       updatedAt: now
     };
@@ -336,6 +353,209 @@ export class MemStorage implements IStorage {
   
   async getUserTransactions(userId: number): Promise<PointTransaction[]> {
     return this.pointTransactions.get(userId) || [];
+  }
+  
+  // Wallet methods implementation
+  async getUserWalletBalance(userId: number): Promise<string> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    return user.walletBalance?.toString() || "20000";
+  }
+  
+  async updateUserWalletBalance(userId: number, newBalance: string): Promise<User> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
+    
+    const updatedUser: User = {
+      ...user,
+      walletBalance: newBalance,
+      updatedAt: new Date()
+    };
+    
+    this.users.set(userId, updatedUser);
+    return updatedUser;
+  }
+  
+  async addWalletTransaction(transaction: InsertWalletTransaction): Promise<WalletTransaction> {
+    const id = this.nextWalletTransactionId++;
+    
+    const walletTransaction: WalletTransaction = {
+      ...transaction,
+      id,
+      createdAt: new Date()
+    };
+    
+    // Add transaction to the user's transaction list
+    const userTransactions = this.walletTransactions.get(transaction.userId) || [];
+    userTransactions.push(walletTransaction);
+    this.walletTransactions.set(transaction.userId, userTransactions);
+    
+    return walletTransaction;
+  }
+  
+  async getUserWalletTransactions(userId: number): Promise<WalletTransaction[]> {
+    return this.walletTransactions.get(userId) || [];
+  }
+  
+  // Funding round methods implementation
+  async getProjectFundingRounds(projectId: number): Promise<FundingRound[]> {
+    return (this.fundingRounds.get(projectId) || []).filter(round => 
+      round.projectId === projectId
+    );
+  }
+  
+  async getActiveFundingRounds(): Promise<FundingRound[]> {
+    const allRounds: FundingRound[] = [];
+    
+    // Collect all funding rounds
+    for (const rounds of this.fundingRounds.values()) {
+      allRounds.push(...rounds);
+    }
+    
+    const now = new Date();
+    
+    // Filter active rounds
+    return allRounds.filter(round => 
+      round.status === 'active' && 
+      new Date(round.startDate) <= now && 
+      new Date(round.endDate) >= now
+    );
+  }
+  
+  async getFundingRoundById(roundId: number): Promise<FundingRound | undefined> {
+    for (const rounds of this.fundingRounds.values()) {
+      const found = rounds.find(round => round.id === roundId);
+      if (found) return found;
+    }
+    return undefined;
+  }
+  
+  async createFundingRound(round: InsertFundingRound): Promise<FundingRound> {
+    const id = this.nextFundingRoundId++;
+    const now = new Date();
+    
+    const fundingRound: FundingRound = {
+      ...round,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    // Add round to the project's funding rounds
+    const projectRounds = this.fundingRounds.get(round.projectId) || [];
+    projectRounds.push(fundingRound);
+    this.fundingRounds.set(round.projectId, projectRounds);
+    
+    return fundingRound;
+  }
+  
+  async updateFundingRound(id: number, updates: Partial<FundingRound>): Promise<FundingRound | undefined> {
+    // Find the round to update
+    let foundRound: FundingRound | undefined;
+    let projectId: number | undefined;
+    
+    for (const [pid, rounds] of this.fundingRounds.entries()) {
+      const round = rounds.find(r => r.id === id);
+      if (round) {
+        foundRound = round;
+        projectId = pid;
+        break;
+      }
+    }
+    
+    if (!foundRound || projectId === undefined) {
+      return undefined;
+    }
+    
+    // Update the round
+    const updatedRound: FundingRound = {
+      ...foundRound,
+      ...updates,
+      id,
+      updatedAt: new Date()
+    };
+    
+    // Replace the old round in the project's funding rounds
+    const projectRounds = this.fundingRounds.get(projectId) || [];
+    const updatedRounds = projectRounds.map(r => r.id === id ? updatedRound : r);
+    this.fundingRounds.set(projectId, updatedRounds);
+    
+    return updatedRound;
+  }
+  
+  // Token holdings methods implementation
+  async getUserTokenHoldings(userId: number): Promise<TokenHolding[]> {
+    const allHoldings: TokenHolding[] = [];
+    
+    // Collect all token holdings for this user
+    for (const holdings of this.tokenHoldings.values()) {
+      const userHoldings = holdings.filter(h => h.userId === userId);
+      allHoldings.push(...userHoldings);
+    }
+    
+    return allHoldings;
+  }
+  
+  async getProjectTokenHoldings(projectId: number): Promise<TokenHolding[]> {
+    const projectHoldings = this.tokenHoldings.get(projectId) || [];
+    return projectHoldings.filter(h => h.projectId === projectId);
+  }
+  
+  async addTokenHolding(holding: InsertTokenHolding): Promise<TokenHolding> {
+    const id = this.nextTokenHoldingId++;
+    const now = new Date();
+    
+    const tokenHolding: TokenHolding = {
+      ...holding,
+      id,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    // Add holding to the project's token holdings
+    const projectHoldings = this.tokenHoldings.get(holding.projectId) || [];
+    projectHoldings.push(tokenHolding);
+    this.tokenHoldings.set(holding.projectId, projectHoldings);
+    
+    return tokenHolding;
+  }
+  
+  async updateTokenHolding(id: number, updates: Partial<TokenHolding>): Promise<TokenHolding | undefined> {
+    // Find the holding to update
+    let foundHolding: TokenHolding | undefined;
+    let projectId: number | undefined;
+    
+    for (const [pid, holdings] of this.tokenHoldings.entries()) {
+      const holding = holdings.find(h => h.id === id);
+      if (holding) {
+        foundHolding = holding;
+        projectId = pid;
+        break;
+      }
+    }
+    
+    if (!foundHolding || projectId === undefined) {
+      return undefined;
+    }
+    
+    // Update the holding
+    const updatedHolding: TokenHolding = {
+      ...foundHolding,
+      ...updates,
+      id,
+      updatedAt: new Date()
+    };
+    
+    // Replace the old holding in the project's token holdings
+    const projectHoldings = this.tokenHoldings.get(projectId) || [];
+    const updatedHoldings = projectHoldings.map(h => h.id === id ? updatedHolding : h);
+    this.tokenHoldings.set(projectId, updatedHoldings);
+    
+    return updatedHolding;
   }
   
   // Helper method to update all user ranks based on points
