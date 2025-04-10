@@ -226,7 +226,7 @@ export class MemStorage implements IStorage {
     const project: Project = { 
       ...insertProject, 
       id, 
-      status: insertProject.status || ProjectStatus.UPCOMING,
+      status: insertProject.status || "pre-abc",
       avatarText: insertProject.avatarText || "",
       isFeatured: insertProject.isFeatured !== undefined ? insertProject.isFeatured : false,
       isNew: insertProject.isNew !== undefined ? insertProject.isNew : false,
@@ -1462,7 +1462,7 @@ export class DatabaseStorage implements IStorage {
     // Ensure status field is set
     const projectWithStatus = {
       ...project,
-      status: project.status || ProjectStatus.UPCOMING
+      status: project.status || "pre-abc"
     };
     
     const [result] = await db.insert(projects).values(projectWithStatus).returning();
@@ -1817,7 +1817,7 @@ export class DatabaseStorage implements IStorage {
       tokenStandard: "ERC-20",
       contractAddress: "0x0000000000000000000000000000000000000000",
       rank: 5,
-      status: ProjectStatus.UPCOMING,
+      status: "pre-launch",
       launchDate: new Date("2025-06-15"),
       websiteUrl: "https://gridlock.xyz",
       whitePaperUrl: "https://gridlock.xyz/whitepaper",
@@ -1849,7 +1849,7 @@ export class DatabaseStorage implements IStorage {
       tokenStandard: "ERC-20",
       contractAddress: "0x0000000000000000000000000000000000000000",
       rank: 6,
-      status: ProjectStatus.UPCOMING,
+      status: "pre-launch",
       launchDate: new Date("2025-07-01"),
       websiteUrl: "https://todamoon.finance",
       whitePaperUrl: "https://todamoon.finance/whitepaper",
@@ -1881,7 +1881,7 @@ export class DatabaseStorage implements IStorage {
       tokenStandard: "ERC-20",
       contractAddress: "0x0000000000000000000000000000000000000000",
       rank: 7,
-      status: ProjectStatus.DEVELOPMENT,
+      status: "pre-abc",
       launchDate: new Date("2025-08-15"),
       websiteUrl: "https://howtodao.xyz",
       whitePaperUrl: "https://howtodao.xyz/whitepaper",
@@ -1913,7 +1913,7 @@ export class DatabaseStorage implements IStorage {
       tokenStandard: "ERC-20",
       contractAddress: "0x0000000000000000000000000000000000000000",
       rank: 8,
-      status: ProjectStatus.DEVELOPMENT,
+      status: "pre-abc",
       launchDate: new Date("2025-09-30"),
       websiteUrl: "https://web3packs.xyz",
       whitePaperUrl: "https://web3packs.xyz/whitepaper",
