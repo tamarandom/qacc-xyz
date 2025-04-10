@@ -6,6 +6,7 @@ interface ProjectAvatarProps {
   textColor?: string;
   size?: "xs" | "sm" | "md" | "lg";
   tokenSymbol?: string;
+  className?: string;
 }
 
 export function ProjectAvatar({
@@ -14,6 +15,7 @@ export function ProjectAvatar({
   textColor = "text-primary",
   size = "md",
   tokenSymbol,
+  className,
 }: ProjectAvatarProps) {
   const sizes = {
     xs: "h-6 w-6 text-xs",
@@ -31,7 +33,8 @@ export function ProjectAvatar({
         "rounded-md flex items-center justify-center font-['IBM_Plex_Mono'] font-bold",
         bgColor,
         textColor,
-        sizes[size]
+        sizes[size],
+        className
       )}
     >
       {displayText}

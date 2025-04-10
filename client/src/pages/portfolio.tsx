@@ -24,12 +24,12 @@ interface TokenUnlock {
   // Unique identifier for each unlock (projectId + round number)
   id: string;
   // For multiple rounds of the same project
-  round?: number;
+  round: number | null;
   transactionHash?: string;
   // Purchase date
-  buyDate?: Date;
+  buyDate: Date;
   // Amount spent on this purchase
-  spent?: number;
+  spent: number;
 }
 
 interface PortfolioItem {
@@ -91,108 +91,39 @@ export default function PortfolioPage() {
   // For claiming tokens - using ID instead of just projectId
   const [claimedTokens, setClaimedTokens] = useState<{[key: string]: boolean}>({});
   
-  // Mock token unlock data - in a real app this would come from the API
-  // Filter out Project #0 by not including it in the initial array
-  const tokenUnlocks: TokenUnlock[] = [
-    // Project #1, Round 1 - First purchase
-    {
-      projectId: 1,
-      amount: 75,
-      cliffDate: new Date(2025, 5, 15), // June 15, 2025
-      endDate: new Date(2026, 5, 15), // June 15, 2026
-      claimed: claimedTokens['1-1'] || false,
-      claimable: new Date() >= new Date(2025, 5, 15), // Check if current date is after cliff date
-      id: '1-1',
-      transactionHash: "0x1234...5678",
-      round: 1,
-      buyDate: new Date(2024, 11, 15), // December 15, 2024 (6 months before cliff)
-      spent: 250
-    },
-    // Project #1, Round 2 - Second purchase
-    {
-      projectId: 1,
-      amount: 120,
-      cliffDate: new Date(2025, 3, 20), // April 20, 2025
-      endDate: new Date(2026, 3, 20), // April 20, 2026
-      claimed: claimedTokens['1-2'] || false,
-      claimable: new Date() >= new Date(2025, 3, 20),
-      id: '1-2',
-      transactionHash: "0x5678...9abc",
-      round: 2,
-      buyDate: new Date(2024, 9, 20), // October 20, 2024 (6 months before cliff)
-      spent: 300
-    },
-    // Project #1, Round 3 - Third purchase
-    {
-      projectId: 1,
-      amount: 150,
-      cliffDate: new Date(2025, 2, 5), // March 5, 2025
-      endDate: new Date(2026, 2, 5), // March 5, 2026
-      claimed: claimedTokens['1-3'] || false,
-      claimable: new Date() >= new Date(2025, 2, 5),
-      id: '1-3',
-      transactionHash: "0xdef0...1234",
-      round: 3,
-      buyDate: new Date(2024, 8, 5), // September 5, 2024 (6 months before cliff)
-      spent: 200
-    },
-    {
-      projectId: 2,
-      amount: 80,
-      cliffDate: new Date(2025, 8, 1), // September 1, 2025
-      endDate: new Date(2026, 8, 1), // September 1, 2026
-      claimed: claimedTokens['2-0'] || false,
-      claimable: new Date() >= new Date(2025, 8, 1), // Check if current date is after cliff date
-      id: '2-0',
-      transactionHash: "0x8765...4321",
-      round: 1,
-      buyDate: new Date(2025, 2, 1), // March 1, 2025 (6 months before cliff)
-      spent: 250
-    },
-    {
-      projectId: 3,
-      amount: 120,
-      cliffDate: new Date(2025, 2, 15), // March 15, 2025
-      endDate: new Date(2026, 2, 15), // March 15, 2026
-      claimed: claimedTokens['3-0'] || false,
-      claimable: false,
-      id: '3-0',
-      transactionHash: "0xabcd...ef01",
-      round: 1,
-      buyDate: new Date(2024, 8, 15), // September 15, 2024 (6 months before cliff)
-      spent: 300
-    },
-    // Adding 5 more tokens with different cliff and end dates
-    {
-      projectId: 4,
-      amount: 150,
-      cliffDate: new Date(2025, 7, 10), // August 10, 2025
-      endDate: new Date(2026, 7, 10), // August 10, 2026
-      claimed: claimedTokens['4-0'] || false,
-      claimable: false,
-      id: '4-0',
-      transactionHash: "0xdef0...1234",
-      round: 1,
-      buyDate: new Date(2025, 1, 10), // February 10, 2025 (6 months before cliff)
-      spent: 350
-    },
-    {
-      projectId: 5,
-      amount: 200,
-      cliffDate: new Date(2025, 11, 25), // December 25, 2025
-      endDate: new Date(2026, 11, 25), // December 25, 2026
-      claimed: claimedTokens['5-0'] || false,
-      claimable: false,
-      id: '5-0',
-      transactionHash: "0x5678...9abc",
-      round: 1,
-      buyDate: new Date(2025, 5, 25), // June 25, 2025 (6 months before cliff)
-      spent: 280
-    }
-  ];
+  // Convert the token holdings from database into the TokenUnlock structure
+  const tokenUnlocks: TokenUnlock[] = tokenHoldings?.map(holding => {
+    // Generate a unique ID for each holding
+    const id = `${holding.projectId}-${holding.roundId || 0}`;
+    
+    // Calculate cliff and end dates - assume 6 month cliff and 12 month vesting
+    const purchaseDate = new Date(holding.purchaseDate || holding.createdAt);
+    const cliffDate = new Date(purchaseDate);
+    cliffDate.setMonth(cliffDate.getMonth() + 6);
+    
+    const endDate = new Date(purchaseDate);
+    endDate.setMonth(endDate.getMonth() + 12);
+    
+    // Check if token is claimable based on current date vs cliff date
+    const now = new Date();
+    const claimable = !holding.isLocked && now >= cliffDate;
+    
+    return {
+      projectId: holding.projectId,
+      amount: Number(holding.tokenAmount),
+      cliffDate,
+      endDate,
+      claimed: !holding.isLocked,
+      claimable,
+      id,
+      round: holding.roundId,
+      buyDate: purchaseDate,
+      spent: Number(holding.investmentAmount)
+    };
+  }) || [];
   
-  // First group all transactions by project ID
-  const transactionsByProject = userData?.transactions.reduce<Record<number, PointTransaction[]>>((acc, transaction) => {
+  // Group transactions by project ID for reference
+  const transactionsByProject = transactions?.reduce<Record<number, PointTransaction[]>>((acc, transaction) => {
     if (!acc[transaction.projectId]) {
       acc[transaction.projectId] = [];
     }
@@ -201,9 +132,9 @@ export default function PortfolioPage() {
   }, {}) || {};
   
   // Filter out unlocks for projects 9, 11, and 12
-  const filteredUnlocks = tokenUnlocks.filter(unlock => 
+  const filteredUnlocks = tokenUnlocks?.filter(unlock => 
     unlock.projectId !== 9 && unlock.projectId !== 11 && unlock.projectId !== 12
-  );
+  ) || [];
   
   // Create a unified list of portfolio items with projects and their unlocks
   const portfolioItems: PortfolioItem[] = [];
@@ -263,6 +194,9 @@ export default function PortfolioPage() {
   
   // Check if there are any tokens available to claim
   const hasClaimableTokens = filteredUnlocks.some((t: TokenUnlock) => t.claimable && !t.claimed);
+  
+  // Get user points from the authenticated user
+  const userPoints = user?.points || 0;
   
   // Handle claiming tokens for a specific unlock
   const handleClaimTokens = (tokenId: string) => {
@@ -341,7 +275,7 @@ export default function PortfolioPage() {
           <div className="bg-[color:var(--color-black-200)] rounded-lg p-4 border border-gray-800">
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">Q/ACC POINTS</h3>
             <div className="text-3xl font-bold text-white">
-              {isLoading ? <Skeleton className="h-8 w-24 bg-gray-700" /> : formatNumber(userData?.points || 0)}
+              {isLoading ? <Skeleton className="h-8 w-24 bg-gray-700" /> : formatNumber(user?.points || 0)}
             </div>
           </div>
         </div>
