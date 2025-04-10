@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu, LogOut } from "lucide-react";
+import { X, Menu, LogOut, User } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo-light.png";
 import { useTheme } from "@/contexts/theme-context";
 import { useAuth } from "@/hooks/use-auth";
@@ -60,13 +60,7 @@ export default function Navbar() {
                 }`}>
                 POINTS
               </Link>
-              <Link href="/wallet" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
-                  location === "/wallet" 
-                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
-                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
-                }`}>
-                PROFILE
-              </Link>
+
             </div>
           </div>
           
@@ -75,21 +69,15 @@ export default function Navbar() {
             {user ? (
               <>                
                 <div className="flex items-center space-x-3">
-                  <div className="flex flex-col items-end">
-                    <span className="text-sm font-medium text-[color:var(--text-primary)]">
-                      {user?.username}
-                    </span>
-                    <span className="text-xs text-[color:var(--text-secondary)]">
-                      {user?.email}
-                    </span>
-                  </div>
+                  <span className="text-sm font-medium text-[color:var(--text-primary)]">
+                    {user?.username}
+                  </span>
                   
-                  <div className="relative">
+                  <Link href="/wallet">
                     <Button 
                       variant="ghost" 
                       size="sm" 
                       className="p-1 rounded-full focus:outline-none"
-                      onClick={handleLogout}
                     >
                       <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
                         <span className="font-['IBM_Plex_Mono'] font-medium">
@@ -97,7 +85,7 @@ export default function Navbar() {
                         </span>
                       </div>
                     </Button>
-                  </div>
+                  </Link>
                 </div>
               </>
             ) : (
@@ -180,17 +168,7 @@ export default function Navbar() {
             >
               POINTS
             </Link>
-            <Link 
-              href="/wallet" 
-              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
-                location === "/wallet"
-                  ? "bg-[color:var(--border-color)] text-[color:var(--color-peach)]"
-                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--border-color)] hover:text-[color:var(--text-primary)]"
-              }`}
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              PROFILE
-            </Link>
+
           </div>
           
           {/* Auth area - Mobile */}
@@ -207,11 +185,20 @@ export default function Navbar() {
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-[color:var(--text-primary)]">{user.username}</div>
-                    <div className="text-sm font-medium text-[color:var(--text-secondary)]">{user.email}</div>
                   </div>
                 </div>
                 
                 <div className="mt-3 space-y-3">
+                  <Link href="/wallet" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                    >
+                      <User className="h-4 w-4 mr-2" /> 
+                      My Profile
+                    </Button>
+                  </Link>
+                  
                   <Button 
                     variant="outline" 
                     className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
