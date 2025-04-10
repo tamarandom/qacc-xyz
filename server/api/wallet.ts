@@ -1,5 +1,6 @@
 import { Express } from 'express';
 import { storage } from '../storage';
+import { TokenHolding } from '@shared/schema';
 
 export function registerWalletRoutes(app: Express) {
   // Get user wallet balance
@@ -216,6 +217,129 @@ export function registerWalletRoutes(app: Express) {
     } catch (error) {
       console.error("Error fetching active funding rounds:", error);
       res.status(500).json({ error: "Failed to fetch active funding rounds" });
+    }
+  });
+
+  // API endpoint to claim a specific token
+  app.post('/api/wallet/claim-token/:id', async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const tokenHoldingId = parseInt(req.params.id);
+      const userId = req.user.id;
+      
+      // Get all user token holdings
+      const holdings = await storage.getUserTokenHoldings(userId);
+      
+      // Find the specific holding
+      const holding = holdings.find(h => h.id === tokenHoldingId);
+      
+      if (!holding) {
+        return res.status(404).json({ error: "Token holding not found" });
+      }
+      
+      // Check if the token is already claimed
+      if (!holding.isLocked) {
+        return res.status(400).json({ error: "Token is already claimed" });
+      }
+      
+      // Check if the token is claimable (unlock date has passed)
+      const now = new Date();
+      if (holding.unlockDate && new Date(holding.unlockDate) > now) {
+        return res.status(400).json({ 
+          error: "Token is not yet claimable", 
+          unlockDate: holding.unlockDate 
+        });
+      }
+      
+      // Update the token holding to mark it as claimed
+      const updatedHolding = await storage.updateTokenHolding(tokenHoldingId, {
+        isLocked: false,
+      });
+      
+      // Get the project for the response
+      const project = await storage.getProjectById(holding.projectId);
+      
+      res.json({
+        success: true,
+        tokenHolding: updatedHolding,
+        message: `Successfully claimed ${holding.tokenAmount} ${project?.tokenSymbol || 'tokens'}`
+      });
+      
+    } catch (error) {
+      console.error(`Error claiming token:`, error);
+      res.status(500).json({ error: "Failed to claim token" });
+    }
+  });
+  
+  // API endpoint to claim all available tokens
+  app.post('/api/wallet/claim-all-tokens', async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const userId = req.user.id;
+      
+      // Get all user token holdings
+      const holdings = await storage.getUserTokenHoldings(userId);
+      
+      // Get current date for comparison
+      const now = new Date();
+      
+      // Filter for locked tokens that are past their unlock date
+      const claimableHoldings = holdings.filter(h => 
+        h.isLocked && h.unlockDate && new Date(h.unlockDate) <= now
+      );
+      
+      if (claimableHoldings.length === 0) {
+        return res.status(400).json({ error: "No claimable tokens available" });
+      }
+      
+      // Update each token holding to mark it as claimed
+      const claimedHoldings: TokenHolding[] = [];
+      
+      for (const holding of claimableHoldings) {
+        const updated = await storage.updateTokenHolding(holding.id, {
+          isLocked: false,
+        });
+        
+        if (updated) {
+          claimedHoldings.push(updated);
+        }
+      }
+      
+      res.json({
+        success: true,
+        tokenHoldings: claimedHoldings,
+        count: claimedHoldings.length,
+        message: `Successfully claimed tokens from ${claimedHoldings.length} holdings`
+      });
+      
+    } catch (error) {
+      console.error(`Error claiming all tokens:`, error);
+      res.status(500).json({ error: "Failed to claim tokens" });
+    }
+  });
+
+  // API endpoint to get user's wallet holdings
+  app.get('/api/wallet/holdings', async (req, res) => {
+    try {
+      if (!req.isAuthenticated() || !req.user) {
+        return res.status(401).json({ error: "Not authenticated" });
+      }
+      
+      const userId = req.user.id;
+      
+      // Get all user token holdings
+      const holdings = await storage.getUserTokenHoldings(userId);
+      
+      res.json(holdings);
+    } catch (error) {
+      console.error(`Error fetching wallet holdings:`, error);
+      res.status(500).json({ error: "Failed to fetch wallet holdings" });
     }
   });
 }

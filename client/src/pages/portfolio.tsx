@@ -199,23 +199,82 @@ export default function PortfolioPage() {
   const userPoints = user?.points || 0;
   
   // Handle claiming tokens for a specific unlock
-  const handleClaimTokens = (tokenId: string) => {
+  const handleClaimTokens = async (tokenId: string) => {
     const unlock = filteredUnlocks.find((t: TokenUnlock) => t.id === tokenId);
     if (!unlock?.claimable) return;
     
-    // In a real app, this would be an API call
-    setClaimedTokens(prev => ({
-      ...prev,
-      [tokenId]: true
-    }));
+    // Extract the database ID from the tokenId (which is in format projectId-roundId)
+    const [projectId, roundId] = tokenId.split('-');
     
-    const project = projects?.find(p => p.id === unlock.projectId);
-    const roundInfo = unlock.round ? ` (Round ${unlock.round})` : '';
-    
-    toast({
-      title: "Tokens Claimed!",
-      description: `Successfully claimed tokens for ${project?.name || `Project #${unlock.projectId}`}${roundInfo}`,
-    });
+    try {
+      // Find the matching token holding in our database
+      const holdings = await queryClient.fetchQuery({ 
+        queryKey: ['/api/wallet/holdings'],
+        queryFn: async () => {
+          const res = await fetch('/api/wallet/holdings');
+          if (!res.ok) throw new Error('Failed to fetch holdings');
+          return await res.json();
+        }
+      });
+      
+      // Find the token holding that matches this project and round
+      const holding = holdings.find((h: any) => 
+        h.projectId === parseInt(projectId) && 
+        (h.roundId === parseInt(roundId) || (h.roundId === null && roundId === '0'))
+      );
+      
+      if (!holding) {
+        toast({
+          title: "Error",
+          description: "Could not find matching token holding",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Call the API to claim this token
+      const response = await fetch(`/api/wallet/claim-token/${holding.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to claim token');
+      }
+      
+      const responseData = await response.json();
+      
+      // Update local state to show the token as claimed
+      setClaimedTokens(prev => ({
+        ...prev,
+        [tokenId]: true
+      }));
+      
+      // Get project details for the toast
+      const project = projects?.find(p => p.id === unlock.projectId);
+      const roundInfo = unlock.round ? ` (Round ${unlock.round})` : '';
+      
+      // Show success message
+      toast({
+        title: "Tokens Claimed!",
+        description: responseData.message || `Successfully claimed tokens for ${project?.name || `Project #${unlock.projectId}`}${roundInfo}`,
+      });
+      
+      // Invalidate relevant queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/holdings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/transactions'] });
+      
+    } catch (error) {
+      console.error('Error claiming token:', error);
+      toast({
+        title: "Error Claiming Token",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handle claiming all available tokens
