@@ -5,14 +5,14 @@ export function registerWalletRoutes(app: Express) {
   // Get user wallet balance
   app.get('/api/wallet/balance', async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
       
       const balance = await storage.getUserWalletBalance(req.user.id);
       res.json({ balance });
     } catch (error) {
-      console.error(`Error fetching wallet balance for user ${req.user.id}:`, error);
+      console.error(`Error fetching wallet balance:`, error);
       res.status(500).json({ error: "Failed to fetch wallet balance" });
     }
   });
@@ -20,14 +20,14 @@ export function registerWalletRoutes(app: Express) {
   // Get wallet transactions
   app.get('/api/wallet/transactions', async (req, res) => {
     try {
-      if (!req.isAuthenticated()) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ error: "Not authenticated" });
       }
       
       const transactions = await storage.getUserWalletTransactions(req.user.id);
       res.json(transactions);
     } catch (error) {
-      console.error(`Error fetching wallet transactions for user ${req.user.id}:`, error);
+      console.error(`Error fetching wallet transactions:`, error);
       res.status(500).json({ error: "Failed to fetch wallet transactions" });
     }
   });
@@ -174,7 +174,6 @@ export function registerWalletRoutes(app: Express) {
         projectId,
         amount: pointsToAdd,
         description: `Points earned for purchasing ${project.tokenSymbol} tokens`,
-        type: "purchase",
         tokenAmount: parseFloat(tokenAmount),
       });
       

@@ -1438,6 +1438,152 @@ export class DatabaseStorage implements IStorage {
       createTableIfMissing: true
     });
   }
+  
+  // Wallet methods
+  async getUserWalletBalance(userId: number): Promise<string> {
+    const [user] = await db.select({ walletBalance: users.walletBalance })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    return user?.walletBalance.toString() || "0";
+  }
+  
+  async updateUserWalletBalance(userId: number, newBalance: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ walletBalance: newBalance, updatedAt: new Date() })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    return user;
+  }
+  
+  async addWalletTransaction(transaction: InsertWalletTransaction): Promise<WalletTransaction> {
+    const [result] = await db
+      .insert(walletTransactions)
+      .values(transaction)
+      .returning();
+    
+    return result;
+  }
+  
+  async getUserWalletTransactions(userId: number): Promise<WalletTransaction[]> {
+    const results = await db
+      .select()
+      .from(walletTransactions)
+      .where(eq(walletTransactions.userId, userId))
+      .orderBy(desc(walletTransactions.createdAt));
+    
+    return results;
+  }
+  
+  async getUserTokenHoldings(userId: number): Promise<TokenHolding[]> {
+    const results = await db
+      .select()
+      .from(tokenHoldings)
+      .where(eq(tokenHoldings.userId, userId))
+      .orderBy(desc(tokenHoldings.purchaseDate));
+    
+    return results;
+  }
+  
+  async getProjectTokenHoldings(projectId: number): Promise<TokenHolding[]> {
+    const results = await db
+      .select()
+      .from(tokenHoldings)
+      .where(eq(tokenHoldings.projectId, projectId))
+      .orderBy(desc(tokenHoldings.purchaseDate));
+    
+    return results;
+  }
+  
+  async addTokenHolding(holding: InsertTokenHolding): Promise<TokenHolding> {
+    const [result] = await db
+      .insert(tokenHoldings)
+      .values({
+        ...holding,
+        purchaseDate: holding.purchaseDate || new Date(),
+        isLocked: holding.isLocked !== undefined ? holding.isLocked : true,
+        unlockDate: holding.unlockDate || null
+      })
+      .returning();
+    
+    return result;
+  }
+  
+  async updateTokenHolding(id: number, updates: Partial<TokenHolding>): Promise<TokenHolding | undefined> {
+    const [result] = await db
+      .update(tokenHoldings)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(tokenHoldings.id, id))
+      .returning();
+    
+    return result;
+  }
+  
+  async getProjectFundingRounds(projectId: number): Promise<FundingRound[]> {
+    const results = await db
+      .select()
+      .from(fundingRounds)
+      .where(eq(fundingRounds.projectId, projectId))
+      .orderBy(desc(fundingRounds.startDate));
+    
+    return results;
+  }
+  
+  async getActiveFundingRounds(): Promise<FundingRound[]> {
+    const now = new Date();
+    
+    const results = await db
+      .select()
+      .from(fundingRounds)
+      .where(eq(fundingRounds.status, "active"))
+      .orderBy(fundingRounds.endDate);
+    
+    // Filter further in JavaScript for proper date comparison
+    return results.filter(round => 
+      new Date(round.startDate) <= now && 
+      new Date(round.endDate) >= now
+    );
+  }
+  
+  async getFundingRoundById(roundId: number): Promise<FundingRound | undefined> {
+    const [result] = await db
+      .select()
+      .from(fundingRounds)
+      .where(eq(fundingRounds.id, roundId));
+    
+    return result;
+  }
+  
+  async createFundingRound(round: InsertFundingRound): Promise<FundingRound> {
+    const [result] = await db
+      .insert(fundingRounds)
+      .values({
+        ...round,
+        minimumInvestment: round.minimumInvestment || null,
+        maximumInvestment: round.maximumInvestment || null
+      })
+      .returning();
+    
+    return result;
+  }
+  
+  async updateFundingRound(id: number, updates: Partial<FundingRound>): Promise<FundingRound | undefined> {
+    const [result] = await db
+      .update(fundingRounds)
+      .set({
+        ...updates,
+        updatedAt: new Date()
+      })
+      .where(eq(fundingRounds.id, id))
+      .returning();
+    
+    return result;
+  }
 
   // Project methods
   async getAllProjects(): Promise<Project[]> {
@@ -1586,7 +1732,7 @@ export class DatabaseStorage implements IStorage {
 
   // Price history methods
   async getProjectPriceHistory(projectId: number, timeframe?: string): Promise<PriceHistory[]> {
-    let query = db
+    const results = await db
       .select()
       .from(priceHistory)
       .where(eq(priceHistory.projectId, projectId))
@@ -1615,10 +1761,11 @@ export class DatabaseStorage implements IStorage {
           break;
       }
       
-      query = query.where(gte(priceHistory.timestamp, startDate));
+      // Filter in JavaScript instead of SQL
+      return results.filter(entry => new Date(entry.timestamp) >= startDate);
     }
     
-    return query;
+    return results;
   }
 
   async addPriceHistoryEntry(entry: InsertPriceHistory): Promise<PriceHistory> {
