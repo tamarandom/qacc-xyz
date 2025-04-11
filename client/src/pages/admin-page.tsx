@@ -189,6 +189,23 @@ export default function AdminPage() {
     }
   });
   
+  // Query to fetch all projects for selection
+  const { 
+    data: allProjects,
+    isLoading: isLoadingProjects 
+  } = useQuery({
+    queryKey: ['/api/projects'],
+    queryFn: async () => {
+      const response = await fetch('/api/projects');
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+      
+      return await response.json();
+    }
+  });
+  
   // Mutation to create a new funding round
   const createRoundMutation = useMutation({
     mutationFn: async (data: {
@@ -287,8 +304,8 @@ export default function AdminPage() {
     }
     
     // Get project details
-    const project = roundsData?.eligibleProjects?.find(
-      (p: Project) => p.id.toString() === projectId
+    const project = allProjects?.find(
+      (p: any) => p.id.toString() === projectId
     );
     
     if (!project) {
@@ -582,7 +599,7 @@ export default function AdminPage() {
                   </Label>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
-                    {roundsData?.eligibleProjects?.map((project: Project) => {
+                    {allProjects?.map((project: any) => {
                       const isSelected = selectedProjectIds.includes(project.id.toString());
                       const projectSetting = projectSettings.find(
                         (s) => s.projectId === project.id
