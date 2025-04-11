@@ -536,37 +536,14 @@ export default function AdminPage() {
                     Create New Round
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[500px]">
+                <DialogContent className="sm:max-w-[600px]">
                   <DialogHeader>
                     <DialogTitle>Create New Funding Round</DialogTitle>
                     <DialogDescription>
-                      Set up a new funding round for a pre-launch or pre-abc project.
+                      Set up a new funding round with multiple participating projects.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="project" className="text-right">
-                        Project
-                      </Label>
-                      <Select 
-                        value={selectedProjectId} 
-                        onValueChange={setSelectedProjectId}
-                      >
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select project" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {roundsData?.eligibleProjects?.map((project: Project) => (
-                            <SelectItem 
-                              key={project.id} 
-                              value={project.id.toString()}
-                            >
-                              {project.name} ({project.tokenSymbol}) - {project.status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="name" className="text-right">
                         Round Name
@@ -603,39 +580,185 @@ export default function AdminPage() {
                         onChange={(e) => setEndDate(e.target.value)}
                       />
                     </div>
+
+                    <Separator className="my-2" />
+                    
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="tokenPrice" className="text-right">
-                        Token Price
-                      </Label>
-                      <Input
-                        id="tokenPrice"
-                        className="col-span-3"
-                        type="number"
-                        value={tokenPrice}
-                        onChange={(e) => setTokenPrice(e.target.value)}
-                        placeholder="0.069"
-                        step="0.001"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="tokensAvailable" className="text-right">
-                        Tokens Available
-                      </Label>
-                      <Input
-                        id="tokensAvailable"
-                        className="col-span-3"
-                        type="number"
-                        value={tokensAvailable}
-                        onChange={(e) => setTokensAvailable(e.target.value)}
-                        placeholder="100000"
-                      />
+                      <div className="text-right">
+                        <Label>Projects</Label>
+                      </div>
+                      <div className="col-span-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <p className="text-sm text-muted-foreground">
+                            Add projects to this funding round
+                          </p>
+                          <div className="flex gap-2">
+                            <Select 
+                              onValueChange={(projectId) => handleAddProject(projectId)}
+                            >
+                              <SelectTrigger className="w-[240px]">
+                                <SelectValue placeholder="Select project to add" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {roundsData?.eligibleProjects
+                                  ?.filter((project: Project) => 
+                                    !selectedProjectIds.includes(project.id.toString())
+                                  )
+                                  .map((project: Project) => (
+                                    <SelectItem 
+                                      key={project.id} 
+                                      value={project.id.toString()}
+                                    >
+                                      {project.name} ({project.tokenSymbol})
+                                    </SelectItem>
+                                  ))
+                                }
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        
+                        {/* Selected Projects List */}
+                        {selectedProjectIds.length === 0 ? (
+                          <div className="text-center py-6 border border-dashed rounded-md">
+                            <p className="text-muted-foreground">No projects selected</p>
+                          </div>
+                        ) : (
+                          <div className="space-y-4 mt-2">
+                            {projectSettings.map((setting) => {
+                              const project = roundsData?.eligibleProjects?.find(
+                                (p: Project) => p.id === setting.projectId
+                              );
+                              
+                              if (!project) return null;
+                              
+                              return (
+                                <div 
+                                  key={setting.projectId} 
+                                  className="border rounded-md p-4 pb-2"
+                                >
+                                  <div className="flex justify-between items-center mb-2">
+                                    <h4 className="font-medium">
+                                      {project.name} ({project.tokenSymbol})
+                                    </h4>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleRemoveProject(setting.projectId)}
+                                      className="h-8 w-8 p-0 text-red-500"
+                                    >
+                                      <span className="sr-only">Remove</span>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        className="h-4 w-4"
+                                      >
+                                        <path d="M18 6L6 18M6 6l12 12" />
+                                      </svg>
+                                    </Button>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                      <Label 
+                                        htmlFor={`tokenPrice-${setting.projectId}`}
+                                        className="text-xs"
+                                      >
+                                        Token Price (USDT)
+                                      </Label>
+                                      <Input
+                                        id={`tokenPrice-${setting.projectId}`}
+                                        type="number"
+                                        value={setting.tokenPrice}
+                                        onChange={(e) => updateProjectSetting(
+                                          setting.projectId,
+                                          'tokenPrice',
+                                          e.target.value
+                                        )}
+                                        placeholder="0.069"
+                                        step="0.001"
+                                        className="h-8"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label 
+                                        htmlFor={`tokensAvailable-${setting.projectId}`}
+                                        className="text-xs"
+                                      >
+                                        Tokens Available
+                                      </Label>
+                                      <Input
+                                        id={`tokensAvailable-${setting.projectId}`}
+                                        type="number"
+                                        value={setting.tokensAvailable}
+                                        onChange={(e) => updateProjectSetting(
+                                          setting.projectId,
+                                          'tokensAvailable',
+                                          e.target.value
+                                        )}
+                                        placeholder="100000"
+                                        className="h-8"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label 
+                                        htmlFor={`minimumInvestment-${setting.projectId}`}
+                                        className="text-xs"
+                                      >
+                                        Min Investment (USDT)
+                                      </Label>
+                                      <Input
+                                        id={`minimumInvestment-${setting.projectId}`}
+                                        type="number"
+                                        value={setting.minimumInvestment}
+                                        onChange={(e) => updateProjectSetting(
+                                          setting.projectId,
+                                          'minimumInvestment',
+                                          e.target.value
+                                        )}
+                                        placeholder="10"
+                                        className="h-8"
+                                      />
+                                    </div>
+                                    <div className="space-y-1">
+                                      <Label 
+                                        htmlFor={`maximumInvestment-${setting.projectId}`}
+                                        className="text-xs"
+                                      >
+                                        Max Investment (USDT)
+                                      </Label>
+                                      <Input
+                                        id={`maximumInvestment-${setting.projectId}`}
+                                        type="number"
+                                        value={setting.maximumInvestment}
+                                        onChange={(e) => updateProjectSetting(
+                                          setting.projectId,
+                                          'maximumInvestment',
+                                          e.target.value
+                                        )}
+                                        placeholder="5000"
+                                        className="h-8"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <DialogFooter>
                     <Button 
                       type="submit" 
                       onClick={handleCreateRound}
-                      disabled={createRoundMutation.isPending}
+                      disabled={createRoundMutation.isPending || selectedProjectIds.length === 0}
                       className="font-['IBM_Plex_Mono']"
                     >
                       {createRoundMutation.isPending ? "Creating..." : "Create Round"}
@@ -658,21 +781,17 @@ export default function AdminPage() {
                 <table className="min-w-full divide-y divide-[color:var(--border-color)]">
                   <thead className="bg-[color:var(--border-color)]">
                     <tr>
-                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Project</th>
                       <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Round</th>
                       <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Status</th>
                       <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Start Date</th>
                       <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">End Date</th>
-                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Price</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Projects</th>
                       <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
                     {roundsData.rounds.map((round: FundingRound) => (
                       <tr key={round.id}>
-                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
-                          {round.projectName}
-                        </td>
                         <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
                           {round.name}
                         </td>
@@ -691,8 +810,21 @@ export default function AdminPage() {
                         <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
                           {format(new Date(round.endDate), "MMM d, yyyy HH:mm")}
                         </td>
-                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
-                          ${parseFloat(String(round.tokenPrice)).toFixed(6)}
+                        <td className="px-3 py-4 text-sm text-[color:var(--text-primary)]">
+                          <div className="flex flex-col gap-1">
+                            {round.projects && round.projects.length > 0 ? (
+                              round.projects.map((project: RoundProject) => (
+                                <div key={project.id} className="flex items-center gap-2">
+                                  <span className="font-medium">{project.projectName}</span>
+                                  <span className="text-xs text-[color:var(--text-secondary)]">
+                                    ({project.tokenSymbol}) - ${parseFloat(String(project.tokenPrice)).toFixed(4)}
+                                  </span>
+                                </div>
+                              ))
+                            ) : (
+                              <span className="text-[color:var(--text-secondary)]">No projects</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-3 py-4 whitespace-nowrap text-sm text-right space-x-2">
                           <Button
@@ -726,7 +858,7 @@ export default function AdminPage() {
                               <DialogHeader>
                                 <DialogTitle>Edit Funding Round Dates</DialogTitle>
                                 <DialogDescription>
-                                  Update the start and end dates for "{round.name}" round of {round.projectName}.
+                                  Update the start and end dates for "{round.name}" funding round.
                                 </DialogDescription>
                               </DialogHeader>
                               <div className="grid gap-4 py-4">
