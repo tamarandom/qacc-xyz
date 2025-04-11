@@ -5,7 +5,7 @@ import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { db } from '../db';
 import { users, projects as projects_table, fundingRounds, roundProjects, UserRole } from '@shared/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 
 const router = Router();
 
@@ -336,7 +336,9 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     }
     
     // Extract project IDs from the projects array
-    const projectIds: number[] = projects.map((p: {projectId: number}) => p.projectId);
+    const projectIds = projects.map((p: {projectId: string | number}) => 
+      typeof p.projectId === 'string' ? parseInt(p.projectId, 10) : p.projectId
+    );
     
     // Parse dates
     const parsedStartDate = new Date(startDate);
@@ -351,13 +353,20 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'End date must be after start date' });
     }
     
-    // Verify all projects exist
-    const existingProjects = await db.select({ id: projects_table.id })
-      .from(projects_table)
-      .where(sql`${projects_table.id} IN (${projectIds.join(',')})`);
-    
-    if (existingProjects.length !== projectIds.length) {
-      return res.status(404).json({ error: 'One or more projects not found' });
+    // Verify all projects exist by checking them individually
+    for (const projectId of projectIds) {
+      try {
+        const result = await db.select({ id: projects_table.id })
+          .from(projects_table)
+          .where(eq(projects_table.id, projectId));
+        
+        if (result.length === 0) {
+          return res.status(404).json({ error: `Project with ID ${projectId} not found` });
+        }
+      } catch (error) {
+        console.error(`Error checking project ${projectId}:`, error);
+        return res.status(404).json({ error: `Invalid project ID: ${projectId}` });
+      }
     }
     
     // Create the new funding round
@@ -374,9 +383,14 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     const roundProjectValues = [];
     
     for (const project of projects) {
+      // Ensure projectId is a number
+      const projectId = typeof project.projectId === 'string' 
+        ? parseInt(project.projectId, 10) 
+        : project.projectId;
+        
       roundProjectValues.push({
         roundId: newRound.id,
-        projectId: project.projectId,
+        projectId: projectId,
         tokenPrice: project.tokenPrice || 0.069,
         tokensAvailable: project.tokensAvailable || 100000,
         minimumInvestment: project.minimumInvestment || 50,
