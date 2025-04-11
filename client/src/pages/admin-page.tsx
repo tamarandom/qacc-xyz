@@ -33,7 +33,7 @@ export default function AdminPage() {
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: "All passwords have been reset to 'pass'",
+        description: "All passwords have been reset to 'thankyou'",
       });
     },
     onError: (error: Error) => {
@@ -102,14 +102,14 @@ export default function AdminPage() {
         <TabsContent value="users" className="space-y-6">
           <Card className="p-6">
             <h2 className="text-xl font-['Tusker_Grotesk'] mb-4 text-[color:var(--text-primary)]">USER ROLES MANAGEMENT</h2>
-            <p className="text-sm text-[color:var(--text-secondary)] mb-4 font-['IBM_Plex_Mono']">
-              This action will update user roles according to the following rules:
+            <div className="text-sm text-[color:var(--text-secondary)] mb-4 font-['IBM_Plex_Mono']">
+              <p className="mb-2">This action will update user roles according to the following rules:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>Set default users to regular role</li>
                 <li>Create or maintain project owner accounts for each project</li>
                 <li>Ensure Tam has admin role</li>
               </ul>
-            </p>
+            </div>
 
             <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4 mt-6">
               <AlertDialog>
@@ -196,7 +196,7 @@ export default function AdminPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Reset All Passwords</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will reset ALL user passwords to "pass". Are you sure you want to continue?
+                    This will reset ALL user passwords to "thankyou". Are you sure you want to continue?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
