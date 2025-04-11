@@ -171,10 +171,15 @@ export type UserWithTransactions = User & {
 // Funding rounds table to track when projects are accepting investments
 export const fundingRounds = pgTable("funding_rounds", {
   id: serial("id").primaryKey(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "set null" }),
   name: text("name").notNull(), // e.g., "Seed Round", "Series A", etc.
   status: text("status").notNull(), // "active" or "inactive"
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
+  tokenPrice: numeric("token_price", { precision: 18, scale: 6 }),
+  tokensAvailable: numeric("tokens_available", { precision: 18, scale: 6 }),
+  minimumInvestment: numeric("minimum_investment", { precision: 18, scale: 2 }),
+  maximumInvestment: numeric("maximum_investment", { precision: 18, scale: 2 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
