@@ -1,20 +1,98 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { apiRequest } from "../lib/queryClient";
-import { ArrowLeftCircle, RefreshCw, Key, Users } from "lucide-react";
+import { apiRequest, queryClient } from "../lib/queryClient";
+import { 
+  ArrowLeftCircle, 
+  Calendar, 
+  CalendarDays, 
+  Check, 
+  Clock, 
+  Key, 
+  Plus, 
+  RefreshCw, 
+  ToggleLeft, 
+  Users 
+} from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { format } from "date-fns";
+import { 
+  AlertDialog, 
+  AlertDialogAction, 
+  AlertDialogCancel, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogFooter, 
+  AlertDialogHeader, 
+  AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+// Define types for funding rounds and projects
+interface FundingRound {
+  id: number;
+  projectId: number;
+  projectName: string;
+  name: string;
+  status: 'active' | 'inactive';
+  startDate: string;
+  endDate: string;
+  tokenPrice: number;
+  tokensAvailable: number;
+  minimumInvestment: number;
+  maximumInvestment: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Project {
+  id: number;
+  name: string;
+  status: string;
+  tokenSymbol: string;
+}
 
 export default function AdminPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [usersData, setUsersData] = useState<any>(null);
+  
+  // State for funding round form
+  const [createRoundOpen, setCreateRoundOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [roundName, setRoundName] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [tokenPrice, setTokenPrice] = useState<string>("0.069");
+  const [tokensAvailable, setTokensAvailable] = useState<string>("100000");
+  const [editRoundId, setEditRoundId] = useState<number | null>(null);
+  const [editStartDate, setEditStartDate] = useState<string>("");
+  const [editEndDate, setEditEndDate] = useState<string>("");
 
   // We don't need this check anymore since we're using AdminRoute
   // if (!user || user.role !== 'admin') {
@@ -94,8 +172,9 @@ export default function AdminPage() {
       </div>
 
       <Tabs defaultValue="users" className="mt-6">
-        <TabsList className="grid grid-cols-2 mb-8">
+        <TabsList className="grid grid-cols-3 mb-8">
           <TabsTrigger value="users" className="text-sm font-['IBM_Plex_Mono']">USER MANAGEMENT</TabsTrigger>
+          <TabsTrigger value="rounds" className="text-sm font-['IBM_Plex_Mono']">ROUND MANAGEMENT</TabsTrigger>
           <TabsTrigger value="system" className="text-sm font-['IBM_Plex_Mono']">SYSTEM SETTINGS</TabsTrigger>
         </TabsList>
 
