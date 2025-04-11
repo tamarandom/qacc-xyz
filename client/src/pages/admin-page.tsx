@@ -53,20 +53,27 @@ import {
 import { Link, useLocation } from "wouter";
 
 // Define types for funding rounds and projects
-interface FundingRound {
+interface RoundProject {
   id: number;
+  roundId: number;
   projectId: number;
   projectName: string;
-  name: string;
-  status: 'active' | 'inactive';
-  startDate: string;
-  endDate: string;
+  tokenSymbol: string;
   tokenPrice: number;
   tokensAvailable: number;
   minimumInvestment: number;
   maximumInvestment: number;
+}
+
+interface FundingRound {
+  id: number;
+  name: string;
+  status: 'active' | 'inactive';
+  startDate: string;
+  endDate: string;
   createdAt: string;
   updatedAt: string;
+  projects: RoundProject[];
 }
 
 interface Project {
@@ -84,12 +91,17 @@ export default function AdminPage() {
   
   // State for funding round form
   const [createRoundOpen, setCreateRoundOpen] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
   const [roundName, setRoundName] = useState<string>("");
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-  const [tokenPrice, setTokenPrice] = useState<string>("0.069");
-  const [tokensAvailable, setTokensAvailable] = useState<string>("100000");
+  const [projectSettings, setProjectSettings] = useState<Array<{
+    projectId: number;
+    tokenPrice: string;
+    tokensAvailable: string;
+    minimumInvestment: string;
+    maximumInvestment: string;
+  }>>([]);
   const [editRoundId, setEditRoundId] = useState<number | null>(null);
   const [editStartDate, setEditStartDate] = useState<string>("");
   const [editEndDate, setEditEndDate] = useState<string>("");
@@ -178,24 +190,27 @@ export default function AdminPage() {
   // Mutation to create a new funding round
   const createRoundMutation = useMutation({
     mutationFn: async (data: {
-      projectId: number;
       name: string;
       startDate: string;
       endDate: string;
-      tokenPrice?: number;
-      tokensAvailable?: number;
+      projects: Array<{
+        projectId: number;
+        tokenPrice: number;
+        tokensAvailable: number;
+        minimumInvestment: number;
+        maximumInvestment: number;
+      }>;
     }) => {
       const response = await apiRequest("POST", "/api/admin/funding-rounds/create", data);
       return await response.json();
     },
     onSuccess: () => {
       setCreateRoundOpen(false);
-      setSelectedProjectId("");
+      setSelectedProjectIds([]);
       setRoundName("");
       setStartDate("");
       setEndDate("");
-      setTokenPrice("0.069");
-      setTokensAvailable("100000");
+      setProjectSettings([]);
       refetchRounds();
       toast({
         title: "Success",
@@ -258,23 +273,97 @@ export default function AdminPage() {
     }
   });
   
-  const handleCreateRound = () => {
-    if (!selectedProjectId || !roundName || !startDate || !endDate) {
+  // Helper to add a project to the round
+  const handleAddProject = (projectId: string) => {
+    // Check if project is already added
+    if (selectedProjectIds.includes(projectId)) {
+      toast({
+        title: "Info",
+        description: "This project is already added to the round",
+      });
+      return;
+    }
+    
+    // Get project details
+    const project = roundsData?.eligibleProjects?.find(
+      (p: Project) => p.id.toString() === projectId
+    );
+    
+    if (!project) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Project not found",
         variant: "destructive",
       });
       return;
     }
     
+    // Add project to selected projects
+    setSelectedProjectIds([...selectedProjectIds, projectId]);
+    
+    // Add default settings for the project
+    setProjectSettings([
+      ...projectSettings,
+      {
+        projectId: parseInt(projectId),
+        tokenPrice: "0.069",
+        tokensAvailable: "100000",
+        minimumInvestment: "10",
+        maximumInvestment: "5000"
+      }
+    ]);
+  };
+  
+  // Helper to remove a project from the round
+  const handleRemoveProject = (projectId: number) => {
+    setSelectedProjectIds(
+      selectedProjectIds.filter(id => parseInt(id) !== projectId)
+    );
+    
+    setProjectSettings(
+      projectSettings.filter(setting => setting.projectId !== projectId)
+    );
+  };
+  
+  // Helper to update project settings
+  const updateProjectSetting = (
+    projectId: number, 
+    field: 'tokenPrice' | 'tokensAvailable' | 'minimumInvestment' | 'maximumInvestment',
+    value: string
+  ) => {
+    setProjectSettings(
+      projectSettings.map(setting => 
+        setting.projectId === projectId 
+          ? { ...setting, [field]: value } 
+          : setting
+      )
+    );
+  };
+
+  const handleCreateRound = () => {
+    if (selectedProjectIds.length === 0 || !roundName || !startDate || !endDate) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields and add at least one project",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Create projects array with settings
+    const projects = projectSettings.map(setting => ({
+      projectId: setting.projectId,
+      tokenPrice: parseFloat(setting.tokenPrice),
+      tokensAvailable: parseInt(setting.tokensAvailable),
+      minimumInvestment: parseInt(setting.minimumInvestment),
+      maximumInvestment: parseInt(setting.maximumInvestment)
+    }));
+    
     createRoundMutation.mutate({
-      projectId: parseInt(selectedProjectId),
       name: roundName,
       startDate,
       endDate,
-      tokenPrice: parseFloat(tokenPrice),
-      tokensAvailable: parseInt(tokensAvailable),
+      projects
     });
   };
   
