@@ -527,252 +527,204 @@ export default function AdminPage() {
           <Card className="p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-['Tusker_Grotesk'] text-[color:var(--text-primary)]">FUNDING ROUNDS MANAGEMENT</h2>
-              
-              <Dialog open={createRoundOpen} onOpenChange={setCreateRoundOpen}>
-                <DialogTrigger asChild>
-                  <Button 
-                    className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--card-background)] text-[color:var(--color-peach)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                    variant="outline"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Create New Round
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Create New Funding Round</DialogTitle>
-                    <DialogDescription>
-                      Set up a new funding round with multiple participating projects.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Round Name
-                      </Label>
-                      <Input
-                        id="name"
-                        className="col-span-3"
-                        value={roundName}
-                        onChange={(e) => setRoundName(e.target.value)}
-                        placeholder="e.g., Seed Round"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="startDate" className="text-right">
-                        Start Date
-                      </Label>
-                      <Input
-                        id="startDate"
-                        className="col-span-3"
-                        type="datetime-local"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="endDate" className="text-right">
-                        End Date
-                      </Label>
-                      <Input
-                        id="endDate"
-                        className="col-span-3"
-                        type="datetime-local"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                      />
-                    </div>
-
-                    <Separator className="my-2" />
-                    
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <div className="text-right">
-                        <Label>Projects</Label>
-                      </div>
-                      <div className="col-span-3">
-                        <div className="flex justify-between items-center mb-2">
-                          <p className="text-sm text-muted-foreground">
-                            Add projects to this funding round
-                          </p>
-                          <div className="flex gap-2">
-                            <Select 
-                              onValueChange={(projectId) => handleAddProject(projectId)}
-                            >
-                              <SelectTrigger className="w-[240px]">
-                                <SelectValue placeholder="Select project to add" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {roundsData?.eligibleProjects
-                                  ?.filter((project: Project) => 
-                                    !selectedProjectIds.includes(project.id.toString())
-                                  )
-                                  .map((project: Project) => (
-                                    <SelectItem 
-                                      key={project.id} 
-                                      value={project.id.toString()}
-                                    >
-                                      {project.name} ({project.tokenSymbol})
-                                    </SelectItem>
-                                  ))
-                                }
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                        
-                        {/* Selected Projects List */}
-                        {selectedProjectIds.length === 0 ? (
-                          <div className="text-center py-6 border border-dashed rounded-md">
-                            <p className="text-muted-foreground">No projects selected</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-4 mt-2">
-                            {projectSettings.map((setting) => {
-                              const project = roundsData?.eligibleProjects?.find(
-                                (p: Project) => p.id === setting.projectId
-                              );
-                              
-                              if (!project) return null;
-                              
-                              return (
-                                <div 
-                                  key={setting.projectId} 
-                                  className="border rounded-md p-4 pb-2"
-                                >
-                                  <div className="flex justify-between items-center mb-2">
-                                    <h4 className="font-medium">
-                                      {project.name} ({project.tokenSymbol})
-                                    </h4>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleRemoveProject(setting.projectId)}
-                                      className="h-8 w-8 p-0 text-red-500"
-                                    >
-                                      <span className="sr-only">Remove</span>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="h-4 w-4"
-                                      >
-                                        <path d="M18 6L6 18M6 6l12 12" />
-                                      </svg>
-                                    </Button>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                      <Label 
-                                        htmlFor={`tokenPrice-${setting.projectId}`}
-                                        className="text-xs"
-                                      >
-                                        Token Price (USDT)
-                                      </Label>
-                                      <Input
-                                        id={`tokenPrice-${setting.projectId}`}
-                                        type="number"
-                                        value={setting.tokenPrice}
-                                        onChange={(e) => updateProjectSetting(
-                                          setting.projectId,
-                                          'tokenPrice',
-                                          e.target.value
-                                        )}
-                                        placeholder="0.069"
-                                        step="0.001"
-                                        className="h-8"
-                                      />
-                                    </div>
-                                    <div className="space-y-1">
-                                      <Label 
-                                        htmlFor={`tokensAvailable-${setting.projectId}`}
-                                        className="text-xs"
-                                      >
-                                        Tokens Available
-                                      </Label>
-                                      <Input
-                                        id={`tokensAvailable-${setting.projectId}`}
-                                        type="number"
-                                        value={setting.tokensAvailable}
-                                        onChange={(e) => updateProjectSetting(
-                                          setting.projectId,
-                                          'tokensAvailable',
-                                          e.target.value
-                                        )}
-                                        placeholder="100000"
-                                        className="h-8"
-                                      />
-                                    </div>
-                                    <div className="space-y-1">
-                                      <Label 
-                                        htmlFor={`minimumInvestment-${setting.projectId}`}
-                                        className="text-xs"
-                                      >
-                                        Min Investment (USDT)
-                                      </Label>
-                                      <Input
-                                        id={`minimumInvestment-${setting.projectId}`}
-                                        type="number"
-                                        value={setting.minimumInvestment}
-                                        onChange={(e) => updateProjectSetting(
-                                          setting.projectId,
-                                          'minimumInvestment',
-                                          e.target.value
-                                        )}
-                                        placeholder="10"
-                                        className="h-8"
-                                      />
-                                    </div>
-                                    <div className="space-y-1">
-                                      <Label 
-                                        htmlFor={`maximumInvestment-${setting.projectId}`}
-                                        className="text-xs"
-                                      >
-                                        Max Investment (USDT)
-                                      </Label>
-                                      <Input
-                                        id={`maximumInvestment-${setting.projectId}`}
-                                        type="number"
-                                        value={setting.maximumInvestment}
-                                        onChange={(e) => updateProjectSetting(
-                                          setting.projectId,
-                                          'maximumInvestment',
-                                          e.target.value
-                                        )}
-                                        placeholder="5000"
-                                        className="h-8"
-                                      />
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button 
-                      type="submit" 
-                      onClick={handleCreateRound}
-                      disabled={createRoundMutation.isPending || selectedProjectIds.length === 0}
-                      className="font-['IBM_Plex_Mono']"
-                    >
-                      {createRoundMutation.isPending ? "Creating..." : "Create Round"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
             </div>
 
             <div className="text-sm text-[color:var(--text-secondary)] mb-6 font-['IBM_Plex_Mono']">
               <p>Manage funding rounds for projects in the accelerator program. Only one round can be active at a time.</p>
             </div>
+            
+            {/* Create New Round Form */}
+            <Card className="mb-6 p-6 border border-[color:var(--border-color)]">
+              <h3 className="text-lg font-['Tusker_Grotesk'] mb-4 text-[color:var(--text-primary)]">CREATE NEW FUNDING ROUND</h3>
+              
+              <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="name" className="mb-2 block">
+                      Round Name
+                    </Label>
+                    <Input
+                      id="name"
+                      value={roundName}
+                      onChange={(e) => setRoundName(e.target.value)}
+                      placeholder="e.g., Seed Round"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="startDate" className="mb-2 block">
+                      Start Date
+                    </Label>
+                    <Input
+                      id="startDate"
+                      type="datetime-local"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="endDate" className="mb-2 block">
+                      End Date
+                    </Label>
+                    <Input
+                      id="endDate"
+                      type="datetime-local"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <Separator className="my-4" />
+                
+                <div>
+                  <Label className="mb-2 block">
+                    Select Projects for This Round
+                  </Label>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+                    {roundsData?.eligibleProjects?.map((project: Project) => {
+                      const isSelected = selectedProjectIds.includes(project.id.toString());
+                      const projectSetting = projectSettings.find(
+                        (s) => s.projectId === project.id
+                      );
+                      
+                      return (
+                        <div 
+                          key={project.id}
+                          className={`border rounded-md p-3 ${isSelected ? 'border-[color:var(--color-peach)] bg-[color:var(--color-peach-10)]' : 'border-[color:var(--border-color)]'}`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`project-${project.id}`}
+                                checked={isSelected}
+                                onChange={() => {
+                                  if (isSelected) {
+                                    handleRemoveProject(project.id);
+                                  } else {
+                                    handleAddProject(project.id.toString());
+                                  }
+                                }}
+                                className="mr-2 h-4 w-4 text-[color:var(--color-peach)] rounded border-[color:var(--border-color)]"
+                              />
+                              <label 
+                                htmlFor={`project-${project.id}`}
+                                className="font-medium cursor-pointer"
+                              >
+                                {project.name} ({project.tokenSymbol})
+                              </label>
+                            </div>
+                            
+                            {project.status === 'pre-launch' && (
+                              <Badge className="bg-[color:var(--color-peach-10)] text-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-10)]">
+                                NEW
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          {isSelected && projectSetting && (
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                              <div className="space-y-1">
+                                <Label 
+                                  htmlFor={`tokenPrice-${project.id}`}
+                                  className="text-xs"
+                                >
+                                  Token Price (USDT)
+                                </Label>
+                                <Input
+                                  id={`tokenPrice-${project.id}`}
+                                  type="number"
+                                  value={projectSetting.tokenPrice}
+                                  onChange={(e) => updateProjectSetting(
+                                    project.id,
+                                    'tokenPrice',
+                                    e.target.value
+                                  )}
+                                  placeholder="0.069"
+                                  step="0.001"
+                                  className="h-8"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label 
+                                  htmlFor={`tokensAvailable-${project.id}`}
+                                  className="text-xs"
+                                >
+                                  Tokens Available
+                                </Label>
+                                <Input
+                                  id={`tokensAvailable-${project.id}`}
+                                  type="number"
+                                  value={projectSetting.tokensAvailable}
+                                  onChange={(e) => updateProjectSetting(
+                                    project.id,
+                                    'tokensAvailable',
+                                    e.target.value
+                                  )}
+                                  placeholder="100000"
+                                  className="h-8"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label 
+                                  htmlFor={`minimumInvestment-${project.id}`}
+                                  className="text-xs"
+                                >
+                                  Min Investment (USDT)
+                                </Label>
+                                <Input
+                                  id={`minimumInvestment-${project.id}`}
+                                  type="number"
+                                  value={projectSetting.minimumInvestment}
+                                  onChange={(e) => updateProjectSetting(
+                                    project.id,
+                                    'minimumInvestment',
+                                    e.target.value
+                                  )}
+                                  placeholder="50"
+                                  className="h-8"
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <Label 
+                                  htmlFor={`maximumInvestment-${project.id}`}
+                                  className="text-xs"
+                                >
+                                  Max Investment (USDT)
+                                </Label>
+                                <Input
+                                  id={`maximumInvestment-${project.id}`}
+                                  type="number"
+                                  value={projectSetting.maximumInvestment}
+                                  onChange={(e) => updateProjectSetting(
+                                    project.id,
+                                    'maximumInvestment',
+                                    e.target.value
+                                  )}
+                                  placeholder="5000"
+                                  className="h-8"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    onClick={handleCreateRound}
+                    disabled={createRoundMutation.isPending || selectedProjectIds.length === 0 || !roundName || !startDate || !endDate}
+                    className="font-['IBM_Plex_Mono']"
+                  >
+                    {createRoundMutation.isPending ? "Creating..." : "Create Round"}
+                  </Button>
+                </div>
+              </div>
+            </Card>
 
             {isLoadingRounds ? (
               <div className="flex justify-center items-center py-10">
