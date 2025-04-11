@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, TrendingUp, TrendingDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PurchaseTokenDialog } from "../funding-round/purchase-token-dialog";
+import { PurchaseTokenDialog } from "../funding-round/purchase-token-dialog"; // Component name kept for file organization
 import { useAuth } from "@/hooks/use-auth";
 import { useFundingRound } from "@/hooks/use-funding-round";
 
@@ -32,18 +32,18 @@ interface ProjectCardWithPurchaseProps {
 export function ProjectCardWithPurchase({ project }: ProjectCardWithPurchaseProps) {
   const { user } = useAuth();
   const { activeRound } = useFundingRound();
-  const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
   
   // Fetch wallet balance
   const { data: walletData } = useQuery<{ balance: string }>({
     queryKey: ['/api/wallet/balance'],
-    enabled: !!user && isPurchaseDialogOpen,
+    enabled: !!user && isBuyDialogOpen,
   });
   
   const walletBalance = walletData ? parseFloat(walletData.balance) : 0;
   
-  // Determine if we can purchase tokens for this project
-  const isPurchasable = activeRound && 
+  // Determine if we can buy tokens for this project
+  const canBuyTokens = activeRound && 
                        (project.status === "launched" || project.status === "pre-launch") && 
                        user;
   
@@ -144,11 +144,11 @@ export function ProjectCardWithPurchase({ project }: ProjectCardWithPurchaseProp
             </Button>
           </Link>
           
-          {isPurchasable && (
+          {canBuyTokens && (
             <Button 
               variant="default" 
               className="font-['IBM_Plex_Mono'] text-xs h-8 px-2.5 bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)]"
-              onClick={() => setIsPurchaseDialogOpen(true)}
+              onClick={() => setIsBuyDialogOpen(true)}
             >
               Buy Tokens
             </Button>
@@ -156,10 +156,10 @@ export function ProjectCardWithPurchase({ project }: ProjectCardWithPurchaseProp
         </CardFooter>
       </Card>
       
-      {activeRound && isPurchaseDialogOpen && (
+      {activeRound && isBuyDialogOpen && (
         <PurchaseTokenDialog
-          isOpen={isPurchaseDialogOpen}
-          onClose={() => setIsPurchaseDialogOpen(false)}
+          isOpen={isBuyDialogOpen}
+          onClose={() => setIsBuyDialogOpen(false)}
           project={{
             id: project.id,
             name: project.name,

@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { VerificationLevel } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info, ShieldCheck } from "lucide-react";
+import { ExternalLink, Info, ShieldCheck } from "lucide-react";
 
 // Spending caps per verification level (from database)
 const SPENDING_CAPS = {
@@ -54,7 +54,11 @@ export function PurchaseTokenDialog({
   const { data: verification, isLoading: verificationLoading } = useQuery<{
     roundId: number,
     verificationLevel: VerificationLevel,
-    spent: number
+    spent: number,
+    verificationUrls: {
+      tier1: string,
+      tier2: string
+    }
   }>({
     queryKey: [`/api/active-rounds/verification?roundId=${roundId}`],
     enabled: isOpen && roundId > 0
@@ -65,6 +69,9 @@ export function PurchaseTokenDialog({
   const spendCap = SPENDING_CAPS[verificationLevel];
   const alreadySpent = verification?.spent || 0;
   const remainingSpend = spendCap - alreadySpent;
+  
+  // Get verification URLs
+  const verificationUrls = verification?.verificationUrls || { tier1: 'tier1.com', tier2: 'tier2.com' };
   
   // Check if purchase amount exceeds verification level
   const exceedsVerificationLevel = parseFloat(amount || "0") > remainingSpend;
@@ -82,7 +89,7 @@ export function PurchaseTokenDialog({
     },
     onSuccess: () => {
       toast({
-        title: "Purchase successful",
+        title: "Buy successful",
         description: `You have successfully contributed ${formatCurrency(parseFloat(amount))} to ${project.name}. Tokens will be allocated at the end of the funding round.`,
       });
       
@@ -143,7 +150,7 @@ export function PurchaseTokenDialog({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px] bg-[color:var(--card-background)] text-[color:var(--text-primary)]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">PURCHASE TOKENS</DialogTitle>
+            <DialogTitle className="text-xl font-bold">BUY TOKENS</DialogTitle>
             <DialogDescription>
               Enter the amount of USDT you want to spend.
             </DialogDescription>
@@ -195,20 +202,13 @@ export function PurchaseTokenDialog({
             </div>
           </div>
           
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={onClose}
-              className="font-['IBM_Plex_Mono'] text-sm"
-            >
-              Cancel
-            </Button>
+          <DialogFooter className="justify-end">
             <Button 
               onClick={handlePurchase} 
               disabled={!amount || parseFloat(amount) <= 0 || isPending || hasNoVerification}
               className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)]"
             >
-              {isPending ? "Processing..." : "Purchase"}
+              {isPending ? "Processing..." : "Buy"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -243,44 +243,50 @@ export function PurchaseTokenDialog({
             <p className="mb-4">Choose a verification level to participate in the funding round:</p>
             
             <div className="space-y-3">
-              <div className="bg-[color:var(--border-color)] p-3 rounded-md flex items-start">
-                <ShieldCheck className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
-                <div>
-                  <p className="font-medium">Human Passport</p>
-                  <p className="text-sm text-[color:var(--text-secondary)]">Spending limit: {formatCurrency(SPENDING_CAPS[VerificationLevel.HUMAN_PASSPORT])}</p>
+              <a 
+                href={verificationUrls.tier1} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block hover:opacity-90 transition-opacity"
+              >
+                <div className="bg-[color:var(--border-color)] p-3 rounded-md flex items-start">
+                  <ShieldCheck className="h-5 w-5 text-gray-400 mr-2 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <p className="font-medium">Human Passport</p>
+                      <ExternalLink className="h-4 w-4 text-[color:var(--text-secondary)]" />
+                    </div>
+                    <p className="text-sm text-[color:var(--text-secondary)]">Spending limit: {formatCurrency(SPENDING_CAPS[VerificationLevel.HUMAN_PASSPORT])}</p>
+                  </div>
                 </div>
-              </div>
+              </a>
               
-              <div className="bg-[color:var(--border-color)] p-3 rounded-md flex items-start">
-                <ShieldCheck className="h-5 w-5 text-[color:var(--color-peach)] mr-2 mt-0.5" />
-                <div>
-                  <p className="font-medium">zkID Verification</p>
-                  <p className="text-sm text-[color:var(--text-secondary)]">Spending limit: {formatCurrency(SPENDING_CAPS[VerificationLevel.ZK_ID])}</p>
+              <a 
+                href={verificationUrls.tier2} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block hover:opacity-90 transition-opacity"
+              >
+                <div className="bg-[color:var(--border-color)] p-3 rounded-md flex items-start">
+                  <ShieldCheck className="h-5 w-5 text-[color:var(--color-peach)] mr-2 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center">
+                      <p className="font-medium">zkID Verification</p>
+                      <ExternalLink className="h-4 w-4 text-[color:var(--text-secondary)]" />
+                    </div>
+                    <p className="text-sm text-[color:var(--text-secondary)]">Spending limit: {formatCurrency(SPENDING_CAPS[VerificationLevel.ZK_ID])}</p>
+                  </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
           
-          <DialogFooter>
+          <DialogFooter className="justify-end">
             <Button 
-              variant="outline" 
               onClick={() => setIsVerificationOpen(false)}
               className="font-['IBM_Plex_Mono'] text-sm"
             >
-              Cancel
-            </Button>
-            <Button 
-              onClick={() => {
-                // Here we would redirect to verification page
-                setIsVerificationOpen(false);
-                toast({
-                  title: "Verification",
-                  description: "Please complete the verification process to participate in the funding round.",
-                });
-              }}
-              className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)]"
-            >
-              Verify Now
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
