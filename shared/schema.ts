@@ -171,11 +171,19 @@ export type UserWithTransactions = User & {
 // Funding rounds table to track when projects are accepting investments
 export const fundingRounds = pgTable("funding_rounds", {
   id: serial("id").primaryKey(),
-  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
   name: text("name").notNull(), // e.g., "Seed Round", "Series A", etc.
   status: text("status").notNull(), // "active" or "inactive"
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Relationship table for rounds and projects (many-to-many)
+export const roundProjects = pgTable("round_projects", {
+  id: serial("id").primaryKey(),
+  roundId: integer("round_id").references(() => fundingRounds.id, { onDelete: "cascade" }).notNull(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
   tokenPrice: numeric("token_price", { precision: 18, scale: 6 }).notNull(),
   tokensAvailable: numeric("tokens_available", { precision: 18, scale: 6 }).notNull(),
   minimumInvestment: numeric("minimum_investment", { precision: 18, scale: 2 }),
@@ -192,6 +200,15 @@ export const insertFundingRoundSchema = createInsertSchema(fundingRounds).omit({
 
 export type FundingRound = typeof fundingRounds.$inferSelect;
 export type InsertFundingRound = z.infer<typeof insertFundingRoundSchema>;
+
+export const insertRoundProjectSchema = createInsertSchema(roundProjects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type RoundProject = typeof roundProjects.$inferSelect;
+export type InsertRoundProject = z.infer<typeof insertRoundProjectSchema>;
 
 // User token holdings table to track purchased tokens
 export const tokenHoldings = pgTable("token_holdings", {
