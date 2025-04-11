@@ -627,6 +627,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register wallet endpoints
   registerWalletRoutes(app);
   
+  // Register active funding rounds endpoints
+  app.use('/api/active-rounds', activeRoundsRouter);
+  
   // put application routes here
   // prefix all routes with /api
   

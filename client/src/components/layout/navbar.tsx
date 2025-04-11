@@ -60,6 +60,13 @@ export default function Navbar() {
                 }`}>
                 LEADERBOARD
               </Link>
+              <Link href="/active-rounds" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
+                  location === "/active-rounds" 
+                    ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
+                    : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
+                }`}>
+                FUNDING ROUNDS
+              </Link>
 
             </div>
           </div>
@@ -167,6 +174,17 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               LEADERBOARD
+            </Link>
+            <Link 
+              href="/active-rounds" 
+              className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
+                location === "/active-rounds"
+                  ? "bg-[color:var(--border-color)] text-[color:var(--color-peach)]"
+                  : "text-[color:var(--text-primary)] hover:bg-[color:var(--border-color)] hover:text-[color:var(--text-primary)]"
+              }`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              FUNDING ROUNDS
             </Link>
 
           </div>
