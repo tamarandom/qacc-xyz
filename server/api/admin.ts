@@ -206,6 +206,8 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
     })
     .from(projects_table);
     
+    console.log('Eligible projects for funding rounds:', eligibleProjects);
+    
     res.json({ 
       success: true,
       rounds: roundsWithProjects,
