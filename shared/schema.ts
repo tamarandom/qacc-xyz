@@ -95,6 +95,7 @@ export const users = pgTable("users", {
   points: integer("points").notNull().default(0),
   rank: integer("rank"),
   walletBalance: numeric("wallet_balance", { precision: 18, scale: 6 }).notNull().default("50000"),
+  verificationLevel: text("verification_level").notNull().default(VerificationLevel.NONE),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -228,3 +229,31 @@ export const insertWalletTransactionSchema = createInsertSchema(walletTransactio
 
 export type WalletTransaction = typeof walletTransactions.$inferSelect;
 export type InsertWalletTransaction = z.infer<typeof insertWalletTransactionSchema>;
+
+// Funding pot for active rounds
+export const fundingPot = pgTable("funding_pot", {
+  id: serial("id").primaryKey(),
+  roundId: integer("round_id").references(() => fundingRounds.id, { onDelete: "cascade" }).notNull(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
+  amount: numeric("amount", { precision: 18, scale: 6 }).notNull(),
+  status: text("status").notNull().default("pending"), // pending, completed, refunded
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertFundingPotSchema = createInsertSchema(fundingPot).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type FundingPot = typeof fundingPot.$inferSelect;
+export type InsertFundingPot = z.infer<typeof insertFundingPotSchema>;
+
+// User verification status
+export enum VerificationLevel {
+  NONE = "none",
+  HUMAN_PASSPORT = "human_passport", // Spending cap: $1,000
+  ZK_ID = "zk_id" // Spending cap: $25,000
+}
