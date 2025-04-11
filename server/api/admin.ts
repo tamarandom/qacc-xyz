@@ -4,7 +4,7 @@ import { isAuthenticated } from '../auth';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { db } from '../db';
-import { users, projects, fundingRounds, roundProjects, UserRole } from '@shared/schema';
+import { users, projects as projects_table, fundingRounds, roundProjects, UserRole } from '@shared/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
 
 const router = Router();
@@ -77,9 +77,9 @@ router.post('/update-roles', isAuthenticated, async (req, res) => {
     
     // Get all projects
     const allProjects = await db.select({
-      id: projects.id,
-      name: projects.name
-    }).from(projects);
+      id: projects_table.id,
+      name: projects_table.name
+    }).from(projects_table);
     
     // For each project, create or update a project owner user
     const projectOwnerUsernames = [];
@@ -180,15 +180,15 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
         id: roundProjects.id,
         roundId: roundProjects.roundId,
         projectId: roundProjects.projectId,
-        projectName: projects.name,
-        tokenSymbol: projects.tokenSymbol,
+        projectName: projects_table.name,
+        tokenSymbol: projects_table.tokenSymbol,
         tokenPrice: roundProjects.tokenPrice,
         tokensAvailable: roundProjects.tokensAvailable,
         minimumInvestment: roundProjects.minimumInvestment,
         maximumInvestment: roundProjects.maximumInvestment
       })
       .from(roundProjects)
-      .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+      .innerJoin(projects_table, eq(roundProjects.projectId, projects_table.id))
       .where(eq(roundProjects.roundId, round.id));
       
       roundsWithProjects.push({
@@ -199,14 +199,14 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
     
     // Get pre-launch and pre-abc projects for potential new rounds
     const eligibleProjects = await db.select({
-      id: projects.id,
-      name: projects.name,
-      status: projects.status,
-      tokenSymbol: projects.tokenSymbol
+      id: projects_table.id,
+      name: projects_table.name,
+      status: projects_table.status,
+      tokenSymbol: projects_table.tokenSymbol
     })
-    .from(projects)
+    .from(projects_table)
     .where(
-      sql`${projects.status} = 'pre-launch' OR ${projects.status} = 'pre-abc'`
+      sql`${projects_table.status} = 'pre-launch' OR ${projects_table.status} = 'pre-abc'`
     );
     
     res.json({ 
@@ -330,14 +330,14 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
       projects = [] // Array of objects containing project settings
     } = req.body;
     
-    if (!projects || !Array.isArray(projects) || projects.length === 0 || !name || !startDate || !endDate) {
+    if (!projects || !Array.isArray(projects) || projects_table.length === 0 || !name || !startDate || !endDate) {
       return res.status(400).json({ 
         error: 'Required fields missing or invalid: projects (array), name, startDate, endDate' 
       });
     }
     
     // Extract project IDs from the projects array
-    const projectIds = projects.map(p => p.projectId);
+    const projectIds = projects_table.map(p => p.projectId);
     
     // Parse dates
     const parsedStartDate = new Date(startDate);
@@ -353,9 +353,9 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     }
     
     // Verify all projects exist
-    const existingProjects = await db.select({ id: projects.id })
-      .from(projects)
-      .where(sql`${projects.id} IN (${projectIds.join(',')})`);
+    const existingProjects = await db.select({ id: projects_table.id })
+      .from(projects_table)
+      .where(sql`${projects_table.id} IN (${projectIds.join(',')})`);
     
     if (existingProjects.length !== projectIds.length) {
       return res.status(404).json({ error: 'One or more projects not found' });
@@ -374,17 +374,14 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     // Create entries in roundProjects table for each project
     const roundProjectValues = [];
     
-    for (const projectId of projectIds) {
-      // Find project-specific settings if provided
-      const settings = projectSettings.find(p => p.projectId === projectId) || {};
-      
+    for (const project of projects) {
       roundProjectValues.push({
         roundId: newRound.id,
-        projectId,
-        tokenPrice: settings.tokenPrice || 0.069,
-        tokensAvailable: settings.tokensAvailable || 100000,
-        minimumInvestment: settings.minimumInvestment || 50,
-        maximumInvestment: settings.maximumInvestment || 5000
+        projectId: project.projectId,
+        tokenPrice: project.tokenPrice || 0.069,
+        tokensAvailable: project.tokensAvailable || 100000,
+        minimumInvestment: project.minimumInvestment || 50,
+        maximumInvestment: project.maximumInvestment || 5000
       });
     }
     
