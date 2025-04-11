@@ -14,6 +14,7 @@ import { PROJECT_CATEGORIES } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatters";
 import PercentageChange from "@/components/ui/percentage-change";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
+import { ActiveRoundBanner } from "@/components/layout/active-round-banner";
 
 export default function Home() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -103,6 +104,9 @@ export default function Home() {
   
   return (
     <div className="py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Active Round Banner */}
+      <ActiveRoundBanner />
+      
       <div className="mb-10">
         <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] uppercase tracking-wider text-[color:var(--text-primary)]">
           THE FUTURE OF <span className="text-[color:var(--color-peach)]">TOKENIZATION</span>
