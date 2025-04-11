@@ -337,7 +337,7 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     }
     
     // Extract project IDs from the projects array
-    const projectIds = projects.map((p: any) => p.projectId);
+    const projectIds: number[] = projects.map((p: {projectId: number}) => p.projectId);
     
     // Parse dates
     const parsedStartDate = new Date(startDate);
