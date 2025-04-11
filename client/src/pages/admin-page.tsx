@@ -571,100 +571,105 @@ export default function AdminPage() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="startDate" className="mb-2 block">
-                      Start Date
-                    </Label>
-                    <div className="flex space-x-2">
-                      <div className="flex-1">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-left font-normal"
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {startDate ? format(startDate, "PPP") : "Pick a date"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <CalendarComponent
-                              mode="single"
-                              selected={startDate}
-                              onSelect={setStartDate}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <div className="w-24">
-                        <Input
-                          id="startTime"
-                          type="time"
-                          className="h-10"
-                          value={startDate ? format(startDate, "HH:mm") : ""}
-                          onChange={(e) => {
-                            if (startDate) {
-                              const [hours, minutes] = e.target.value.split(':');
-                              const newDate = new Date(startDate);
-                              newDate.setHours(parseInt(hours), parseInt(minutes));
-                              setStartDate(newDate);
-                            } else {
-                              const now = new Date();
-                              const [hours, minutes] = e.target.value.split(':');
-                              now.setHours(parseInt(hours), parseInt(minutes));
-                              setStartDate(now);
-                            }
-                          }}
-                        />
+                    <div className="flex flex-col space-y-2">
+                      <Label htmlFor="startDate">Start Date</Label>
+                      <div className="flex gap-2 items-center">
+                        <div className="flex-grow">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start text-left font-normal"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {startDate ? format(startDate, "MMMM d, yyyy") : "Select date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <CalendarComponent
+                                mode="single"
+                                selected={startDate}
+                                onSelect={setStartDate}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        
+                        <div className="w-[120px]">
+                          <Input
+                            id="startTime"
+                            type="time"
+                            className="h-10"
+                            placeholder="Time"
+                            value={startDate ? format(startDate, "HH:mm") : ""}
+                            onChange={(e) => {
+                              if (startDate) {
+                                const [hours, minutes] = e.target.value.split(':');
+                                const newDate = new Date(startDate);
+                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                setStartDate(newDate);
+                              } else {
+                                const now = new Date();
+                                const [hours, minutes] = e.target.value.split(':');
+                                now.setHours(parseInt(hours), parseInt(minutes));
+                                setStartDate(now);
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
+                  
                   <div>
-                    <Label htmlFor="endDate" className="mb-2 block">
-                      End Date
-                    </Label>
-                    <div className="flex space-x-2">
-                      <div className="flex-1">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="w-full justify-start text-left font-normal"
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {endDate ? format(endDate, "PPP") : "Pick a date"}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <CalendarComponent
-                              mode="single"
-                              selected={endDate}
-                              onSelect={setEndDate}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                      <div className="w-24">
-                        <Input
-                          id="endTime"
-                          type="time"
-                          className="h-10"
-                          value={endDate ? format(endDate, "HH:mm") : ""}
-                          onChange={(e) => {
-                            if (endDate) {
-                              const [hours, minutes] = e.target.value.split(':');
-                              const newDate = new Date(endDate);
-                              newDate.setHours(parseInt(hours), parseInt(minutes));
-                              setEndDate(newDate);
-                            } else {
-                              const now = new Date();
-                              const [hours, minutes] = e.target.value.split(':');
-                              now.setHours(parseInt(hours), parseInt(minutes));
-                              setEndDate(now);
-                            }
-                          }}
-                        />
+                    <div className="flex flex-col space-y-2">
+                      <Label htmlFor="endDate">End Date</Label>
+                      <div className="flex gap-2 items-center">
+                        <div className="flex-grow">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                className="w-full justify-start text-left font-normal"
+                              >
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                {endDate ? format(endDate, "MMMM d, yyyy") : "Select date"}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <CalendarComponent
+                                mode="single"
+                                selected={endDate}
+                                onSelect={setEndDate}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        
+                        <div className="w-[120px]">
+                          <Input
+                            id="endTime"
+                            type="time"
+                            className="h-10"
+                            placeholder="Time"
+                            value={endDate ? format(endDate, "HH:mm") : ""}
+                            onChange={(e) => {
+                              if (endDate) {
+                                const [hours, minutes] = e.target.value.split(':');
+                                const newDate = new Date(endDate);
+                                newDate.setHours(parseInt(hours), parseInt(minutes));
+                                setEndDate(newDate);
+                              } else {
+                                const now = new Date();
+                                const [hours, minutes] = e.target.value.split(':');
+                                now.setHours(parseInt(hours), parseInt(minutes));
+                                setEndDate(now);
+                              }
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -828,10 +833,10 @@ export default function AdminPage() {
                                 </DialogDescription>
                               </DialogHeader>
                               <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
+                                <div className="flex flex-col space-y-2">
                                   <Label htmlFor="editStartDate">Start Date</Label>
-                                  <div className="flex space-x-2">
-                                    <div className="flex-1">
+                                  <div className="flex gap-2 items-center">
+                                    <div className="flex-grow">
                                       <Popover>
                                         <PopoverTrigger asChild>
                                           <Button
@@ -840,7 +845,7 @@ export default function AdminPage() {
                                             className="w-full justify-start text-left font-normal"
                                           >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {editStartDate ? format(editStartDate, "PPP") : "Pick a date"}
+                                            {editStartDate ? format(editStartDate, "MMMM d, yyyy") : "Select date"}
                                           </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0">
@@ -853,11 +858,13 @@ export default function AdminPage() {
                                         </PopoverContent>
                                       </Popover>
                                     </div>
-                                    <div className="w-24">
+                                    
+                                    <div className="w-[120px]">
                                       <Input
                                         id="editStartTime"
                                         type="time"
                                         className="h-10"
+                                        placeholder="Time"
                                         value={editStartDate ? format(editStartDate, "HH:mm") : ""}
                                         onChange={(e) => {
                                           if (editStartDate) {
@@ -876,10 +883,11 @@ export default function AdminPage() {
                                     </div>
                                   </div>
                                 </div>
-                                <div className="grid gap-2">
+                                
+                                <div className="flex flex-col space-y-2">
                                   <Label htmlFor="editEndDate">End Date</Label>
-                                  <div className="flex space-x-2">
-                                    <div className="flex-1">
+                                  <div className="flex gap-2 items-center">
+                                    <div className="flex-grow">
                                       <Popover>
                                         <PopoverTrigger asChild>
                                           <Button
@@ -888,7 +896,7 @@ export default function AdminPage() {
                                             className="w-full justify-start text-left font-normal"
                                           >
                                             <CalendarIcon className="mr-2 h-4 w-4" />
-                                            {editEndDate ? format(editEndDate, "PPP") : "Pick a date"}
+                                            {editEndDate ? format(editEndDate, "MMMM d, yyyy") : "Select date"}
                                           </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0">
@@ -901,11 +909,13 @@ export default function AdminPage() {
                                         </PopoverContent>
                                       </Popover>
                                     </div>
-                                    <div className="w-24">
+                                    
+                                    <div className="w-[120px]">
                                       <Input
                                         id="editEndTime"
                                         type="time"
                                         className="h-10"
+                                        placeholder="Time"
                                         value={editEndDate ? format(editEndDate, "HH:mm") : ""}
                                         onChange={(e) => {
                                           if (editEndDate) {
