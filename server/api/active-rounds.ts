@@ -4,7 +4,7 @@
 import express, { Request, Response } from 'express';
 import { db } from "../db";
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { fundingRounds, projects, fundingPot, users, walletTransactions } from "@shared/schema";
+import { fundingRounds, projects, fundingPot, users, walletTransactions, roundProjects } from "@shared/schema";
 import { VerificationLevel } from "@shared/schema";
 import { isAuthenticated } from '../auth';
 
@@ -19,15 +19,10 @@ router.get('/', async (_req: Request, res: Response) => {
     const activeRounds = await db
       .select({
         id: fundingRounds.id,
-        projectId: fundingRounds.projectId,
         name: fundingRounds.name,
         status: fundingRounds.status,
         startDate: fundingRounds.startDate,
         endDate: fundingRounds.endDate,
-        tokenPrice: fundingRounds.tokenPrice,
-        tokensAvailable: fundingRounds.tokensAvailable,
-        minimumInvestment: fundingRounds.minimumInvestment,
-        maximumInvestment: fundingRounds.maximumInvestment,
       })
       .from(fundingRounds)
       .where(
@@ -38,27 +33,35 @@ router.get('/', async (_req: Request, res: Response) => {
         )
       );
 
-    // Fetch project details for each round
-    const roundsWithProjects = await Promise.all(
-      activeRounds.map(async (round) => {
-        const [project] = await db
-          .select({
-            id: projects.id,
-            name: projects.name,
-            tokenSymbol: projects.tokenSymbol,
-            status: projects.status,
-            avatarBg: projects.avatarBg,
-            avatarColor: projects.avatarColor
-          })
-          .from(projects)
-          .where(eq(projects.id, round.projectId));
-
-        return {
-          ...round,
-          project
-        };
-      })
-    );
+    // For each active round, fetch the associated projects
+    const roundsWithProjects = [];
+    
+    for (const round of activeRounds) {
+      // Get all projects in this round
+      const projectsInRound = await db
+        .select({
+          id: roundProjects.id,
+          roundId: roundProjects.roundId,
+          projectId: roundProjects.projectId,
+          tokenPrice: roundProjects.tokenPrice,
+          tokensAvailable: roundProjects.tokensAvailable,
+          minimumInvestment: roundProjects.minimumInvestment,
+          maximumInvestment: roundProjects.maximumInvestment,
+          projectName: projects.name,
+          tokenSymbol: projects.tokenSymbol,
+          status: projects.status,
+          avatarBg: projects.avatarBg,
+          avatarColor: projects.avatarColor
+        })
+        .from(roundProjects)
+        .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+        .where(eq(roundProjects.roundId, round.id));
+      
+      roundsWithProjects.push({
+        ...round,
+        projects: projectsInRound
+      });
+    }
 
     res.json(roundsWithProjects);
   } catch (error) {
@@ -85,11 +88,26 @@ router.get('/:roundId', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Funding round not found' });
     }
 
-    // Get project details
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, round.projectId));
+    // Get projects in this round
+    const projectsInRound = await db
+      .select({
+        id: roundProjects.id,
+        roundId: roundProjects.roundId,
+        projectId: roundProjects.projectId,
+        tokenPrice: roundProjects.tokenPrice,
+        tokensAvailable: roundProjects.tokensAvailable,
+        minimumInvestment: roundProjects.minimumInvestment,
+        maximumInvestment: roundProjects.maximumInvestment,
+        projectName: projects.name,
+        tokenSymbol: projects.tokenSymbol,
+        projectDescription: projects.description,
+        status: projects.status,
+        avatarBg: projects.avatarBg,
+        avatarColor: projects.avatarColor
+      })
+      .from(roundProjects)
+      .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+      .where(eq(roundProjects.roundId, roundId));
 
     // Get total amount currently in the funding pot
     const fundingPotEntries = await db
@@ -116,7 +134,7 @@ router.get('/:roundId', async (req: Request, res: Response) => {
 
     res.json({
       round,
-      project,
+      projects: projectsInRound,
       fundingDetails: {
         totalFunding,
         participants: fundingPotEntries.length,
@@ -138,11 +156,11 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
   try {
     const userId = req.user!.id;
     const roundId = parseInt(req.params.roundId);
-    const { amount } = req.body;
+    const { amount, projectId } = req.body;
 
     // Validate input
-    if (isNaN(roundId) || !amount || amount <= 0) {
-      return res.status(400).json({ error: 'Invalid input parameters' });
+    if (isNaN(roundId) || !amount || amount <= 0 || !projectId) {
+      return res.status(400).json({ error: 'Invalid input parameters. Requires roundId, projectId, and amount.' });
     }
 
     // Get user details including verification level
@@ -170,17 +188,32 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
     if (round.status !== 'active' || now < round.startDate || now > round.endDate) {
       return res.status(400).json({ error: 'Funding round is not active' });
     }
+    
+    // Get the project-specific round settings
+    const [roundProject] = await db
+      .select()
+      .from(roundProjects)
+      .where(
+        and(
+          eq(roundProjects.roundId, roundId),
+          eq(roundProjects.projectId, projectId)
+        )
+      );
+      
+    if (!roundProject) {
+      return res.status(404).json({ error: 'Project not found in this funding round' });
+    }
 
     // Check if contribution amount is within allowed range
-    if (round.minimumInvestment && amount < Number(round.minimumInvestment)) {
+    if (roundProject.minimumInvestment && amount < Number(roundProject.minimumInvestment)) {
       return res.status(400).json({ 
-        error: `Minimum contribution is ${round.minimumInvestment} USDT` 
+        error: `Minimum contribution is ${roundProject.minimumInvestment} USDT` 
       });
     }
 
-    if (round.maximumInvestment && amount > Number(round.maximumInvestment)) {
+    if (roundProject.maximumInvestment && amount > Number(roundProject.maximumInvestment)) {
       return res.status(400).json({ 
-        error: `Maximum contribution is ${round.maximumInvestment} USDT` 
+        error: `Maximum contribution is ${roundProject.maximumInvestment} USDT` 
       });
     }
 
@@ -203,8 +236,8 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
         spendingCap = 25000; // $25,000 cap
         break;
       default:
-        // No verification, use round's max investment as cap
-        spendingCap = round.maximumInvestment ? Number(round.maximumInvestment) : 500;
+        // No verification, use round's project max investment as cap
+        spendingCap = roundProject.maximumInvestment ? Number(roundProject.maximumInvestment) : 500;
     }
 
     // Get user's existing contributions to this round
@@ -252,19 +285,27 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
       })
       .where(eq(users.id, userId));
 
+    // Get project name for the description
+    const [project] = await db
+      .select({
+        name: projects.name
+      })
+      .from(projects)
+      .where(eq(projects.id, projectId));
+
     // 2. Create wallet transaction record
     await db.insert(walletTransactions).values({
       userId: userId,
-      projectId: round.projectId,
+      projectId: projectId,
       type: 'purchase',
       amount: amount.toString(),
-      description: `Contributed ${amount} USDT to ${round.name} for project #${round.projectId}`
+      description: `Contributed ${amount} USDT to ${round.name} for project ${project.name}`
     });
 
     // 3. Add to funding pot
     await db.insert(fundingPot).values({
       userId: userId,
-      projectId: round.projectId,
+      projectId: projectId,
       roundId: roundId,
       amount: amount.toString(),
       status: 'pending'
@@ -279,11 +320,11 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
       .where(eq(users.id, userId));
 
     res.status(200).json({
-      message: `Successfully contributed ${amount} USDT to the funding round`,
+      message: `Successfully contributed ${amount} USDT to project ${project.name} in ${round.name}`,
       newBalance: updatedUser.walletBalance,
       contribution: {
         roundId,
-        projectId: round.projectId,
+        projectId,
         amount
       }
     });

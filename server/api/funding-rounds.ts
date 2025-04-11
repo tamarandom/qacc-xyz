@@ -1,29 +1,22 @@
 import { Router } from "express";
 import { db } from "../db";
-import { eq, and, desc } from "drizzle-orm";
-import { fundingRounds, projects } from "@shared/schema";
+import { eq, and, desc, or, sql } from "drizzle-orm";
+import { fundingRounds, projects, roundProjects } from "@shared/schema";
 
 const router = Router();
 
 // Get the active funding round
 router.get('/active', async (req, res) => {
   try {
-    // Get the active funding round with project info
+    // Get the active funding round
     const rounds = await db.select({
       id: fundingRounds.id,
-      projectId: fundingRounds.projectId,
-      projectName: projects.name,
       name: fundingRounds.name,
       status: fundingRounds.status,
       startDate: fundingRounds.startDate,
       endDate: fundingRounds.endDate,
-      tokenPrice: fundingRounds.tokenPrice,
-      tokensAvailable: fundingRounds.tokensAvailable,
-      minimumInvestment: fundingRounds.minimumInvestment,
-      maximumInvestment: fundingRounds.maximumInvestment,
     })
     .from(fundingRounds)
-    .innerJoin(projects, eq(fundingRounds.projectId, projects.id))
     .where(eq(fundingRounds.status, 'active'))
     .orderBy(desc(fundingRounds.startDate))
     .limit(1);
@@ -60,14 +53,73 @@ router.get('/active', async (req, res) => {
       });
     }
     
+    // Get the projects in this round
+    const roundProjectsData = await db.select({
+      id: roundProjects.id,
+      roundId: roundProjects.roundId,
+      projectId: roundProjects.projectId,
+      projectName: projects.name,
+      tokenPrice: roundProjects.tokenPrice,
+      tokensAvailable: roundProjects.tokensAvailable,
+    })
+    .from(roundProjects)
+    .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+    .where(eq(roundProjects.roundId, round.id));
+    
     res.json({ 
       success: true,
-      round
+      round,
+      projects: roundProjectsData
     });
     
   } catch (error) {
     console.error('Error fetching active funding round:', error);
     res.status(500).json({ error: 'Failed to fetch active funding round' });
+  }
+});
+
+// Get all projects in a specific round
+router.get('/:id/projects', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const roundId = parseInt(id);
+    
+    if (isNaN(roundId)) {
+      return res.status(400).json({ error: 'Invalid round ID' });
+    }
+    
+    // Get the round first
+    const [round] = await db.select()
+      .from(fundingRounds)
+      .where(eq(fundingRounds.id, roundId));
+    
+    if (!round) {
+      return res.status(404).json({ error: 'Round not found' });
+    }
+    
+    // Get the projects in this round
+    const roundProjectsData = await db.select({
+      id: roundProjects.id,
+      roundId: roundProjects.roundId,
+      projectId: roundProjects.projectId,
+      projectName: projects.name,
+      tokenSymbol: projects.tokenSymbol,
+      tokenPrice: roundProjects.tokenPrice,
+      tokensAvailable: roundProjects.tokensAvailable,
+    })
+    .from(roundProjects)
+    .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+    .where(eq(roundProjects.roundId, roundId));
+    
+    res.json({ 
+      success: true,
+      round,
+      projects: roundProjectsData
+    });
+    
+  } catch (error) {
+    console.error('Error fetching round projects:', error);
+    res.status(500).json({ error: 'Failed to fetch round projects' });
   }
 });
 

@@ -4,7 +4,7 @@ import { isAuthenticated } from '../auth';
 import { scrypt, randomBytes } from 'crypto';
 import { promisify } from 'util';
 import { db } from '../db';
-import { users, projects, fundingRounds, UserRole } from '@shared/schema';
+import { users, projects, fundingRounds, roundProjects, UserRole } from '@shared/schema';
 import { eq, and, desc, sql } from 'drizzle-orm';
 
 const router = Router();
@@ -158,25 +158,44 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
     
-    // Get all funding rounds with project info
+    // Get all funding rounds
     const rounds = await db.select({
       id: fundingRounds.id,
-      projectId: fundingRounds.projectId,
-      projectName: projects.name,
       name: fundingRounds.name,
       status: fundingRounds.status,
       startDate: fundingRounds.startDate,
       endDate: fundingRounds.endDate,
-      tokenPrice: fundingRounds.tokenPrice,
-      tokensAvailable: fundingRounds.tokensAvailable,
-      minimumInvestment: fundingRounds.minimumInvestment,
-      maximumInvestment: fundingRounds.maximumInvestment,
       createdAt: fundingRounds.createdAt,
       updatedAt: fundingRounds.updatedAt
     })
     .from(fundingRounds)
-    .innerJoin(projects, eq(fundingRounds.projectId, projects.id))
     .orderBy(desc(fundingRounds.id));
+    
+    // For each round, get the associated projects
+    const roundsWithProjects = [];
+    
+    for (const round of rounds) {
+      // Get the projects in this round
+      const roundProjects1 = await db.select({
+        id: roundProjects.id,
+        roundId: roundProjects.roundId,
+        projectId: roundProjects.projectId,
+        projectName: projects.name,
+        tokenSymbol: projects.tokenSymbol,
+        tokenPrice: roundProjects.tokenPrice,
+        tokensAvailable: roundProjects.tokensAvailable,
+        minimumInvestment: roundProjects.minimumInvestment,
+        maximumInvestment: roundProjects.maximumInvestment
+      })
+      .from(roundProjects)
+      .innerJoin(projects, eq(roundProjects.projectId, projects.id))
+      .where(eq(roundProjects.roundId, round.id));
+      
+      roundsWithProjects.push({
+        ...round,
+        projects: roundProjects1
+      });
+    }
     
     // Get pre-launch and pre-abc projects for potential new rounds
     const eligibleProjects = await db.select({
@@ -192,7 +211,7 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
     
     res.json({ 
       success: true,
-      rounds,
+      rounds: roundsWithProjects,
       eligibleProjects
     });
     
@@ -305,19 +324,16 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
     }
     
     const { 
-      projectId, 
+      projectIds,  // Now an array of project IDs
       name, 
       startDate,
       endDate,
-      tokenPrice = 0.069,
-      tokensAvailable = 100000,
-      minimumInvestment = 50,
-      maximumInvestment = 5000
+      projectSettings = [] // Array of objects containing project-specific settings
     } = req.body;
     
-    if (!projectId || !name || !startDate || !endDate) {
+    if (!projectIds || !Array.isArray(projectIds) || projectIds.length === 0 || !name || !startDate || !endDate) {
       return res.status(400).json({ 
-        error: 'Required fields missing: projectId, name, startDate, endDate' 
+        error: 'Required fields missing or invalid: projectIds (array), name, startDate, endDate' 
       });
     }
     
@@ -334,34 +350,52 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'End date must be after start date' });
     }
     
-    // Verify the project exists
-    const projectExists = await db.select({ id: projects.id })
+    // Verify all projects exist
+    const existingProjects = await db.select({ id: projects.id })
       .from(projects)
-      .where(eq(projects.id, projectId));
+      .where(sql`${projects.id} IN (${projectIds.join(',')})`);
     
-    if (projectExists.length === 0) {
-      return res.status(404).json({ error: 'Project not found' });
+    if (existingProjects.length !== projectIds.length) {
+      return res.status(404).json({ error: 'One or more projects not found' });
     }
     
     // Create the new funding round
     const [newRound] = await db.insert(fundingRounds)
       .values({
-        projectId,
         name,
         status: 'inactive', // Default to inactive
         startDate: parsedStartDate,
-        endDate: parsedEndDate,
-        tokenPrice,
-        tokensAvailable,
-        minimumInvestment,
-        maximumInvestment
+        endDate: parsedEndDate
       })
+      .returning();
+    
+    // Create entries in roundProjects table for each project
+    const roundProjectValues = [];
+    
+    for (const projectId of projectIds) {
+      // Find project-specific settings if provided
+      const settings = projectSettings.find(p => p.projectId === projectId) || {};
+      
+      roundProjectValues.push({
+        roundId: newRound.id,
+        projectId,
+        tokenPrice: settings.tokenPrice || 0.069,
+        tokensAvailable: settings.tokensAvailable || 100000,
+        minimumInvestment: settings.minimumInvestment || 50,
+        maximumInvestment: settings.maximumInvestment || 5000
+      });
+    }
+    
+    // Insert all project associations
+    const newRoundProjects = await db.insert(roundProjects)
+      .values(roundProjectValues)
       .returning();
     
     res.status(201).json({ 
       success: true,
       message: 'Funding round created successfully',
-      round: newRound
+      round: newRound,
+      projects: newRoundProjects
     });
     
   } catch (error) {
