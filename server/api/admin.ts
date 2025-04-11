@@ -76,11 +76,14 @@ router.post('/update-roles', isAuthenticated, async (req, res) => {
     }
     
     // Get all projects
-    const allProjects = await db.select().from(projects);
+    const allProjects = await db.select({
+      id: projects.id,
+      name: projects.name
+    }).from(projects);
     
     // For each project, create or update a project owner user
     const projectOwnerUsernames = [];
-    for (const project of projects) {
+    for (const project of allProjects) {
       const baseUsername = project.name.toLowerCase().replace(/[^a-z0-9]/g, '');
       const ownerUsername = `${baseUsername}_owner`;
       projectOwnerUsernames.push(ownerUsername);

@@ -1,149 +1,147 @@
-// Script to update users with roles and set all passwords to "pass"
-const { db } = require('../server/db');
-const { scrypt, randomBytes } = require('crypto');
-const { promisify } = require('util');
-const { eq } = require('drizzle-orm');
+// Script to update user roles in the database
+import pg from 'pg';
+import crypto from 'crypto';
+import util from 'util';
 
-const scryptAsync = promisify(scrypt);
+const { Pool } = pg;
+
+const scryptAsync = util.promisify(crypto.scrypt);
+
+// PostgreSQL connection
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
 
 // Helper function to hash password using same method as in auth.ts
 async function hashPassword(password) {
-  const salt = randomBytes(16).toString('hex');
+  const salt = crypto.randomBytes(16).toString('hex');
   const buf = await scryptAsync(password, salt, 64);
   return `${buf.toString('hex')}.${salt}`;
 }
 
 async function updateUserRoles() {
+  const client = await pool.connect();
+  
   try {
-    console.log('Starting user role updates...');
+    console.log('Starting user roles update...');
     
-    // Hash the common password "pass"
-    const hashedPassword = await hashPassword('pass');
-    console.log('Generated hashed password for all users');
-
-    // Check if the role column exists, if not add it
-    const result = await db.execute(`
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name = 'users' AND column_name = 'role'
+    // Begin transaction
+    await client.query('BEGIN');
+    
+    // Set all users to regular role by default
+    await client.query(`
+      UPDATE users 
+      SET role = 'regular'
+    `);
+    console.log('Reset all users to regular role');
+    
+    // Find or create admin user
+    const adminResult = await client.query(`
+      SELECT * FROM users WHERE username = 'admin'
     `);
     
-    if (result.rowCount === 0) {
-      console.log('Role column does not exist, adding it...');
-      await db.execute(`
-        ALTER TABLE users 
-        ADD COLUMN role TEXT NOT NULL DEFAULT 'regular'
-      `);
-      console.log('Added role column to users table');
-    } else {
-      console.log('Role column already exists');
-    }
-    
-    // 1. Update all existing users with regular role and the same password
-    await db.execute(`
-      UPDATE users 
-      SET password = $1, role = 'regular'
-    `, [hashedPassword]);
-    console.log('Updated all users with password "pass" and regular role');
-    
-    // 2. Get all projects to create project owner users
-    const projects = await db.query(`SELECT id, name FROM projects`);
-    console.log(`Found ${projects.length} projects`);
-    
-    // 3. Create or update admin user
-    const adminUser = await db.query(`SELECT id FROM users WHERE username = 'admin'`);
-    
-    if (adminUser.length > 0) {
-      await db.execute(`
-        UPDATE users
-        SET role = 'admin', password = $1
+    if (adminResult.rowCount > 0) {
+      // Update existing admin user
+      await client.query(`
+        UPDATE users 
+        SET role = 'admin' 
         WHERE username = 'admin'
-      `, [hashedPassword]);
-      console.log('Updated existing admin user with admin role');
+      `);
+      console.log('Updated existing admin user');
     } else {
-      await db.execute(`
+      // Create admin user
+      const hashedPassword = await hashPassword('pass');
+      await client.query(`
         INSERT INTO users (username, email, password, role, wallet_balance)
         VALUES ('admin', 'admin@qacc.io', $1, 'admin', '50000')
       `, [hashedPassword]);
       console.log('Created new admin user');
     }
     
-    // 4. For each project, create a project owner user
-    for (const project of projects) {
-      const ownerUsername = project.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '_owner';
-      const ownerEmail = `${ownerUsername}@qacc.io`;
+    // Get all projects
+    const projectsResult = await client.query(`
+      SELECT id, name FROM projects
+    `);
+    
+    // Create project owner users
+    const projectOwners = [];
+    for (const project of projectsResult.rows) {
+      const baseUsername = project.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const ownerUsername = `${baseUsername}_owner`;
+      projectOwners.push(ownerUsername);
       
-      const existingUser = await db.query(`
-        SELECT id FROM users WHERE username = $1
+      // Check if user exists
+      const existingUserResult = await client.query(`
+        SELECT * FROM users WHERE username = $1
       `, [ownerUsername]);
       
-      if (existingUser.length > 0) {
-        await db.execute(`
-          UPDATE users
-          SET role = 'project_owner', password = $1
-          WHERE username = $2
-        `, [hashedPassword, ownerUsername]);
-        console.log(`Updated existing user as project owner: ${ownerUsername}`);
+      if (existingUserResult.rowCount > 0) {
+        // Update to project owner role
+        await client.query(`
+          UPDATE users 
+          SET role = 'project_owner' 
+          WHERE username = $1
+        `, [ownerUsername]);
+        console.log(`Updated existing user ${ownerUsername} to project owner role`);
       } else {
-        await db.execute(`
+        // Create new project owner user
+        const hashedPassword = await hashPassword('pass');
+        await client.query(`
           INSERT INTO users (username, email, password, role, wallet_balance)
           VALUES ($1, $2, $3, 'project_owner', '50000')
-        `, [ownerUsername, ownerEmail, hashedPassword]);
+        `, [ownerUsername, `${ownerUsername}@qacc.io`, hashedPassword]);
         console.log(`Created new project owner user: ${ownerUsername}`);
       }
     }
     
-    // 5. Create 3 regular users if they don't exist
+    // Create regular users if they don't exist
     const regularUsers = ['user1', 'user2', 'user3'];
-    
     for (const username of regularUsers) {
-      const email = `${username}@qacc.io`;
-      
-      const existingUser = await db.query(`
-        SELECT id FROM users WHERE username = $1
+      const existingUserResult = await client.query(`
+        SELECT * FROM users WHERE username = $1
       `, [username]);
       
-      if (existingUser.length > 0) {
-        await db.execute(`
-          UPDATE users
-          SET role = 'regular', password = $1
-          WHERE username = $2
-        `, [hashedPassword, username]);
-        console.log(`Updated existing user: ${username}`);
-      } else {
-        await db.execute(`
+      if (existingUserResult.rowCount === 0) {
+        const hashedPassword = await hashPassword('pass');
+        await client.query(`
           INSERT INTO users (username, email, password, role, wallet_balance)
           VALUES ($1, $2, $3, 'regular', '50000')
-        `, [username, email, hashedPassword]);
+        `, [username, `${username}@qacc.io`, hashedPassword]);
         console.log(`Created new regular user: ${username}`);
       }
     }
     
-    // 6. List all users and their roles
-    const allUsers = await db.query(`
+    // Commit the transaction
+    await client.query('COMMIT');
+    
+    // Print summary of users with their roles
+    const allUsersResult = await client.query(`
       SELECT id, username, email, role FROM users
-      ORDER BY role, username
     `);
     
-    console.log('\nUsers in the system:');
-    console.log('--------------------');
-    for (const user of allUsers) {
-      console.log(`${user.username} (${user.email}) - Role: ${user.role}`);
-    }
+    console.log('\nUser roles updated successfully');
+    console.log('\nUser summary:');
+    console.log('=============');
+    console.log('Admin: admin');
+    console.log(`Project owners: ${projectOwners.join(', ')}`);
+    console.log(`Regular users: ${regularUsers.join(', ')}`);
+    console.log('\nAll users:');
     
-    console.log('\nPassword for all users is now: pass');
+    allUsersResult.rows.forEach(user => {
+      console.log(`${user.username} (${user.email}): ${user.role}`);
+    });
     
   } catch (error) {
+    // Rollback the transaction in case of error
+    await client.query('ROLLBACK');
     console.error('Error updating user roles:', error);
+  } finally {
+    // Release the client back to the pool
+    client.release();
+    // Close the connection pool
+    pool.end();
   }
 }
 
-updateUserRoles()
-  .then(() => {
-    console.log('User role update completed');
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error('Failed to update user roles:', err);
-    process.exit(1);
-  });
+// Run the function
+updateUserRoles();
