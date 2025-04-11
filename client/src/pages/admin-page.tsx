@@ -310,7 +310,7 @@ export default function AdminPage() {
         projectId: parseInt(projectId),
         tokenPrice: "0.069",
         tokensAvailable: "100000",
-        minimumInvestment: "10",
+        minimumInvestment: "50",
         maximumInvestment: "5000"
       }
     ]);

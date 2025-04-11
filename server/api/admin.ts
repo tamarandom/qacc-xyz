@@ -330,14 +330,14 @@ router.post('/funding-rounds/create', isAuthenticated, async (req, res) => {
       projects = [] // Array of objects containing project settings
     } = req.body;
     
-    if (!projects || !Array.isArray(projects) || projects_table.length === 0 || !name || !startDate || !endDate) {
+    if (!projects || !Array.isArray(projects) || projects.length === 0 || !name || !startDate || !endDate) {
       return res.status(400).json({ 
         error: 'Required fields missing or invalid: projects (array), name, startDate, endDate' 
       });
     }
     
     // Extract project IDs from the projects array
-    const projectIds = projects_table.map(p => p.projectId);
+    const projectIds = projects.map((p: any) => p.projectId);
     
     // Parse dates
     const parsedStartDate = new Date(startDate);
