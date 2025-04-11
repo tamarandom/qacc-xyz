@@ -50,6 +50,7 @@ import {
 } from "./services/geckoterminal";
 import { registerAdminRoutes } from "./api/admin";
 import { registerWalletRoutes } from "./api/wallet";
+import activeRoundsRouter from "./api/active-rounds";
 
 // Deprecated caches - use the centralized cache from './cache.ts' instead
 // These are kept for backward compatibility with existing code
