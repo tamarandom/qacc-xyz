@@ -11,6 +11,7 @@ import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
 import WalletPage from "@/pages/wallet-page";
 import AuthPage from "@/pages/auth-page";
+import AdminPage from "@/pages/admin-page";
 import ActiveRoundsPage from "@/pages/active-rounds";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AuthProvider } from "@/hooks/use-auth";
@@ -27,6 +28,7 @@ function Router() {
       <ProtectedRoute path="/user-score" component={UserScorePage} />
       <ProtectedRoute path="/portfolio" component={PortfolioPage} />
       <ProtectedRoute path="/wallet" component={WalletPage} />
+      <ProtectedRoute path="/admin" component={AdminPage} />
       <Route path="/auth" component={AuthPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />

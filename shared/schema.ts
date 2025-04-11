@@ -95,6 +95,7 @@ export const users = pgTable("users", {
   points: integer("points").notNull().default(0),
   rank: integer("rank"),
   walletBalance: numeric("wallet_balance", { precision: 18, scale: 6 }).notNull().default("50000"),
+  role: text("role").notNull().default("user"), // 'user' or 'admin'
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

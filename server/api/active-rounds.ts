@@ -14,7 +14,7 @@ import {
   userVerifications 
 } from "@shared/schema";
 import { VerificationLevel } from "@shared/schema";
-import { isAuthenticated } from '../auth';
+import { isAuthenticated, isAdmin } from '../auth';
 
 const router = express.Router();
 
@@ -505,6 +505,235 @@ router.post('/verification', isAuthenticated, async (req: Request, res: Response
   } catch (error) {
     console.error('Error updating verification level:', error);
     res.status(500).json({ error: 'Failed to update verification level' });
+  }
+});
+
+// =========== ADMIN ENDPOINTS ===========
+
+// Get all rounds (active and inactive) - Admin only
+router.get('/admin/rounds', isAdmin, async (_req: Request, res: Response) => {
+  try {
+    // Fetch all rounds
+    const rounds = await db
+      .select()
+      .from(fundingRounds)
+      .orderBy(fundingRounds.startDate);
+
+    // Fetch project details for each round
+    const roundsWithProjects = await Promise.all(
+      rounds.map(async (round) => {
+        const [project] = await db
+          .select({
+            id: projects.id,
+            name: projects.name,
+            tokenSymbol: projects.tokenSymbol,
+            status: projects.status,
+          })
+          .from(projects)
+          .where(eq(projects.id, round.projectId));
+
+        return {
+          ...round,
+          project
+        };
+      })
+    );
+
+    res.json(roundsWithProjects);
+  } catch (error) {
+    console.error('Error fetching all rounds:', error);
+    res.status(500).json({ error: 'Failed to fetch rounds' });
+  }
+});
+
+// Create a new funding round - Admin only
+router.post('/admin/rounds', isAdmin, async (req: Request, res: Response) => {
+  try {
+    const { 
+      projectId, 
+      name, 
+      days, 
+      hours, 
+      tokenPrice, 
+      tokensAvailable, 
+      minimumInvestment, 
+      maximumInvestment 
+    } = req.body;
+
+    // Validate input
+    if (!projectId || !name || !tokenPrice || !tokensAvailable) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Calculate start and end dates
+    const startDate = new Date();
+    const endDate = new Date();
+    
+    // Add specified days and hours to end date
+    if (days) {
+      endDate.setDate(endDate.getDate() + parseInt(days));
+    }
+    
+    if (hours) {
+      endDate.setHours(endDate.getHours() + parseInt(hours));
+    }
+
+    // Insert new funding round
+    const [newRound] = await db.insert(fundingRounds)
+      .values({
+        projectId: parseInt(projectId),
+        name,
+        status: 'active', // Created as active
+        startDate,
+        endDate,
+        tokenPrice: tokenPrice.toString(),
+        tokensAvailable: tokensAvailable.toString(),
+        minimumInvestment: minimumInvestment ? minimumInvestment.toString() : null,
+        maximumInvestment: maximumInvestment ? maximumInvestment.toString() : null,
+      })
+      .returning();
+
+    res.status(201).json({
+      message: 'Funding round created successfully',
+      round: newRound
+    });
+  } catch (error) {
+    console.error('Error creating funding round:', error);
+    res.status(500).json({ error: 'Failed to create funding round' });
+  }
+});
+
+// Update a funding round - Admin only
+router.put('/admin/rounds/:roundId', isAdmin, async (req: Request, res: Response) => {
+  try {
+    const roundId = parseInt(req.params.roundId);
+    const { 
+      name, 
+      status, 
+      days, 
+      hours,
+      tokenPrice, 
+      tokensAvailable, 
+      minimumInvestment, 
+      maximumInvestment 
+    } = req.body;
+
+    if (isNaN(roundId)) {
+      return res.status(400).json({ error: 'Invalid round ID' });
+    }
+
+    // Get current round
+    const [existingRound] = await db
+      .select()
+      .from(fundingRounds)
+      .where(eq(fundingRounds.id, roundId));
+
+    if (!existingRound) {
+      return res.status(404).json({ error: 'Funding round not found' });
+    }
+
+    // Calculate new end date if days or hours are provided
+    let endDate = new Date(existingRound.endDate);
+    
+    if (days !== undefined || hours !== undefined) {
+      // Reset to current time
+      endDate = new Date();
+      
+      // Add days and hours if provided
+      if (days) {
+        endDate.setDate(endDate.getDate() + parseInt(days));
+      }
+      
+      if (hours) {
+        endDate.setHours(endDate.getHours() + parseInt(hours));
+      }
+    }
+
+    // Update funding round
+    const [updatedRound] = await db.update(fundingRounds)
+      .set({
+        name: name || existingRound.name,
+        status: status || existingRound.status,
+        endDate,
+        tokenPrice: tokenPrice ? tokenPrice.toString() : existingRound.tokenPrice,
+        tokensAvailable: tokensAvailable ? tokensAvailable.toString() : existingRound.tokensAvailable,
+        minimumInvestment: minimumInvestment ? minimumInvestment.toString() : existingRound.minimumInvestment,
+        maximumInvestment: maximumInvestment ? maximumInvestment.toString() : existingRound.maximumInvestment,
+        updatedAt: new Date()
+      })
+      .where(eq(fundingRounds.id, roundId))
+      .returning();
+
+    res.json({
+      message: 'Funding round updated successfully',
+      round: updatedRound
+    });
+  } catch (error) {
+    console.error('Error updating funding round:', error);
+    res.status(500).json({ error: 'Failed to update funding round' });
+  }
+});
+
+// Activate or deactivate a funding round - Admin only
+router.patch('/admin/rounds/:roundId/status', isAdmin, async (req: Request, res: Response) => {
+  try {
+    const roundId = parseInt(req.params.roundId);
+    const { status } = req.body;
+
+    if (isNaN(roundId)) {
+      return res.status(400).json({ error: 'Invalid round ID' });
+    }
+
+    if (status !== 'active' && status !== 'inactive') {
+      return res.status(400).json({ error: 'Status must be "active" or "inactive"' });
+    }
+
+    // Update round status
+    const [updatedRound] = await db.update(fundingRounds)
+      .set({
+        status,
+        updatedAt: new Date()
+      })
+      .where(eq(fundingRounds.id, roundId))
+      .returning();
+
+    if (!updatedRound) {
+      return res.status(404).json({ error: 'Funding round not found' });
+    }
+
+    res.json({
+      message: `Funding round status updated to ${status}`,
+      round: updatedRound
+    });
+  } catch (error) {
+    console.error('Error updating funding round status:', error);
+    res.status(500).json({ error: 'Failed to update funding round status' });
+  }
+});
+
+// Get available projects for funding rounds - Admin only
+router.get('/admin/available-projects', isAdmin, async (_req: Request, res: Response) => {
+  try {
+    // Get projects that are eligible for funding rounds (pre-launch or launched)
+    const availableProjects = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.status, 'pre-launch'))
+      .orderBy(projects.id);
+      
+    const launchedProjects = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.status, 'launched'))
+      .orderBy(projects.id);
+      
+    // Combine the results
+    const combinedProjects = [...availableProjects, ...launchedProjects];
+
+    res.json(combinedProjects);
+  } catch (error) {
+    console.error('Error fetching available projects:', error);
+    res.status(500).json({ error: 'Failed to fetch available projects' });
   }
 });
 
