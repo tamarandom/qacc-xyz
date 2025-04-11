@@ -5,7 +5,8 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser, users } from "@shared/schema";
+import { db } from "./db";
 
 declare global {
   namespace Express {
@@ -74,13 +75,33 @@ export function setupAuth(app: Express) {
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
-        const user = await storage.getUserByUsername(username);
-        if (!user || !(await comparePasswords(password, user.password))) {
+        console.log(`Attempting login for username: ${username}`);
+        
+        // Try case-sensitive first
+        let user = await storage.getUserByUsername(username);
+        
+        if (!user) {
+          // If not found, try case-insensitive search
+          console.log(`User ${username} not found, trying case-insensitive search`);
+          const allUsers = await db.select().from(users);
+          user = allUsers.find(u => u.username.toLowerCase() === username.toLowerCase());
+        }
+        
+        if (!user) {
+          console.log(`No user found for ${username}`);
+          return done(null, false);
+        }
+        
+        const passwordMatches = await comparePasswords(password, user.password);
+        console.log(`Password comparison result for ${username}: ${passwordMatches}`);
+        
+        if (!passwordMatches) {
           return done(null, false);
         } else {
           return done(null, user);
         }
       } catch (error) {
+        console.error('Login error:', error);
         return done(error);
       }
     }),
