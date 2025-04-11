@@ -102,6 +102,8 @@ export default function AdminPage() {
     minimumInvestment: string;
     maximumInvestment: string;
   }>>([]);
+  
+  // Functions for handling multiple project selection are defined below
   const [editRoundId, setEditRoundId] = useState<number | null>(null);
   const [editStartDate, setEditStartDate] = useState<string>("");
   const [editEndDate, setEditEndDate] = useState<string>("");
