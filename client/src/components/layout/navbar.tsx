@@ -74,11 +74,31 @@ export default function Navbar() {
           {/* Auth Buttons or User Info - Desktop */}
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-3">
             {user ? (
-              <>                
+              <>       
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-[color:var(--text-primary)]">
-                    {user?.username}
-                  </span>
+                  {user.role === 'admin' && (
+                    <Link href="/admin">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="font-['IBM_Plex_Mono'] text-xs font-medium bg-[color:var(--card-background)] text-[color:var(--color-peach)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                      >
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
+                  
+                  <div className="flex flex-col items-end">
+                    <span className="text-sm font-medium text-[color:var(--text-primary)]">
+                      {user?.username}
+                    </span>
+                    {user.role === 'admin' && (
+                      <span className="text-xs text-[color:var(--color-peach)]">Admin</span>
+                    )}
+                    {user.role === 'project_owner' && (
+                      <span className="text-xs text-blue-500">Project Owner</span>
+                    )}
+                  </div>
                   
                   <Link href="/wallet">
                     <Button 
@@ -203,6 +223,12 @@ export default function Navbar() {
                   </div>
                   <div className="ml-3">
                     <div className="text-base font-medium text-[color:var(--text-primary)]">{user.username}</div>
+                    {user.role === 'admin' && (
+                      <div className="text-xs text-[color:var(--color-peach)]">Admin</div>
+                    )}
+                    {user.role === 'project_owner' && (
+                      <div className="text-xs text-blue-500">Project Owner</div>
+                    )}
                   </div>
                 </div>
                 
@@ -216,6 +242,22 @@ export default function Navbar() {
                       My Profile
                     </Button>
                   </Link>
+                  
+                  {user.role === 'admin' && (
+                    <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button 
+                        variant="outline" 
+                        className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--color-peach)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2">
+                          <path d="M12 4.5A2.5 2.5 0 0 0 9.5 7 2.5 2.5 0 0 0 12 9.5a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 12 4.5z"></path>
+                          <path d="M19.5 19.5c0-3.59-2.91-6.5-6.5-6.5s-6.5 2.91-6.5 6.5"></path>
+                          <path d="M2 19.5a5 5 0 0 1 5-5h12a5 5 0 0 1 5 5"></path>
+                        </svg>
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  )}
                   
                   <Button 
                     variant="outline" 
