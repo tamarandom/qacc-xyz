@@ -13,13 +13,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 export default function AdminPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const [usersData, setUsersData] = useState<any>(null);
 
-  if (!user || user.role !== 'admin') {
-    setLocation("/");
-    return null;
-  }
+  // We don't need this check anymore since we're using AdminRoute
+  // if (!user || user.role !== 'admin') {
+  //   setLocation("/");
+  //   return null;
+  // }
 
   const resetPasswordsMutation = useMutation({
     mutationFn: async () => {

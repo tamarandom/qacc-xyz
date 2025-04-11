@@ -11,10 +11,12 @@ import UserScorePage from "@/pages/user-score";
 import PortfolioPage from "@/pages/portfolio";
 import WalletPage from "@/pages/wallet-page";
 import AuthPage from "@/pages/auth-page";
+import AdminPage from "@/pages/admin-page";
 import ActiveRoundsPage from "@/pages/active-rounds";
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AdminRoute } from "./lib/admin-route";
 import { useEffect } from "react";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -28,6 +30,7 @@ function Router() {
       <ProtectedRoute path="/portfolio" component={PortfolioPage} />
       <ProtectedRoute path="/wallet" component={WalletPage} />
       <ProtectedRoute path="/active-rounds" component={ActiveRoundsPage} />
+      <AdminRoute path="/admin" component={AdminPage} />
       <Route path="/auth" component={AuthPage} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
