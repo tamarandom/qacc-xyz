@@ -154,6 +154,151 @@ export default function AdminPage() {
   const handleUpdateRoles = () => {
     updateRolesMutation.mutate();
   };
+  
+  // Query to fetch funding rounds
+  const { 
+    data: roundsData,
+    isLoading: isLoadingRounds,
+    refetch: refetchRounds
+  } = useQuery({
+    queryKey: ['/api/admin/funding-rounds'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/funding-rounds', {
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch funding rounds');
+      }
+      
+      return await response.json();
+    }
+  });
+  
+  // Mutation to create a new funding round
+  const createRoundMutation = useMutation({
+    mutationFn: async (data: {
+      projectId: number;
+      name: string;
+      startDate: string;
+      endDate: string;
+      tokenPrice?: number;
+      tokensAvailable?: number;
+    }) => {
+      const response = await apiRequest("POST", "/api/admin/funding-rounds/create", data);
+      return await response.json();
+    },
+    onSuccess: () => {
+      setCreateRoundOpen(false);
+      setSelectedProjectId("");
+      setRoundName("");
+      setStartDate("");
+      setEndDate("");
+      setTokenPrice("0.069");
+      setTokensAvailable("100000");
+      refetchRounds();
+      toast({
+        title: "Success",
+        description: "Funding round created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Mutation to update a funding round's status
+  const updateRoundStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: 'active' | 'inactive' }) => {
+      const response = await apiRequest("POST", `/api/admin/funding-rounds/${id}/status`, { status });
+      return await response.json();
+    },
+    onSuccess: () => {
+      refetchRounds();
+      toast({
+        title: "Success",
+        description: "Funding round status updated successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  // Mutation to update a funding round's dates
+  const updateRoundDatesMutation = useMutation({
+    mutationFn: async ({ id, startDate, endDate }: { id: number; startDate: string; endDate: string }) => {
+      const response = await apiRequest("POST", `/api/admin/funding-rounds/${id}/dates`, { startDate, endDate });
+      return await response.json();
+    },
+    onSuccess: () => {
+      setEditRoundId(null);
+      setEditStartDate("");
+      setEditEndDate("");
+      refetchRounds();
+      toast({
+        title: "Success",
+        description: "Funding round dates updated successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+  
+  const handleCreateRound = () => {
+    if (!selectedProjectId || !roundName || !startDate || !endDate) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    createRoundMutation.mutate({
+      projectId: parseInt(selectedProjectId),
+      name: roundName,
+      startDate,
+      endDate,
+      tokenPrice: parseFloat(tokenPrice),
+      tokensAvailable: parseInt(tokensAvailable),
+    });
+  };
+  
+  const handleToggleRoundStatus = (round: FundingRound) => {
+    const newStatus = round.status === 'active' ? 'inactive' : 'active';
+    updateRoundStatusMutation.mutate({ id: round.id, status: newStatus });
+  };
+  
+  const handleUpdateRoundDates = () => {
+    if (!editRoundId || !editStartDate || !editEndDate) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    updateRoundDatesMutation.mutate({
+      id: editRoundId,
+      startDate: editStartDate,
+      endDate: editEndDate
+    });
+  };
 
   return (
     <div className="container mx-auto py-8 max-w-4xl">
@@ -287,6 +432,267 @@ export default function AdminPage() {
           </Card>
         </TabsContent>
 
+        <TabsContent value="rounds" className="space-y-6">
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-['Tusker_Grotesk'] text-[color:var(--text-primary)]">FUNDING ROUNDS MANAGEMENT</h2>
+              
+              <Dialog open={createRoundOpen} onOpenChange={setCreateRoundOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--card-background)] text-[color:var(--color-peach)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                    variant="outline"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New Round
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <DialogHeader>
+                    <DialogTitle>Create New Funding Round</DialogTitle>
+                    <DialogDescription>
+                      Set up a new funding round for a pre-launch or pre-abc project.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="project" className="text-right">
+                        Project
+                      </Label>
+                      <Select 
+                        value={selectedProjectId} 
+                        onValueChange={setSelectedProjectId}
+                      >
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Select project" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {roundsData?.eligibleProjects?.map((project: Project) => (
+                            <SelectItem 
+                              key={project.id} 
+                              value={project.id.toString()}
+                            >
+                              {project.name} ({project.tokenSymbol}) - {project.status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">
+                        Round Name
+                      </Label>
+                      <Input
+                        id="name"
+                        className="col-span-3"
+                        value={roundName}
+                        onChange={(e) => setRoundName(e.target.value)}
+                        placeholder="e.g., Seed Round"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="startDate" className="text-right">
+                        Start Date
+                      </Label>
+                      <Input
+                        id="startDate"
+                        className="col-span-3"
+                        type="datetime-local"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="endDate" className="text-right">
+                        End Date
+                      </Label>
+                      <Input
+                        id="endDate"
+                        className="col-span-3"
+                        type="datetime-local"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="tokenPrice" className="text-right">
+                        Token Price
+                      </Label>
+                      <Input
+                        id="tokenPrice"
+                        className="col-span-3"
+                        type="number"
+                        value={tokenPrice}
+                        onChange={(e) => setTokenPrice(e.target.value)}
+                        placeholder="0.069"
+                        step="0.001"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="tokensAvailable" className="text-right">
+                        Tokens Available
+                      </Label>
+                      <Input
+                        id="tokensAvailable"
+                        className="col-span-3"
+                        type="number"
+                        value={tokensAvailable}
+                        onChange={(e) => setTokensAvailable(e.target.value)}
+                        placeholder="100000"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button 
+                      type="submit" 
+                      onClick={handleCreateRound}
+                      disabled={createRoundMutation.isPending}
+                      className="font-['IBM_Plex_Mono']"
+                    >
+                      {createRoundMutation.isPending ? "Creating..." : "Create Round"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <div className="text-sm text-[color:var(--text-secondary)] mb-6 font-['IBM_Plex_Mono']">
+              <p>Manage funding rounds for projects in the accelerator program. Only one round can be active at a time.</p>
+            </div>
+
+            {isLoadingRounds ? (
+              <div className="flex justify-center items-center py-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[color:var(--color-peach)]"></div>
+              </div>
+            ) : roundsData?.rounds?.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-[color:var(--border-color)]">
+                  <thead className="bg-[color:var(--border-color)]">
+                    <tr>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Project</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Round</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Status</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Start Date</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">End Date</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Price</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-[color:var(--card-background)] divide-y divide-[color:var(--border-color)]">
+                    {roundsData.rounds.map((round: FundingRound) => (
+                      <tr key={round.id}>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                          {round.projectName}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                          {round.name}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap">
+                          <Badge
+                            className={round.status === 'active' 
+                              ? 'bg-green-100 text-green-800 hover:bg-green-100' 
+                              : 'bg-gray-100 text-gray-800 hover:bg-gray-100'}
+                          >
+                            {round.status.toUpperCase()}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                          {format(new Date(round.startDate), "MMM d, yyyy HH:mm")}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                          {format(new Date(round.endDate), "MMM d, yyyy HH:mm")}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
+                          ${parseFloat(String(round.tokenPrice)).toFixed(6)}
+                        </td>
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-right space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleRoundStatus(round)}
+                            disabled={updateRoundStatusMutation.isPending}
+                            className="bg-[color:var(--card-background)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                          >
+                            <ToggleLeft className="h-4 w-4 mr-1" />
+                            {round.status === 'active' ? 'Deactivate' : 'Activate'}
+                          </Button>
+                          
+                          <Dialog open={editRoundId === round.id} onOpenChange={(open) => !open && setEditRoundId(null)}>
+                            <DialogTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setEditRoundId(round.id);
+                                  setEditStartDate(new Date(round.startDate).toISOString().slice(0, 16));
+                                  setEditEndDate(new Date(round.endDate).toISOString().slice(0, 16));
+                                }}
+                                className="bg-[color:var(--card-background)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                              >
+                                <CalendarDays className="h-4 w-4 mr-1" />
+                                Edit Dates
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-[500px]">
+                              <DialogHeader>
+                                <DialogTitle>Edit Funding Round Dates</DialogTitle>
+                                <DialogDescription>
+                                  Update the start and end dates for "{round.name}" round of {round.projectName}.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <div className="grid gap-4 py-4">
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="editStartDate" className="text-right">
+                                    Start Date
+                                  </Label>
+                                  <Input
+                                    id="editStartDate"
+                                    className="col-span-3"
+                                    type="datetime-local"
+                                    value={editStartDate}
+                                    onChange={(e) => setEditStartDate(e.target.value)}
+                                  />
+                                </div>
+                                <div className="grid grid-cols-4 items-center gap-4">
+                                  <Label htmlFor="editEndDate" className="text-right">
+                                    End Date
+                                  </Label>
+                                  <Input
+                                    id="editEndDate"
+                                    className="col-span-3"
+                                    type="datetime-local"
+                                    value={editEndDate}
+                                    onChange={(e) => setEditEndDate(e.target.value)}
+                                  />
+                                </div>
+                              </div>
+                              <DialogFooter>
+                                <Button 
+                                  type="submit" 
+                                  onClick={handleUpdateRoundDates}
+                                  disabled={updateRoundDatesMutation.isPending}
+                                  className="font-['IBM_Plex_Mono']"
+                                >
+                                  {updateRoundDatesMutation.isPending ? "Updating..." : "Update Dates"}
+                                </Button>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-10 text-[color:var(--text-secondary)]">
+                <p className="mb-4">No funding rounds found.</p>
+                <p>Create a new funding round using the button above.</p>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+        
         <TabsContent value="system" className="space-y-6">
           <Card className="p-6">
             <h2 className="text-xl font-['Tusker_Grotesk'] mb-4 text-[color:var(--text-primary)]">CACHE MANAGEMENT</h2>

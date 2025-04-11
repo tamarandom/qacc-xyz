@@ -30,14 +30,14 @@ router.post('/reset-passwords', isAuthenticated, async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
     
-    const hashedPassword = await hashPassword('pass');
+    const hashedPassword = await hashPassword('thankyou');
     
     // Update all user passwords
     await db.update(users).set({ 
       password: hashedPassword 
     });
     
-    res.json({ success: true, message: 'All user passwords reset to "pass"' });
+    res.json({ success: true, message: 'All user passwords reset to "thankyou"' });
   } catch (error) {
     console.error('Error resetting passwords:', error);
     res.status(500).json({ error: 'Failed to reset passwords' });
@@ -65,7 +65,7 @@ router.post('/update-roles', isAuthenticated, async (req, res) => {
         .where(eq(users.username, 'admin'));
     } else {
       // Create admin user
-      const hashedPassword = await hashPassword('pass');
+      const hashedPassword = await hashPassword('thankyou');
       await db.insert(users).values({
         username: 'admin',
         email: 'admin@qacc.io',
@@ -98,7 +98,7 @@ router.post('/update-roles', isAuthenticated, async (req, res) => {
           .where(eq(users.username, ownerUsername));
       } else {
         // Create new project owner user
-        const hashedPassword = await hashPassword('pass');
+        const hashedPassword = await hashPassword('thankyou');
         await db.insert(users).values({
           username: ownerUsername,
           email: `${ownerUsername}@qacc.io`,
@@ -116,7 +116,7 @@ router.post('/update-roles', isAuthenticated, async (req, res) => {
       
       if (existingUser.length === 0) {
         // Create new regular user
-        const hashedPassword = await hashPassword('pass');
+        const hashedPassword = await hashPassword('thankyou');
         await db.insert(users).values({
           username,
           email: `${username}@qacc.io`,
