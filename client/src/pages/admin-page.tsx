@@ -278,8 +278,8 @@ export default function AdminPage() {
     },
     onSuccess: () => {
       setEditRoundId(null);
-      setEditStartDate("");
-      setEditEndDate("");
+      setEditStartDate(undefined);
+      setEditEndDate(undefined);
       refetchRounds();
       toast({
         title: "Success",
@@ -574,23 +574,49 @@ export default function AdminPage() {
                     <Label htmlFor="startDate" className="mb-2 block">
                       Start Date
                     </Label>
-                    <Input
-                      id="startDate"
-                      type="datetime-local"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {startDate ? format(startDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={startDate}
+                          onSelect={setStartDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div>
                     <Label htmlFor="endDate" className="mb-2 block">
                       End Date
                     </Label>
-                    <Input
-                      id="endDate"
-                      type="datetime-local"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                    />
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {endDate ? format(endDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={endDate}
+                          onSelect={setEndDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
                 
@@ -643,91 +669,7 @@ export default function AdminPage() {
                             )}
                           </div>
                           
-                          {isSelected && projectSetting && (
-                            <div className="grid grid-cols-2 gap-2 mt-2">
-                              <div className="space-y-1">
-                                <Label 
-                                  htmlFor={`tokenPrice-${project.id}`}
-                                  className="text-xs"
-                                >
-                                  Token Price (USDT)
-                                </Label>
-                                <Input
-                                  id={`tokenPrice-${project.id}`}
-                                  type="number"
-                                  value={projectSetting.tokenPrice}
-                                  onChange={(e) => updateProjectSetting(
-                                    project.id,
-                                    'tokenPrice',
-                                    e.target.value
-                                  )}
-                                  placeholder="0.069"
-                                  step="0.001"
-                                  className="h-8"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label 
-                                  htmlFor={`tokensAvailable-${project.id}`}
-                                  className="text-xs"
-                                >
-                                  Tokens Available
-                                </Label>
-                                <Input
-                                  id={`tokensAvailable-${project.id}`}
-                                  type="number"
-                                  value={projectSetting.tokensAvailable}
-                                  onChange={(e) => updateProjectSetting(
-                                    project.id,
-                                    'tokensAvailable',
-                                    e.target.value
-                                  )}
-                                  placeholder="100000"
-                                  className="h-8"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label 
-                                  htmlFor={`minimumInvestment-${project.id}`}
-                                  className="text-xs"
-                                >
-                                  Min Investment (USDT)
-                                </Label>
-                                <Input
-                                  id={`minimumInvestment-${project.id}`}
-                                  type="number"
-                                  value={projectSetting.minimumInvestment}
-                                  onChange={(e) => updateProjectSetting(
-                                    project.id,
-                                    'minimumInvestment',
-                                    e.target.value
-                                  )}
-                                  placeholder="50"
-                                  className="h-8"
-                                />
-                              </div>
-                              <div className="space-y-1">
-                                <Label 
-                                  htmlFor={`maximumInvestment-${project.id}`}
-                                  className="text-xs"
-                                >
-                                  Max Investment (USDT)
-                                </Label>
-                                <Input
-                                  id={`maximumInvestment-${project.id}`}
-                                  type="number"
-                                  value={projectSetting.maximumInvestment}
-                                  onChange={(e) => updateProjectSetting(
-                                    project.id,
-                                    'maximumInvestment',
-                                    e.target.value
-                                  )}
-                                  placeholder="5000"
-                                  className="h-8"
-                                />
-                              </div>
-                            </div>
-                          )}
+
                         </div>
                       );
                     })}
@@ -819,8 +761,8 @@ export default function AdminPage() {
                                 size="sm"
                                 onClick={() => {
                                   setEditRoundId(round.id);
-                                  setEditStartDate(new Date(round.startDate).toISOString().slice(0, 16));
-                                  setEditEndDate(new Date(round.endDate).toISOString().slice(0, 16));
+                                  setEditStartDate(new Date(round.startDate));
+                                  setEditEndDate(new Date(round.endDate));
                                 }}
                                 className="bg-[color:var(--card-background)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
                               >
@@ -836,29 +778,51 @@ export default function AdminPage() {
                                 </DialogDescription>
                               </DialogHeader>
                               <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="editStartDate" className="text-right">
-                                    Start Date
-                                  </Label>
-                                  <Input
-                                    id="editStartDate"
-                                    className="col-span-3"
-                                    type="datetime-local"
-                                    value={editStartDate}
-                                    onChange={(e) => setEditStartDate(e.target.value)}
-                                  />
+                                <div className="grid gap-2">
+                                  <Label htmlFor="editStartDate">Start Date</Label>
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        id="editStartDate"
+                                        variant="outline"
+                                        className="w-full justify-start text-left font-normal"
+                                      >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {editStartDate ? format(editStartDate, "PPP") : "Pick a date"}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                      <CalendarComponent
+                                        mode="single"
+                                        selected={editStartDate}
+                                        onSelect={setEditStartDate}
+                                        initialFocus
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
                                 </div>
-                                <div className="grid grid-cols-4 items-center gap-4">
-                                  <Label htmlFor="editEndDate" className="text-right">
-                                    End Date
-                                  </Label>
-                                  <Input
-                                    id="editEndDate"
-                                    className="col-span-3"
-                                    type="datetime-local"
-                                    value={editEndDate}
-                                    onChange={(e) => setEditEndDate(e.target.value)}
-                                  />
+                                <div className="grid gap-2">
+                                  <Label htmlFor="editEndDate">End Date</Label>
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <Button
+                                        id="editEndDate"
+                                        variant="outline"
+                                        className="w-full justify-start text-left font-normal"
+                                      >
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {editEndDate ? format(editEndDate, "PPP") : "Pick a date"}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                      <CalendarComponent
+                                        mode="single"
+                                        selected={editEndDate}
+                                        onSelect={setEditEndDate}
+                                        initialFocus
+                                      />
+                                    </PopoverContent>
+                                  </Popover>
                                 </div>
                               </div>
                               <DialogFooter>
