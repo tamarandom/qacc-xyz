@@ -186,7 +186,16 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
 
     // Check verification level spending caps
     let spendingCap = 0;
-    switch (user.verificationLevel) {
+    // Normally we would use user.verificationLevel, but since we added it manually,
+    // we need to query for it directly from the database
+    const userVerificationResult = await db.execute(
+      `SELECT verification_level FROM users WHERE id = ${userId}`
+    );
+    
+    // Extract the verification level from the result
+    const verificationLevel = userVerificationResult.rows[0]?.verification_level || VerificationLevel.NONE;
+    
+    switch (verificationLevel) {
       case VerificationLevel.HUMAN_PASSPORT:
         spendingCap = 1000; // $1,000 cap
         break;
@@ -219,7 +228,7 @@ router.post('/:roundId/contribute', isAuthenticated, async (req: Request, res: R
     // Check if new contribution would exceed spending cap
     if (totalContributed + amount > spendingCap) {
       return res.status(400).json({
-        error: `This contribution would exceed your spending cap of ${spendingCap} USDT based on your verification level (${user.verificationLevel})`
+        error: `This contribution would exceed your spending cap of ${spendingCap} USDT based on your verification level (${verificationLevel})`
       });
     }
 
@@ -349,13 +358,11 @@ router.post('/verification', isAuthenticated, async (req: Request, res: Response
       });
     }
 
-    // Update user verification level
-    await db
-      .update(users)
-      .set({
-        verificationLevel: verificationType
-      })
-      .where(eq(users.id, userId));
+    // Update user verification level using raw SQL
+    // Since our schema doesn't include verificationLevel in the standard Drizzle model
+    await db.execute(
+      `UPDATE users SET verification_level = '${verificationType}' WHERE id = ${userId}`
+    );
 
     // Get spending cap based on verification level
     let spendingCap = 0;

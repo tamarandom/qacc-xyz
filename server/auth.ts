@@ -46,6 +46,15 @@ async function comparePasswords(supplied: string, stored: string) {
   }
 }
 
+// Authentication middleware
+export function isAuthenticated(req: Express.Request, res: Express.Response, next: Function) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.statusCode = 401;
+  res.json({ error: 'User not authenticated' });
+}
+
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "q/acc-session-secret",
