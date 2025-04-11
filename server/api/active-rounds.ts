@@ -4,7 +4,15 @@
 import express, { Request, Response } from 'express';
 import { db } from "../db";
 import { eq, and, gte, lte } from 'drizzle-orm';
-import { fundingRounds, projects, fundingPot, users, walletTransactions } from "@shared/schema";
+import { 
+  fundingRounds, 
+  projects, 
+  fundingPot, 
+  users, 
+  walletTransactions, 
+  verificationUrls,
+  userVerifications 
+} from "@shared/schema";
 import { VerificationLevel } from "@shared/schema";
 import { isAuthenticated } from '../auth';
 
@@ -343,6 +351,118 @@ router.post('/add-funds', isAuthenticated, async (req: Request, res: Response) =
     res.status(500).json({ error: 'Failed to add funds to wallet' });
   }
 });
+
+// Get verification URLs
+router.get('/verification-urls', async (_req: Request, res: Response) => {
+  try {
+    // Get all verification URLs
+    const urls = await db
+      .select()
+      .from(verificationUrls);
+    
+    // Create a map of name to URL
+    const urlMap: Record<string, string> = {};
+    urls.forEach(url => {
+      urlMap[url.name] = url.url;
+    });
+    
+    res.json({
+      tier1: urlMap['tier1'] || 'tier1.com', // Default if not found
+      tier2: urlMap['tier2'] || 'tier2.com'  // Default if not found
+    });
+  } catch (error) {
+    console.error('Error fetching verification URLs:', error);
+    res.status(500).json({ error: 'Failed to fetch verification URLs' });
+  }
+});
+
+// Get user's verification level and spending information for a round
+router.get('/verification', isAuthenticated, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const roundId = parseInt(req.query.roundId as string);
+    
+    if (isNaN(roundId)) {
+      return res.status(400).json({ error: 'Invalid round ID' });
+    }
+    
+    // Get user's verification level using raw SQL
+    const userVerificationResult = await db.execute(
+      `SELECT verification_level FROM users WHERE id = ${userId}`
+    );
+    
+    // Extract the verification level from the result
+    const verificationLevel = userVerificationResult.rows[0]?.verification_level || VerificationLevel.NONE;
+    
+    // Get user's total contributions to this round
+    const contributions = await db
+      .select()
+      .from(fundingPot)
+      .where(
+        and(
+          eq(fundingPot.userId, userId),
+          eq(fundingPot.roundId, roundId),
+          eq(fundingPot.status, 'pending')
+        )
+      );
+    
+    // Calculate total amount spent
+    const totalSpent = contributions.reduce(
+      (sum, entry) => sum + Number(entry.amount),
+      0
+    );
+    
+    // Get verification URLs
+    const urls = await db.select().from(verificationUrls);
+    const urlMap: Record<string, string> = {};
+    urls.forEach(url => {
+      urlMap[url.name] = url.url;
+    });
+    
+    res.json({
+      roundId,
+      verificationLevel,
+      spent: totalSpent,
+      verificationUrls: {
+        tier1: urlMap['tier1'] || 'tier1.com',
+        tier2: urlMap['tier2'] || 'tier2.com'
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching verification status:', error);
+    res.status(500).json({ error: 'Failed to fetch verification status' });
+  }
+});
+
+// Initialize verification URLs if they don't exist
+async function initVerificationUrls() {
+  try {
+    // Check if verification URLs exist
+    const existingUrls = await db.select().from(verificationUrls);
+    
+    if (existingUrls.length === 0) {
+      // Insert default URLs
+      await db.insert(verificationUrls).values([
+        {
+          name: 'tier1',
+          url: 'tier1.com',
+          description: 'Human Passport verification (Tier 1)'
+        },
+        {
+          name: 'tier2',
+          url: 'tier2.com',
+          description: 'zkID verification (Tier 2)'
+        }
+      ]);
+      console.log('Initialized verification URLs');
+    }
+  } catch (error) {
+    console.error('Error initializing verification URLs:', error);
+  }
+}
+
+// Initialize verification URLs when this module is loaded
+initVerificationUrls();
 
 // Update user verification level (for demonstration purposes)
 router.post('/verification', isAuthenticated, async (req: Request, res: Response) => {

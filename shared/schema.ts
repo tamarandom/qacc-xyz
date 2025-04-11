@@ -256,3 +256,40 @@ export enum VerificationLevel {
   HUMAN_PASSPORT = "human_passport", // Spending cap: $1,000
   ZK_ID = "zk_id" // Spending cap: $25,000
 }
+
+// Verification URLs table - for storing links to verification providers
+export const verificationUrls = pgTable("verification_urls", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(), // "tier1", "tier2"
+  url: text("url").notNull(), // The URL to the verification provider
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const insertVerificationUrlSchema = createInsertSchema(verificationUrls).omit({
+  id: true,
+  createdAt: true
+});
+
+export type VerificationUrl = typeof verificationUrls.$inferSelect;
+export type InsertVerificationUrl = z.infer<typeof insertVerificationUrlSchema>;
+
+// User verification table - to track user verification status
+export const userVerifications = pgTable("user_verifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  verificationLevel: text("verification_level").notNull().default(VerificationLevel.NONE),
+  verifiedAt: timestamp("verified_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at"), // Optional expiration date
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const insertUserVerificationSchema = createInsertSchema(userVerifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export type UserVerification = typeof userVerifications.$inferSelect;
+export type InsertUserVerification = z.infer<typeof insertUserVerificationSchema>;
