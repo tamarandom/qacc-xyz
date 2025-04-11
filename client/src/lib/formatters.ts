@@ -53,30 +53,3 @@ export function formatNumber(value: number, noDecimals = false): string {
     maximumFractionDigits: noDecimals ? 0 : 2
   }).format(value);
 }
-
-/**
- * Format a number in compact notation (K, M, B)
- * @param value - The value to format
- * @param includeSymbol - Whether to include the $ symbol
- */
-export function formatCompactNumber(value: number | null, includeSymbol = true): string {
-  if (value === null || value === undefined) {
-    return includeSymbol ? '$0' : '0';
-  }
-  
-  const prefix = includeSymbol ? '$' : '';
-  
-  if (value >= 1000000000) {
-    return `${prefix}${(value / 1000000000).toFixed(1)}B`;
-  }
-  
-  if (value >= 1000000) {
-    return `${prefix}${(value / 1000000).toFixed(1)}M`;
-  }
-  
-  if (value >= 1000) {
-    return `${prefix}${(value / 1000).toFixed(1)}K`;
-  }
-  
-  return `${prefix}${value.toFixed(0)}`;
-}

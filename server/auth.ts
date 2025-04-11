@@ -54,14 +54,6 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
   res.status(401).json({ error: 'User not authenticated' });
 }
 
-// Admin role check middleware
-export function isAdmin(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated() && req.user.role === 'admin') {
-    return next();
-  }
-  res.status(403).json({ error: 'Access denied. Admin role required.' });
-}
-
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "q/acc-session-secret",
