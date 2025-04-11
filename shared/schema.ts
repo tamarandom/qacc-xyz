@@ -85,12 +85,20 @@ export type InsertProjectFeature = z.infer<typeof insertProjectFeatureSchema>;
 export type ProjectTechnicalDetail = typeof projectTechnicalDetails.$inferSelect;
 export type InsertProjectTechnicalDetail = z.infer<typeof insertProjectTechnicalDetailSchema>;
 
+// User Roles Enum
+export enum UserRole {
+  REGULAR = 'regular',
+  PROJECT_OWNER = 'project_owner',
+  ADMIN = 'admin'
+}
+
 // User table
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").notNull().default(UserRole.REGULAR),
   avatarUrl: text("avatar_url"),
   points: integer("points").notNull().default(0),
   rank: integer("rank"),
