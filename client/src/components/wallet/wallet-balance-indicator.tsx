@@ -12,7 +12,7 @@ export function WalletBalanceIndicator() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[color:var(--card-background)] border border-[color:var(--border-color)]">
+      <div className="flex items-center space-x-1.5">
         <Wallet className="h-3.5 w-3.5 text-[color:var(--text-secondary)]" />
         <Skeleton className="h-4 w-20" />
       </div>
@@ -24,9 +24,9 @@ export function WalletBalanceIndicator() {
   }
 
   return (
-    <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-md bg-[color:var(--card-background)] border border-[color:var(--border-color)]">
+    <div className="flex items-center space-x-1.5">
       <Wallet className="h-3.5 w-3.5 text-[color:var(--text-secondary)]" />
-      <span className="font-['IBM_Plex_Mono'] text-xs font-medium">
+      <span className="font-['IBM_Plex_Mono'] text-xs font-medium text-[color:var(--text-secondary)]">
         {formatCurrency(parseFloat(balance.balance))}
       </span>
     </div>

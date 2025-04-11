@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { VerificationLevel } from "@/lib/types";
 import { formatCurrency } from "@/lib/formatters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info, ShieldCheck, X } from "lucide-react";
+import { Info, ShieldCheck } from "lucide-react";
 
 // Spending caps per verification level (from database)
 const SPENDING_CAPS = {
@@ -32,7 +32,7 @@ interface PurchaseTokenDialogProps {
     id: number;
     name: string;
     symbol: string;
-    price: number;
+    price: number; // We'll ignore this since tokens are allocated at end of round
   };
   walletBalance: number;
   roundId: number;
@@ -60,9 +60,6 @@ export function PurchaseTokenDialog({
     enabled: isOpen && roundId > 0
   });
   
-  // Calculate token amount based on price
-  const tokenAmount = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) / project.price : 0;
-  
   // Calculate remaining spend amount based on verification level
   const verificationLevel = verification?.verificationLevel || VerificationLevel.NONE;
   const spendCap = SPENDING_CAPS[verificationLevel];
@@ -71,6 +68,7 @@ export function PurchaseTokenDialog({
   
   // Check if purchase amount exceeds verification level
   const exceedsVerificationLevel = parseFloat(amount || "0") > remainingSpend;
+  const hasNoVerification = verificationLevel === VerificationLevel.NONE;
   
   // Contribute mutation
   const { mutate: contribute, isPending } = useMutation({
@@ -85,7 +83,7 @@ export function PurchaseTokenDialog({
     onSuccess: () => {
       toast({
         title: "Purchase successful",
-        description: `You have successfully purchased ${tokenAmount.toFixed(2)} ${project.symbol} tokens.`,
+        description: `You have successfully contributed ${formatCurrency(parseFloat(amount))} to ${project.name}. Tokens will be allocated at the end of the funding round.`,
       });
       
       // Invalidate relevant queries
@@ -127,6 +125,11 @@ export function PurchaseTokenDialog({
       return;
     }
     
+    if (hasNoVerification) {
+      setIsVerificationOpen(true);
+      return;
+    }
+    
     if (exceedsVerificationLevel) {
       setIsVerificationOpen(true);
       return;
@@ -140,7 +143,7 @@ export function PurchaseTokenDialog({
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-[425px] bg-[color:var(--card-background)] text-[color:var(--text-primary)]">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold">Purchase {project.symbol} Tokens</DialogTitle>
+            <DialogTitle className="text-xl font-bold">PURCHASE TOKENS</DialogTitle>
             <DialogDescription>
               Enter the amount of USDT you want to spend.
             </DialogDescription>
@@ -177,46 +180,18 @@ export function PurchaseTokenDialog({
                 onChange={(e) => setAmount(e.target.value)}
                 min="0"
                 step="0.01"
-                max={walletBalance.toString()}
+                max={Math.min(walletBalance, remainingSpend).toString()}
                 placeholder="0.00"
                 className="col-span-3 bg-[color:var(--background)]"
               />
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="tokens" className="text-right">
-                {project.symbol}
-              </Label>
-              <Input
-                id="tokens"
-                value={tokenAmount ? tokenAmount.toFixed(6) : "0"}
-                disabled
-                className="col-span-3 bg-[color:var(--border-color)]"
-              />
+            <div className="text-sm mt-2 text-[color:var(--text-secondary)]">
+              <p>Token allocation will be determined at the end of the funding round based on total contributions.</p>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">
-                Price
-              </Label>
-              <Input
-                id="price"
-                value={formatCurrency(project.price)}
-                disabled
-                className="col-span-3 bg-[color:var(--border-color)]"
-              />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="balance" className="text-right">
-                Balance
-              </Label>
-              <Input
-                id="balance"
-                value={formatCurrency(walletBalance)}
-                disabled
-                className="col-span-3 bg-[color:var(--border-color)]"
-              />
+            <div className="text-xs mt-1 text-[color:var(--text-secondary)] flex justify-end">
+              Balance: {formatCurrency(walletBalance)}
             </div>
           </div>
           
@@ -230,7 +205,7 @@ export function PurchaseTokenDialog({
             </Button>
             <Button 
               onClick={handlePurchase} 
-              disabled={!amount || parseFloat(amount) <= 0 || isPending}
+              disabled={!amount || parseFloat(amount) <= 0 || isPending || hasNoVerification}
               className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)]"
             >
               {isPending ? "Processing..." : "Purchase"}
@@ -246,16 +221,26 @@ export function PurchaseTokenDialog({
             <DialogTitle className="text-xl font-bold">Verification Required</DialogTitle>
           </DialogHeader>
           
-          <Alert variant="destructive">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Spending limit exceeded</AlertTitle>
-            <AlertDescription>
-              Your purchase amount exceeds your remaining spending limit of {formatCurrency(remainingSpend)}.
-            </AlertDescription>
-          </Alert>
+          {hasNoVerification ? (
+            <Alert variant="destructive">
+              <Info className="h-4 w-4" />
+              <AlertTitle>Verification Required</AlertTitle>
+              <AlertDescription>
+                You need to complete verification before you can participate in this funding round.
+              </AlertDescription>
+            </Alert>
+          ) : (
+            <Alert variant="destructive">
+              <Info className="h-4 w-4" />
+              <AlertTitle>Spending limit exceeded</AlertTitle>
+              <AlertDescription>
+                Your purchase amount exceeds your remaining spending limit of {formatCurrency(remainingSpend)}.
+              </AlertDescription>
+            </Alert>
+          )}
           
           <div className="py-4">
-            <p className="mb-4">To increase your spending limit, you need to upgrade your verification level:</p>
+            <p className="mb-4">Choose a verification level to participate in the funding round:</p>
             
             <div className="space-y-3">
               <div className="bg-[color:var(--border-color)] p-3 rounded-md flex items-start">
@@ -290,7 +275,7 @@ export function PurchaseTokenDialog({
                 setIsVerificationOpen(false);
                 toast({
                   title: "Verification",
-                  description: "Please complete the verification process to upgrade your spending limit.",
+                  description: "Please complete the verification process to participate in the funding round.",
                 });
               }}
               className="font-['IBM_Plex_Mono'] text-sm bg-[color:var(--color-peach)] text-[color:var(--color-black)] hover:bg-[color:var(--color-peach-300)]"
