@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { 
   Dialog,
   DialogContent,
@@ -40,7 +43,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { 
   ArrowLeftCircle, 
-  Calendar, 
+  CalendarIcon, 
   CalendarDays, 
   Check, 
   Clock, 
@@ -93,8 +96,8 @@ export default function AdminPage() {
   const [createRoundOpen, setCreateRoundOpen] = useState(false);
   const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
   const [roundName, setRoundName] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [projectSettings, setProjectSettings] = useState<Array<{
     projectId: number;
     tokenPrice: string;
@@ -105,8 +108,8 @@ export default function AdminPage() {
   
   // Functions for handling multiple project selection are defined below
   const [editRoundId, setEditRoundId] = useState<number | null>(null);
-  const [editStartDate, setEditStartDate] = useState<string>("");
-  const [editEndDate, setEditEndDate] = useState<string>("");
+  const [editStartDate, setEditStartDate] = useState<Date | undefined>(undefined);
+  const [editEndDate, setEditEndDate] = useState<Date | undefined>(undefined);
 
   // We don't need this check anymore since we're using AdminRoute
   // if (!user || user.role !== 'admin') {
@@ -227,8 +230,8 @@ export default function AdminPage() {
       setCreateRoundOpen(false);
       setSelectedProjectIds([]);
       setRoundName("");
-      setStartDate("");
-      setEndDate("");
+      setStartDate(undefined);
+      setEndDate(undefined);
       setProjectSettings([]);
       refetchRounds();
       toast({
@@ -380,8 +383,8 @@ export default function AdminPage() {
     
     createRoundMutation.mutate({
       name: roundName,
-      startDate,
-      endDate,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       projects
     });
   };
@@ -403,8 +406,8 @@ export default function AdminPage() {
     
     updateRoundDatesMutation.mutate({
       id: editRoundId,
-      startDate: editStartDate,
-      endDate: editEndDate
+      startDate: editStartDate.toISOString(),
+      endDate: editEndDate.toISOString()
     });
   };
 
