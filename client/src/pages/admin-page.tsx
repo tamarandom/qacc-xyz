@@ -79,7 +79,7 @@ const AdminPage = () => {
     refetch: refetchRounds
   } = useQuery<FundingRound[]>({
     queryKey: ['/api/active-rounds/admin/rounds'],
-    queryFn: getQueryFn({}),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     enabled: !!user && user.role === 'admin'
   });
 
@@ -89,7 +89,7 @@ const AdminPage = () => {
     isLoading: isLoadingProjects
   } = useQuery<Project[]>({
     queryKey: ['/api/active-rounds/admin/available-projects'],
-    queryFn: getQueryFn(),
+    queryFn: getQueryFn({ on401: 'returnNull' }),
     enabled: !!user && user.role === 'admin'
   });
 
