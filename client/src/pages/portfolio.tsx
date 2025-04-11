@@ -5,14 +5,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Briefcase, Calendar, Coins, ArrowUpRight, Check, LockOpen, ShieldCheck } from "lucide-react";
+import { Briefcase, Calendar, Coins, ArrowUpRight, Check, LockOpen } from "lucide-react";
 import { type Project, type User, type PointTransaction, type TokenHolding } from "@shared/schema";
 import { formatNumber, formatCurrency } from "@/lib/formatters";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { VerificationLevel } from "@/lib/types";
 
 // Token unlock structure
 interface TokenUnlock {
@@ -85,7 +84,6 @@ export default function PortfolioPage() {
   });
   
   const isLoading = projectsLoading || holdingsLoading || transactionsLoading || !user;
-  // We don't include verificationLoading here since we handle it separately in the verification section
   
   // For token claiming
   const { toast } = useToast();
@@ -199,18 +197,6 @@ export default function PortfolioPage() {
   
   // Get user points from the authenticated user
   const userPoints = user?.points || 0;
-  
-  // Get user verification level
-  const { data: userVerification, isLoading: verificationLoading } = useQuery<{
-    verificationLevel: VerificationLevel,
-    verificationUrls: {
-      tier1: string,
-      tier2: string
-    }
-  }>({
-    queryKey: ['/api/active-rounds/verification?roundId=1'],
-    enabled: !!user, // Only fetch if user is logged in
-  });
   
   // Handle claiming tokens for a specific unlock
   const handleClaimTokens = async (tokenId: string) => {
@@ -357,75 +343,6 @@ export default function PortfolioPage() {
             <h3 className="text-sm font-['IBM_Plex_Mono'] text-[color:var(--color-gray)] mb-2">Q/ACC POINTS</h3>
             <div className="text-3xl font-bold text-white">
               {isLoading ? <Skeleton className="h-8 w-24 bg-gray-700" /> : formatNumber(user?.points || 0)}
-            </div>
-          </div>
-        </div>
-        
-        {/* Verification Status */}
-        <div className="bg-[color:var(--color-black-200)] rounded-lg p-6 border border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <div>
-              <h2 className="text-xl font-['Tusker_Grotesk'] font-bold text-white mb-1">Verification Status</h2>
-              <p className="text-sm text-[color:var(--color-gray)] font-['IBM_Plex_Mono']">
-                Your verification level determines your spending cap during funding rounds
-              </p>
-            </div>
-            
-            {userVerification && userVerification.verificationLevel !== VerificationLevel.NONE && (
-              <Badge 
-                className="font-['IBM_Plex_Mono'] text-xs py-1 px-3 bg-[color:var(--color-peach)] text-[color:var(--color-black)]"
-              >
-                <ShieldCheck className="h-3.5 w-3.5 mr-1.5" />
-                {userVerification.verificationLevel === VerificationLevel.HUMAN_PASSPORT ? 'Human Passport' : 'zkID'}
-              </Badge>
-            )}
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 p-4 rounded-lg border border-gray-700 bg-[color:var(--color-black-300)]">
-              <div className="flex items-center mb-2">
-                <Badge variant="outline" className="mr-2 bg-transparent border-[color:var(--color-peach)] text-[color:var(--color-peach)]">Tier 1</Badge>
-                <h3 className="font-['IBM_Plex_Mono'] font-bold">Human Passport</h3>
-              </div>
-              <p className="text-sm text-[color:var(--color-gray)] mb-3">$1,000 spending cap per round</p>
-              
-              {isLoading || verificationLoading ? (
-                <Skeleton className="h-10 w-full bg-gray-700" />
-              ) : userVerification?.verificationLevel === VerificationLevel.HUMAN_PASSPORT || userVerification?.verificationLevel === VerificationLevel.ZK_ID ? (
-                <Button disabled variant="outline" className="w-full font-['IBM_Plex_Mono'] text-sm">
-                  <Check className="mr-2 h-4 w-4" />
-                  Verified
-                </Button>
-              ) : (
-                <Link href={userVerification?.verificationUrls?.tier1 || "#"} target="_blank" className="block">
-                  <Button variant="outline" className="w-full font-['IBM_Plex_Mono'] text-sm">
-                    Get Verified
-                  </Button>
-                </Link>
-              )}
-            </div>
-            
-            <div className="flex-1 p-4 rounded-lg border border-gray-700 bg-[color:var(--color-black-300)]">
-              <div className="flex items-center mb-2">
-                <Badge variant="outline" className="mr-2 bg-transparent border-[color:var(--color-peach)] text-[color:var(--color-peach)]">Tier 2</Badge>
-                <h3 className="font-['IBM_Plex_Mono'] font-bold">zkID</h3>
-              </div>
-              <p className="text-sm text-[color:var(--color-gray)] mb-3">$25,000 spending cap per round</p>
-              
-              {isLoading || verificationLoading ? (
-                <Skeleton className="h-10 w-full bg-gray-700" />
-              ) : userVerification?.verificationLevel === VerificationLevel.ZK_ID ? (
-                <Button disabled variant="outline" className="w-full font-['IBM_Plex_Mono'] text-sm">
-                  <Check className="mr-2 h-4 w-4" />
-                  Verified
-                </Button>
-              ) : (
-                <Link href={userVerification?.verificationUrls?.tier2 || "#"} target="_blank" className="block">
-                  <Button variant="outline" className="w-full font-['IBM_Plex_Mono'] text-sm">
-                    Get Verified
-                  </Button>
-                </Link>
-              )}
             </div>
           </div>
         </div>
