@@ -407,10 +407,10 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="users" className="mt-6">
+      <Tabs defaultValue="rounds" className="mt-6">
         <TabsList className="grid grid-cols-3 mb-8">
-          <TabsTrigger value="users" className="text-sm font-['IBM_Plex_Mono']">USER MANAGEMENT</TabsTrigger>
           <TabsTrigger value="rounds" className="text-sm font-['IBM_Plex_Mono']">ROUND MANAGEMENT</TabsTrigger>
+          <TabsTrigger value="users" className="text-sm font-['IBM_Plex_Mono']">USER MANAGEMENT</TabsTrigger>
           <TabsTrigger value="system" className="text-sm font-['IBM_Plex_Mono']">SYSTEM SETTINGS</TabsTrigger>
         </TabsList>
 

@@ -197,17 +197,14 @@ router.get('/funding-rounds', isAuthenticated, async (req, res) => {
       });
     }
     
-    // Get pre-launch and pre-abc projects for potential new rounds
+    // Get all projects for potential new rounds
     const eligibleProjects = await db.select({
       id: projects_table.id,
       name: projects_table.name,
       status: projects_table.status,
       tokenSymbol: projects_table.tokenSymbol
     })
-    .from(projects_table)
-    .where(
-      sql`${projects_table.status} = 'pre-launch' OR ${projects_table.status} = 'pre-abc'`
-    );
+    .from(projects_table);
     
     res.json({ 
       success: true,
