@@ -10,7 +10,7 @@ import { type Project, type User, type PointTransaction, type TokenHolding } fro
 import { formatNumber, formatCurrency } from "@/lib/formatters";
 import { ProjectAvatar } from "@/components/ui/project-avatar";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
 // Token unlock structure

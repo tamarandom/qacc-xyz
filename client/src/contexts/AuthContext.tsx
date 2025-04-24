@@ -1,12 +1,14 @@
 import { createContext, ReactNode, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "@shared/schema";
+import { type User } from "../../shared/schema";
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   error: Error | null;
+  login: () => void;
+  logout: () => void;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -14,12 +16,23 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const {
     data: user,
-    error,
     isLoading,
-  } = useQuery<User | undefined, Error>({
+    error,
+  } = useQuery<User | null, Error>({
     queryKey: ["/api/auth/user"],
     retry: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  const login = () => {
+    // Redirect to login page
+    window.location.href = "/api/login";
+  };
+
+  const logout = () => {
+    // Redirect to the server logout endpoint
+    window.location.href = "/api/logout";
+  };
 
   return (
     <AuthContext.Provider
@@ -28,6 +41,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         isAuthenticated: !!user,
         error,
+        login,
+        logout,
       }}
     >
       {children}

@@ -1,30 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
-import type { User } from "@shared/schema";
+import { useContext } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
 
 export function useAuth() {
-  const { 
-    data: user, 
-    isLoading,
-    error 
-  } = useQuery<User | undefined, Error>({
-    queryKey: ["/api/auth/user"],
-    retry: false,
-  });
-
-  return {
-    user,
-    isLoading,
-    error,
-    isAuthenticated: !!user,
-    // Helper functions
-    logout: () => {
-      // Redirect to the server logout endpoint
-      window.location.href = "/api/logout";
-    },
-    login: () => {
-      // Redirect to the server login endpoint
-      window.location.href = "/api/login";
-    }
-  };
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }

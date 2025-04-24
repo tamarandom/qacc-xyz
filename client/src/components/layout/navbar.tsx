@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { X, Menu, LogOut, User } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo-light.png";
 import { useTheme } from "@/contexts/theme-context";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
   const { toggleTheme } = useTheme(); // Keep for compatibility
   
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout();
   };
   
   const handleRedirectToAuth = () => {

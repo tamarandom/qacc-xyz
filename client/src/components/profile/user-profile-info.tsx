@@ -1,14 +1,14 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Edit, LogOut } from "lucide-react";
 
 export function UserProfileInfo() {
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logoutMutation.mutate();
+    logout();
   };
 
   return (

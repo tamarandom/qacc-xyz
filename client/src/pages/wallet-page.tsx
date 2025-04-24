@@ -4,7 +4,7 @@ import { TransactionHistory } from "@/components/wallet/transaction-history";
 import { UserProfileInfo } from "@/components/profile/user-profile-info";
 import { UserPoints } from "@/components/profile/user-points";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/contexts/AuthContext";
 import { Helmet } from "react-helmet-async";
 
 export default function WalletPage() {

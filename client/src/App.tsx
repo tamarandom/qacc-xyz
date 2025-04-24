@@ -14,7 +14,7 @@ import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
 import ActiveRoundsPage from "@/pages/active-rounds";
 import { ThemeProvider } from "@/contexts/theme-context";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/lib/protected-route";
 import { AdminRoute } from "./lib/admin-route";
 import { useEffect } from "react";
@@ -53,9 +53,9 @@ function InitDarkMode() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider>
-          <HelmetProvider>
+      <ThemeProvider>
+        <HelmetProvider>
+          <AuthProvider>
             <InitDarkMode />
             <div className="flex flex-col min-h-screen dark bg-[color:var(--background)]">
               <Navbar />
@@ -64,9 +64,9 @@ function App() {
               </main>
             </div>
             <Toaster />
-          </HelmetProvider>
-        </ThemeProvider>
-      </AuthProvider>
+          </AuthProvider>
+        </HelmetProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
