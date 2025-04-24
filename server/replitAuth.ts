@@ -32,13 +32,13 @@ export function getSession() {
     tableName: "sessions",
   });
   return session({
-    secret: process.env.SESSION_SECRET || 'temporarysecret', // Added a fallback for development
+    secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // Set secure only in production
+      secure: true,
       maxAge: sessionTtl,
     },
   });
@@ -126,18 +126,6 @@ export async function setupAuth(app: Express) {
         }).href
       );
     });
-  });
-
-  // User data endpoint
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
   });
 }
 

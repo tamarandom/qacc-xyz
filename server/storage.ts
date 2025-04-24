@@ -267,8 +267,24 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values());
   }
   
-  async getUserById(id: number): Promise<User | undefined> {
+  async getUserById(id: number | string): Promise<User | undefined> {
+    // For compatibility with string IDs, convert to number if it's a string
+    // This helps maintain backward compatibility with existing number IDs
+    if (typeof id === 'string') {
+      // Try to convert to number if it's a numeric string
+      const numericId = parseInt(id, 10);
+      if (!isNaN(numericId)) {
+        return this.users.get(numericId);
+      }
+      // If not numeric, search through all users for string ID match
+      return Array.from(this.users.values()).find(user => user.id.toString() === id);
+    }
     return this.users.get(id);
+  }
+  
+  // Alias for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    return this.getUserById(id);
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -276,7 +292,7 @@ export class MemStorage implements IStorage {
   }
   
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.nextUserId++;
+    const id = insertUser.id || this.nextUserId++;
     const now = new Date();
     const user: User = { 
       ...insertUser, 
@@ -284,15 +300,29 @@ export class MemStorage implements IStorage {
       points: insertUser.points || 0,
       rank: null,
       avatarUrl: insertUser.avatarUrl || null,
-      walletBalance: insertUser.walletBalance || "20000",
+      walletBalance: insertUser.walletBalance || "50000", // Default wallet balance
       createdAt: now,
       updatedAt: now
     };
-    this.users.set(id, user);
+    
+    // Store with the appropriate key
+    if (typeof id === 'string') {
+      const numericId = parseInt(id, 10);
+      if (!isNaN(numericId)) {
+        this.users.set(numericId, user);
+      } else {
+        // For non-numeric string IDs, we'll store by their string representation
+        // Note: This is a workaround for Map with number keys
+        this.users.set(this.nextUserId++, user);
+      }
+    } else {
+      this.users.set(id, user);
+    }
+    
     return user;
   }
   
-  async updateUserPoints(userId: number, points: number): Promise<User> {
+  async updateUserPoints(userId: number | string, points: number): Promise<User> {
     const user = await this.getUserById(userId);
     if (!user) {
       throw new Error(`User with ID ${userId} not found`);
@@ -304,12 +334,74 @@ export class MemStorage implements IStorage {
       updatedAt: new Date()
     };
     
-    this.users.set(userId, updatedUser);
+    // Update in the map with the appropriate key
+    if (typeof userId === 'string') {
+      const numericId = parseInt(userId, 10);
+      if (!isNaN(numericId)) {
+        this.users.set(numericId, updatedUser);
+      } else {
+        // Find the user by ID and update
+        const allUsers = Array.from(this.users.entries());
+        for (const [key, existingUser] of allUsers) {
+          if (existingUser.id.toString() === userId) {
+            this.users.set(key, updatedUser);
+            break;
+          }
+        }
+      }
+    } else {
+      this.users.set(userId, updatedUser);
+    }
     
     // Update user ranks after point change
-    await await this.updateUserRanks();
+    await this.updateUserRanks();
     
     return updatedUser;
+  }
+  
+  async upsertUser(userData: { id: string, username: string, [key: string]: any }): Promise<User> {
+    // Check if user exists
+    const existingUser = await this.getUserById(userData.id);
+    
+    if (existingUser) {
+      // Update existing user, preserving certain fields
+      const updatedUser: User = {
+        ...existingUser,
+        username: userData.username,
+        email: userData.email || existingUser.email,
+        firstName: userData.firstName || existingUser.firstName,
+        lastName: userData.lastName || existingUser.lastName,
+        bio: userData.bio || existingUser.bio,
+        profileImageUrl: userData.profileImageUrl || existingUser.profileImageUrl,
+        updatedAt: new Date()
+      };
+      
+      // Find the user by ID and update
+      const allUsers = Array.from(this.users.entries());
+      for (const [key, user] of allUsers) {
+        if (user.id.toString() === userData.id) {
+          this.users.set(key, updatedUser);
+          break;
+        }
+      }
+      
+      return updatedUser;
+    } else {
+      // Create new user
+      return this.createUser({
+        id: userData.id,
+        username: userData.username,
+        email: userData.email || null,
+        password: null, // No password for Replit Auth users
+        firstName: userData.firstName || null,
+        lastName: userData.lastName || null,
+        bio: userData.bio || null,
+        profileImageUrl: userData.profileImageUrl || null,
+        role: userData.role || 'regular',
+        points: userData.points || 0,
+        walletBalance: "50000", // Default wallet balance
+      });
+    }
   }
   
   // Points methods implementation

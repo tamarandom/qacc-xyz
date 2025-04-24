@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
+import { setupAuth as setupReplitAuth, isAuthenticated } from "./replitAuth";
 import { storage } from "./storage";
 import { 
   insertUserSchema, 

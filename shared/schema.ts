@@ -1,6 +1,17 @@
-import { pgTable, text, serial, integer, boolean, numeric, doublePrecision, foreignKey, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, numeric, doublePrecision, foreignKey, timestamp, varchar, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
 
 // Project Status Enum
 export enum ProjectStatus {
