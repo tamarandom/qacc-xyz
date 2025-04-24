@@ -54,10 +54,13 @@ export interface IStorage {
   
   // User methods
   getAllUsers(): Promise<User[]>;
-  getUserById(id: number): Promise<User | undefined>;
+  // Support both integer and string IDs for backwards compatibility
+  getUserById(id: number | string): Promise<User | undefined>;
+  getUser(id: string): Promise<User | undefined>; // Alias for Replit Auth
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUserPoints(userId: number, points: number): Promise<User>;
+  updateUserPoints(userId: number | string, points: number): Promise<User>;
+  upsertUser(userData: { id: string, username: string, [key: string]: any }): Promise<User>;
   
   // Points methods
   getUserPoints(userId: number): Promise<number>;

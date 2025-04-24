@@ -267,7 +267,7 @@ export type InsertWalletTransaction = z.infer<typeof insertWalletTransactionSche
 export const fundingPot = pgTable("funding_pot", {
   id: serial("id").primaryKey(),
   roundId: integer("round_id").references(() => fundingRounds.id, { onDelete: "cascade" }).notNull(),
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
   amount: numeric("amount", { precision: 18, scale: 6 }).notNull(),
   status: text("status").notNull().default("pending"), // pending, completed, refunded
