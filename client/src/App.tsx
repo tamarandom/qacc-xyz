@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Navbar from "@/components/layout/navbar";
 import Home from "@/pages/home-fixed";
+import LandingPage from "@/pages/landing-page";
 import ProjectDetail from "@/pages/project-detail";
 import PointsPage from "@/pages/points";
 import UserScorePage from "@/pages/user-score";
@@ -23,7 +24,8 @@ import { HelmetProvider } from "react-helmet-async";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/" component={LandingPage} />
+      <Route path="/projects" component={Home} />
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
       <ProtectedRoute path="/user-score" component={UserScorePage} />

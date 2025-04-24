@@ -39,8 +39,8 @@ export default function Navbar() {
               </Link>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-8">
-              <Link href="/" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
-                  location === "/" 
+              <Link href="/projects" className={`inline-flex items-center px-1 pt-1 border-b-2 font-['IBM_Plex_Mono'] text-sm font-medium ${
+                  location === "/projects" 
                     ? "border-[color:var(--color-peach)] text-[color:var(--text-primary)]" 
                     : "border-transparent text-[color:var(--text-secondary)] hover:border-[color:var(--color-peach-200)] hover:text-[color:var(--text-primary)]"
                 }`}>
@@ -163,9 +163,9 @@ export default function Navbar() {
         <div className="sm:hidden bg-[color:var(--card-background)] border-t border-[color:var(--border-color)] pt-2 pb-3">
           <div className="space-y-1 px-4">
             <Link 
-              href="/" 
+              href="/projects" 
               className={`block py-2 px-3 rounded-md font-['IBM_Plex_Mono'] text-base font-medium ${
-                location === "/"
+                location === "/projects"
                   ? "bg-[color:var(--border-color)] text-[color:var(--color-peach)]"
                   : "text-[color:var(--text-primary)] hover:bg-[color:var(--border-color)] hover:text-[color:var(--text-primary)]"
               }`}
