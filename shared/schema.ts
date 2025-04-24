@@ -108,7 +108,7 @@ export const users = pgTable("users", {
   id: text("id").primaryKey(), // Changed to text for Replit Auth user IDs
   username: text("username").notNull().unique(),
   email: text("email").unique(), // Email might not be available for all login methods
-  password: text("password"), // Optional since auth will be handled by Replit
+  password: text("password").notNull(), // Required field, use default value for Google auth
   role: text("role").notNull().default(UserRole.REGULAR),
   avatarUrl: text("avatar_url"),
   profileImageUrl: text("profile_image_url"), // Added for Replit Auth profile images

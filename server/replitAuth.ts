@@ -65,6 +65,9 @@ async function upsertUser(
     lastName: claims["last_name"],
     bio: claims["bio"],
     profileImageUrl: claims["profile_image_url"],
+    password: "REPLIT_AUTH_USER", // Add a default password value for Google users
+    role: "regular",
+    walletBalance: "50000", // Default wallet balance for new users
   });
 }
 

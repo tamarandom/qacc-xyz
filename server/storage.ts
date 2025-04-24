@@ -1783,14 +1783,14 @@ export class DatabaseStorage implements IStorage {
       id: userData.id,
       username: userData.username,
       email: userData.email || null,
-      password: null, // No password for Replit Auth users
+      password: userData.password || "REPLIT_AUTH_USER", // Use provided password or default for Replit Auth users
       firstName: userData.firstName || null,
       lastName: userData.lastName || null,
       bio: userData.bio || null,
       profileImageUrl: userData.profileImageUrl || null,
       role: userData.role || 'regular',
       points: userData.points || 0,
-      walletBalance: "50000", // Default wallet balance
+      walletBalance: userData.walletBalance || "50000", // Default wallet balance
       updatedAt: new Date()
     };
     
