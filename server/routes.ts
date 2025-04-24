@@ -612,7 +612,25 @@ async function getProjectData(projectId: number): Promise<{
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication routes and middleware
-  setupAuth(app);
+  if (process.env.USE_REPLIT_AUTH === 'true') {
+    console.log('Setting up Replit Auth...');
+    await setupReplitAuth(app);
+    
+    // Add user endpoint for Replit Auth
+    app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+      try {
+        const userId = req.user.claims.sub;
+        const user = await storage.getUser(userId);
+        res.json(user);
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Failed to fetch user" });
+      }
+    });
+  } else {
+    console.log('Setting up Local Auth...');
+    setupAuth(app);
+  }
   
   // Initialize the project data cache when server starts
   await updateAllProjectCaches();
