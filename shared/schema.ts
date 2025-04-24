@@ -94,12 +94,16 @@ export enum UserRole {
 
 // User table
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(), // Changed to text for Replit Auth user IDs
   username: text("username").notNull().unique(),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  email: text("email").unique(), // Email might not be available for all login methods
+  password: text("password"), // Optional since auth will be handled by Replit
   role: text("role").notNull().default(UserRole.REGULAR),
   avatarUrl: text("avatar_url"),
+  profileImageUrl: text("profile_image_url"), // Added for Replit Auth profile images
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  bio: text("bio"),
   points: integer("points").notNull().default(0),
   rank: integer("rank"),
   walletBalance: numeric("wallet_balance", { precision: 18, scale: 6 }).notNull().default("50000"),
@@ -110,7 +114,7 @@ export const users = pgTable("users", {
 // Points transactions (history of how users earned points)
 export const pointTransactions = pgTable("point_transactions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull().references(() => users.id),
+  userId: text("user_id").notNull().references(() => users.id),
   projectId: integer("project_id").notNull().references(() => projects.id),
   amount: integer("amount").notNull(),
   tokenAmount: doublePrecision("token_amount").notNull(),
@@ -218,7 +222,7 @@ export type InsertRoundProject = z.infer<typeof insertRoundProjectSchema>;
 // User token holdings table to track purchased tokens
 export const tokenHoldings = pgTable("token_holdings", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   projectId: integer("project_id").references(() => projects.id, { onDelete: "cascade" }).notNull(),
   roundId: integer("round_id").references(() => fundingRounds.id),
   tokenAmount: numeric("token_amount", { precision: 18, scale: 6 }).notNull(),
@@ -243,7 +247,7 @@ export type InsertTokenHolding = z.infer<typeof insertTokenHoldingSchema>;
 // Transaction history for user wallet activities
 export const walletTransactions = pgTable("wallet_transactions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   projectId: integer("project_id").references(() => projects.id),
   type: text("type").notNull(), // "purchase", "deposit", "withdrawal"
   amount: numeric("amount", { precision: 18, scale: 6 }).notNull(),
