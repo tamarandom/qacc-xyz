@@ -33,9 +33,12 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const { user, isLoading, loginMutation, registerMutation } = useAuth();
+  const { user, isLoading, login } = useAuth();
   
-  // Create forms
+  // With Replit Auth, we don't need to handle forms,
+  // just direct users to the login endpoint
+  
+  // Create forms (for UI only, not functional with Replit Auth)
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -54,16 +57,14 @@ export default function AuthPage() {
     },
   });
 
-  // Handle login submission
-  const onLoginSubmit = (data: LoginFormData) => {
-    loginMutation.mutate(data);
+  // Handle login submission - redirect to Replit Auth
+  const onLoginSubmit = () => {
+    login();
   };
 
-  // Handle registration submission
-  const onRegisterSubmit = (data: RegisterFormData) => {
-    // Remove confirmPassword as it's not in our schema
-    const { confirmPassword, ...registerData } = data;
-    registerMutation.mutate(registerData);
+  // Handle registration submission - also redirect to Replit Auth
+  const onRegisterSubmit = () => {
+    login();
   };
 
   // Redirect if already logged in
@@ -159,15 +160,8 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-                      {loginMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Logging in...
-                        </>
-                      ) : (
-                        "Sign In"
-                      )}
+                    <Button type="submit" className="w-full">
+                      Sign In with Replit
                     </Button>
                   </form>
                 </Form>
@@ -228,15 +222,8 @@ export default function AuthPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
-                      {registerMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Creating account...
-                        </>
-                      ) : (
-                        "Create Account"
-                      )}
+                    <Button type="submit" className="w-full">
+                      Register with Replit
                     </Button>
                   </form>
                 </Form>
