@@ -1,72 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { z } from "zod";
 import { Redirect } from "wouter";
 import { Loader2 } from "lucide-react";
-
-// Login form schema
-const loginSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-
-// Registration form schema 
-const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+import { FcGoogle } from "react-icons/fc";
 
 export default function AuthPage() {
   const { user, isLoading, login } = useAuth();
   
-  // With Replit Auth, we don't need to handle forms,
-  // just direct users to the login endpoint
-  
-  // Create forms (for UI only, not functional with Replit Auth)
-  const loginForm = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const registerForm = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  // Handle login submission - redirect to Replit Auth
-  const onLoginSubmit = () => {
-    login();
-  };
-
-  // Handle registration submission - also redirect to Replit Auth
-  const onRegisterSubmit = () => {
-    login();
-  };
-
   // Redirect if already logged in
   if (user) {
     return <Redirect to="/" />;
@@ -115,120 +56,28 @@ export default function AuthPage() {
         </div>
       </div>
       
-      {/* Auth forms */}
+      {/* Auth form */}
       <div className="w-full md:w-1/2 p-8 flex items-center justify-center bg-background">
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold">Welcome to q/acc</CardTitle>
+            <CardTitle className="text-2xl font-bold">WELCOME TO Q/ACC</CardTitle>
             <CardDescription>
               Sign in to your account or create a new one
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
-            
-              <TabsContent value="login">
-                <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-                    <FormField
-                      control={loginForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Enter your username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={loginForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Enter your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full">
-                      Sign In with Replit
-                    </Button>
-                  </form>
-                </Form>
-              </TabsContent>
-            
-              <TabsContent value="register">
-                <Form {...registerForm}>
-                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
-                    <FormField
-                      control={registerForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Choose a username" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input placeholder="your@email.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Create a password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="confirmPassword"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Confirm Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" placeholder="Confirm your password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full">
-                      Register with Replit
-                    </Button>
-                  </form>
-                </Form>
-              </TabsContent>
-            </Tabs>
+          <CardContent className="space-y-6">
+            <div className="flex flex-col gap-4 items-center justify-center py-6">
+              <Button 
+                onClick={login} 
+                className="w-full h-12 bg-[#FBBA80] hover:bg-[#E9A970] text-black font-semibold text-base flex items-center justify-center gap-2"
+              >
+                <FcGoogle className="h-5 w-5" />
+                Sign In with Google
+              </Button>
+              <p className="text-sm text-muted-foreground mt-4 text-center">
+                You'll be securely authenticated through Replit's authentication service, which uses Google login.
+              </p>
+            </div>
           </CardContent>
           <CardFooter className="flex justify-center text-sm text-gray-500">
             <p>By signing in, you agree to our Terms of Service and Privacy Policy.</p>
