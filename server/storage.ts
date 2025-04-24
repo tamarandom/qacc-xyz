@@ -1645,9 +1645,14 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(users);
   }
 
-  async getUserById(id: number): Promise<User | undefined> {
-    const [result] = await db.select().from(users).where(eq(users.id, id));
+  async getUserById(id: number | string): Promise<User | undefined> {
+    const [result] = await db.select().from(users).where(eq(users.id, id.toString()));
     return result;
+  }
+
+  // Alias for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
+    return this.getUserById(id);
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
@@ -1660,14 +1665,14 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async updateUserPoints(userId: number, points: number): Promise<User> {
+  async updateUserPoints(userId: number | string, points: number): Promise<User> {
     const [result] = await db
       .update(users)
       .set({
         points: points,
         updatedAt: new Date()
       })
-      .where(eq(users.id, userId))
+      .where(eq(users.id, userId.toString()))
       .returning();
     
     if (!result) {
@@ -1678,6 +1683,47 @@ export class DatabaseStorage implements IStorage {
     await this.updateUserRanks();
     
     return result;
+  }
+  
+  async upsertUser(userData: { id: string, username: string, [key: string]: any }): Promise<User> {
+    // Prepare the user data
+    const userInput = {
+      id: userData.id,
+      username: userData.username,
+      email: userData.email || null,
+      password: null, // No password for Replit Auth users
+      firstName: userData.firstName || null,
+      lastName: userData.lastName || null,
+      bio: userData.bio || null,
+      profileImageUrl: userData.profileImageUrl || null,
+      role: userData.role || 'regular',
+      points: userData.points || 0,
+      walletBalance: "50000", // Default wallet balance
+      updatedAt: new Date()
+    };
+    
+    try {
+      // Try to insert the user
+      const [createdUser] = await db
+        .insert(users)
+        .values(userInput)
+        .onConflictDoUpdate({
+          target: users.id,
+          set: {
+            ...userInput,
+            // Don't update these fields if they already exist
+            points: undefined,
+            walletBalance: undefined,
+            role: undefined
+          }
+        })
+        .returning();
+        
+      return createdUser;
+    } catch (error) {
+      console.error('Error upserting user:', error);
+      throw error;
+    }
   }
 
   // Points methods
