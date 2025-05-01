@@ -27,7 +27,8 @@ export interface ProjectTokenHolders {
 
 // Define the complete project cache entry interface
 export interface ProjectCacheEntry {
-  lastUpdated: Date;
+  lastUpdated: Date;           // Last update timestamp for market data
+  tokenHoldersLastUpdated: Date; // Separate timestamp for token holders
   marketData: ProjectMarketData;
   tokenHolders: ProjectTokenHolders;
   apiSuccess: boolean; // Flag to indicate if the last API call was successful
@@ -55,7 +56,14 @@ export function isCacheValid(projectId: number, cacheType: "market" | "holders" 
   if (!projectCache[projectId]) return false;
   
   const now = new Date();
-  const cacheTime = projectCache[projectId].lastUpdated;
+  
+  // Use the appropriate timestamp based on cache type
+  const cacheTime = cacheType === "market"
+    ? projectCache[projectId].lastUpdated
+    : projectCache[projectId].tokenHoldersLastUpdated || projectCache[projectId].lastUpdated; // Fallback for backward compatibility
+  
+  if (!cacheTime) return false;
+  
   const diffMs = now.getTime() - cacheTime.getTime();
   const diffMinutes = diffMs / (1000 * 60);
   
@@ -119,6 +127,7 @@ export function updateProjectMarketData(
   if (!projectCache[projectId]) {
     projectCache[projectId] = {
       lastUpdated: new Date(),
+      tokenHoldersLastUpdated: new Date(),
       marketData: {
         price: null,
         marketCap: null,
@@ -163,6 +172,7 @@ export function updateProjectTokenHolders(
   if (!projectCache[projectId]) {
     projectCache[projectId] = {
       lastUpdated: new Date(),
+      tokenHoldersLastUpdated: new Date(),
       marketData: {
         price: null,
         marketCap: null,
@@ -177,9 +187,9 @@ export function updateProjectTokenHolders(
     };
   }
   
-  // Update token holders but keep the original timestamp
-  // This allows market data and token holders to have different refresh cycles
+  // Update token holders and its timestamp
   projectCache[projectId].tokenHolders = { holders };
+  projectCache[projectId].tokenHoldersLastUpdated = new Date();
   
   console.log(`Updated token holders cache for project ${projectId} with ${holders.length} holders`);
 }
@@ -230,12 +240,21 @@ export function initializeProjectCache(project: Project): void {
  * Force refresh the project cache for a specific project
  * 
  * @param projectId - The project ID to refresh
+ * @param cacheType - The type of cache to invalidate ("market", "holders", or "all")
  */
-export function invalidateProjectCache(projectId: number): void {
+export function invalidateProjectCache(projectId: number, cacheType: "market" | "holders" | "all" = "all"): void {
   if (projectCache[projectId]) {
-    // Keep the project's data but mark it as invalid by setting timestamp to 1970
-    projectCache[projectId].lastUpdated = new Date(0);
-    console.log(`Invalidated cache for project ${projectId}`);
+    if (cacheType === "all" || cacheType === "market") {
+      // Invalidate market data
+      projectCache[projectId].lastUpdated = new Date(0);
+    }
+    
+    if (cacheType === "all" || cacheType === "holders") {
+      // Invalidate token holders
+      projectCache[projectId].tokenHoldersLastUpdated = new Date(0);
+    }
+    
+    console.log(`Invalidated ${cacheType} cache for project ${projectId}`);
   }
 }
 

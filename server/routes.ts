@@ -59,23 +59,10 @@ import fundingRoundsRouter from "./api/funding-rounds";
 const projectDataCache: Record<number, { lastUpdated: Date, data: any }> = {};
 const tokenHoldersCache: Record<number, { lastUpdated: Date, data: any }> = {};
 
-// Check if token holders cache is valid (less than 15 minutes old)
+// Check if token holders cache is valid
+// This uses the central cache system from cache.ts
 function isTokenHoldersCacheValid(projectId: number): boolean {
-  if (!tokenHoldersCache[projectId]) return false;
-  
-  // Always refetch token holders data to ensure it's up-to-date for all projects
-  // This ensures consistent behavior across all project pages
-  return false;
-  
-  // The code below is no longer used but kept for reference
-  /*
-  const now = new Date();
-  const cacheTime = tokenHoldersCache[projectId].lastUpdated;
-  const diffMs = now.getTime() - cacheTime.getTime();
-  const diffMinutes = diffMs / (1000 * 60);
-  
-  return diffMinutes < 15; // Cache is valid if less than 15 minutes old
-  */
+  return isCacheValid(projectId, "holders");
 }
 
 // Function to update token holders cache for a project
@@ -94,6 +81,12 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
       return;
     }
     
+    // Check if cache is still valid (using much longer duration for token holders)
+    if (isCacheValid(projectId, "holders")) {
+      console.log(`Token holders cache for project ${projectId} is still valid, skipping update`);
+      return;
+    }
+    
     // Check if required API key is available
     if (!process.env.COVALENT_API_KEY) {
       console.error('COVALENT_API_KEY environment variable not set');
@@ -108,11 +101,15 @@ async function updateTokenHoldersCache(projectId: number): Promise<void> {
     tokenHolders = await fetchTokenHolders(project.contractAddress);
     
     if (tokenHolders.length > 0) {
-      // Cache the token holders data
+      // Update both the old cache (for backward compatibility) and the new centralized cache
       tokenHoldersCache[projectId] = {
         lastUpdated: new Date(),
         data: tokenHolders
       };
+      
+      // Update the centralized cache
+      updateProjectTokenHolders(projectId, tokenHolders);
+      
       console.log(`Updated token holders cache for project ${projectId} with ${tokenHolders.length} holders`);
     } else {
       console.warn(`No token holders found for ${project.tokenSymbol}, using previously cached data if available`);
