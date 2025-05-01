@@ -985,31 +985,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Force fetch from our customized token service which now uses Covalent API
         const tokenHolders = await fetchTokenHolders(project.contractAddress);
         
-        // Update cache with fresh data
+        // Update both caches with fresh data
         tokenHoldersCache[id] = {
           lastUpdated: new Date(),
           data: tokenHolders
         };
         
-        console.log(`Updated token holders cache for project ${id} with ${tokenHolders.length} holders`);
+        // Also update the centralized cache system
+        updateProjectTokenHolders(id, tokenHolders);
+        
+        console.log(`Updated token holders cache for project ${id} with ${tokenHolders.length} holders (forced refresh)`);
         return res.json(tokenHolders);
       }
       
-      // Check if we have valid cached token holder data
+      // Check if we have valid cached token holder data in the centralized cache
+      if (isCacheValid(id, "holders") && projectCache[id]?.tokenHolders?.holders?.length > 0) {
+        const cachedHolders = getProjectTokenHolders(id);
+        console.log(`Using centralized cached token holders for project ${id}`);
+        return res.json(cachedHolders);
+      }
+      
+      // Also check the old cache system for backward compatibility
       if (isTokenHoldersCacheValid(id)) {
-        console.log(`Using cached token holders for project ${id} from ${tokenHoldersCache[id].lastUpdated}`);
+        console.log(`Using legacy cached token holders for project ${id} from ${tokenHoldersCache[id].lastUpdated}`);
+        
+        // Also update the centralized cache for future requests
+        updateProjectTokenHolders(id, tokenHoldersCache[id].data);
+        
         return res.json(tokenHoldersCache[id].data);
       }
       
-      // If cache is invalid, fetch new data from Covalent API
+      // If all caches are invalid, fetch new data from Covalent API
       console.log(`Fetching token holders for ${project.tokenSymbol} using Covalent API`);
       const tokenHolders = await fetchTokenHolders(project.contractAddress);
       
-      // Cache the token holders data
+      // Update both caching systems
       tokenHoldersCache[id] = {
         lastUpdated: new Date(),
         data: tokenHolders
       };
+      
+      // Also update the centralized cache system
+      updateProjectTokenHolders(id, tokenHolders);
       
       console.log(`Updated token holders cache for project ${id} with ${tokenHolders.length} holders`);
       res.json(tokenHolders);
