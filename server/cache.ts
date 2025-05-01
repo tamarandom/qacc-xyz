@@ -37,16 +37,21 @@ export interface ProjectCacheEntry {
 // Complete project cache - stores all data for each project
 const projectCache: Record<number, ProjectCacheEntry> = {};
 
-// Cache duration in minutes (30 minutes as requested)
-export const CACHE_DURATION_MINUTES = 30;
+// Cache durations in minutes
+export const MARKET_DATA_CACHE_DURATION_MINUTES = 30; // Market data refreshes every 30 minutes
+export const TOKEN_HOLDERS_CACHE_DURATION_MINUTES = 1440; // Token holders refresh every 24 hours (1440 minutes)
+
+// Fallback to old constant name for backward compatibility
+export const CACHE_DURATION_MINUTES = MARKET_DATA_CACHE_DURATION_MINUTES;
 
 /**
- * Check if the project cache entry is valid (less than CACHE_DURATION_MINUTES old)
+ * Check if the project cache entry is valid within the specified duration
  * 
  * @param projectId - The project ID to check
+ * @param cacheType - The type of cache to check ("market" or "holders")
  * @returns True if the cache entry is valid, false otherwise
  */
-export function isCacheValid(projectId: number): boolean {
+export function isCacheValid(projectId: number, cacheType: "market" | "holders" = "market"): boolean {
   if (!projectCache[projectId]) return false;
   
   const now = new Date();
@@ -54,7 +59,12 @@ export function isCacheValid(projectId: number): boolean {
   const diffMs = now.getTime() - cacheTime.getTime();
   const diffMinutes = diffMs / (1000 * 60);
   
-  return diffMinutes < CACHE_DURATION_MINUTES;
+  // Use appropriate cache duration based on cache type
+  const cacheDuration = cacheType === "market" 
+    ? MARKET_DATA_CACHE_DURATION_MINUTES 
+    : TOKEN_HOLDERS_CACHE_DURATION_MINUTES;
+  
+  return diffMinutes < cacheDuration;
 }
 
 /**
@@ -64,7 +74,7 @@ export function isCacheValid(projectId: number): boolean {
  * @returns Market data from cache or null values if not available
  */
 export function getProjectMarketData(projectId: number): ProjectMarketData {
-  if (isCacheValid(projectId) && projectCache[projectId].marketData) {
+  if (isCacheValid(projectId, "market") && projectCache[projectId].marketData) {
     return projectCache[projectId].marketData;
   }
   
@@ -84,7 +94,7 @@ export function getProjectMarketData(projectId: number): ProjectMarketData {
  * @returns Token holders from cache or empty array if not available
  */
 export function getProjectTokenHolders(projectId: number): TokenHolderDataType[] {
-  if (isCacheValid(projectId) && projectCache[projectId].tokenHolders) {
+  if (isCacheValid(projectId, "holders") && projectCache[projectId].tokenHolders) {
     return projectCache[projectId].tokenHolders.holders;
   }
   
