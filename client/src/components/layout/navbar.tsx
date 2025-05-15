@@ -80,6 +80,11 @@ export default function Navbar() {
             {user ? (
               <>       
                 <div className="flex items-center space-x-3">
+                  {/* Display user points for logged in users */}
+                  <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium">
+                    {user.points || 0} Pt
+                  </div>
+                  
                   {user.role === 'admin' && (
                     <Link href="/admin">
                       <Button 
@@ -184,23 +189,19 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link href="/auth">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                  >
-                    Log In
-                  </Button>
-                </Link>
+                {/* Points display for non-logged in users */}
+                <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium">
+                  0 Pt
+                </div>
                 
-                <Link href="/auth?tab=register">
+                {/* Connect button */}
+                <Link href="/auth">
                   <Button 
                     variant="default" 
                     size="sm"
                     className="font-['IBM_Plex_Mono'] text-sm font-medium px-6 py-2 bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
                   >
-                    Sign Up
+                    Connect
                   </Button>
                 </Link>
               </>
@@ -349,21 +350,18 @@ export default function Navbar() {
               </>
             ) : (
               <div className="space-y-3">
-                <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button 
-                    variant="outline" 
-                    className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                  >
-                    Log In
-                  </Button>
-                </Link>
+                {/* Points display for mobile */}
+                <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium text-center">
+                  0 Pt
+                </div>
                 
-                <Link href="/auth?tab=register" onClick={() => setIsMobileMenuOpen(false)}>
+                {/* Connect button for mobile */}
+                <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button 
                     variant="default" 
                     className="w-full font-['IBM_Plex_Mono'] text-sm font-medium bg-[color:var(--color-peach)] text-[color:var(--color-black)] border-none hover:bg-[color:var(--color-peach-300)]"
                   >
-                    Sign Up
+                    Connect
                   </Button>
                 </Link>
               </div>
