@@ -9,8 +9,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import { Redirect } from "wouter";
 import { Loader2 } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
-import { Separator } from "@/components/ui/separator";
 
 // Login form schema
 const loginSchema = z.object({
@@ -34,7 +32,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const { user, isLoading, login, loginWithCredentials, registerWithCredentials } = useAuth();
+  const { user, isLoading, loginWithCredentials, registerWithCredentials } = useAuth();
   
   // Create forms
   const loginForm = useForm<LoginFormData>({
@@ -123,21 +121,6 @@ export default function AuthPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={login} 
-              className="w-full h-12 bg-[#FBBA80] hover:bg-[#E9A970] text-black font-semibold text-base flex items-center justify-center gap-2 mb-6"
-            >
-              <FcGoogle className="h-5 w-5" />
-              Sign In with Google
-            </Button>
-            
-            <div className="relative my-6">
-              <Separator />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="bg-background px-2 text-xs text-muted-foreground">OR</span>
-              </div>
-            </div>
-            
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>

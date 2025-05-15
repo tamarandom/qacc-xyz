@@ -16,7 +16,6 @@ type AuthContextType = {
   isLoading: boolean;
   isAuthenticated: boolean;
   error: Error | null;
-  login: () => void;
   logout: () => void;
   loginWithCredentials: (username: string, password: string) => void;
   registerWithCredentials: (data: RegisterFormData) => void;
