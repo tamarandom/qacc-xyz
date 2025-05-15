@@ -159,8 +159,8 @@ export default function PortfolioPage() {
   const totalSpent = tokenHoldings?.reduce((total, holding) => total + Number(holding.investmentAmount || 0), 0) || 0;
   const projectsCount = new Set(tokenHoldings?.map(h => h.projectId)).size || 0;
   
-  // Calculate total points from transactions
-  const totalPoints = transactions?.reduce((total, tx) => total + (tx.amount || 0), 0) || 0;
+  // Calculate total points from transactions and user.points (which is more reliable)
+  const totalPoints = user?.points || transactions?.reduce((total, tx) => total + (tx.amount || 0), 0) || 0;
   
   // Organize token holdings by project 
   const holdingsByProject = tokenHoldings?.reduce((acc, holding) => {
@@ -255,7 +255,7 @@ export default function PortfolioPage() {
               
               <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
                 <h3 className="text-sm font-['IBM_Plex_Mono'] text-gray-400 mb-2">Q/ACC POINTS</h3>
-                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{Math.round(totalPoints).toLocaleString()}</p>
+                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{Number.isFinite(totalPoints) ? Math.round(totalPoints).toLocaleString() : 0}</p>
               </div>
             </div>
             
