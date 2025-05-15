@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { X, Menu, LogOut, User } from "lucide-react";
+import { X, Menu, LogOut, User, Settings, ChevronDown } from "lucide-react";
 import qaccLogo from "../../assets/qacc-logo-light.png";
 import { useTheme } from "@/contexts/theme-context";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -100,19 +109,72 @@ export default function Navbar() {
                     )}
                   </div>
                   
-                  <Link href="/wallet">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="p-1 rounded-full focus:outline-none"
-                    >
-                      <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
-                        <span className="font-['IBM_Plex_Mono'] font-medium">
-                          {user?.username ? user.username.substring(0, 2).toUpperCase() : ""}
-                        </span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="p-1 rounded-full focus:outline-none"
+                      >
+                        <div className="h-8 w-8 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
+                          <span className="font-['IBM_Plex_Mono'] font-medium">
+                            {user?.username ? user.username.substring(0, 2).toUpperCase() : ""}
+                          </span>
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-72 bg-[#11151b] border border-[#2a323c] text-white">
+                      <div className="flex items-center p-4 border-b border-[#2a323c]">
+                        <div className="h-12 w-12 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)] mr-3">
+                          <span className="font-['IBM_Plex_Mono'] font-medium text-lg">
+                            {user?.username ? user.username.substring(0, 2).toUpperCase() : ""}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-['IBM_Plex_Mono'] font-medium text-lg text-white">
+                            {user?.username}
+                          </div>
+                        </div>
                       </div>
-                    </Button>
-                  </Link>
+                      <DropdownMenuSeparator className="bg-[#2a323c]" />
+                      
+                      <DropdownMenuItem 
+                        className="p-4 cursor-pointer hover:bg-[#1c2430] transition-colors flex items-center"
+                        asChild
+                      >
+                        <Link href="/wallet">
+                          <div className="flex items-center w-full">
+                            <User className="mr-2 h-5 w-5" />
+                            <span className="font-['IBM_Plex_Mono'] text-base">View Profile</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator className="bg-[#2a323c]" />
+                      
+                      <DropdownMenuItem 
+                        className="p-4 cursor-pointer hover:bg-[#1c2430] transition-colors flex items-center"
+                        asChild
+                      >
+                        <Link href="/wallet">
+                          <div className="flex items-center w-full">
+                            <Settings className="mr-2 h-5 w-5" />
+                            <span className="font-['IBM_Plex_Mono'] text-base">Account Settings</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator className="bg-[#2a323c]" />
+                      
+                      <DropdownMenuItem 
+                        className="p-4 cursor-pointer hover:bg-[#1c2430] transition-colors flex items-center text-white"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="mr-2 h-5 w-5" />
+                        <span className="font-['IBM_Plex_Mono'] text-base">Logout</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </>
             ) : (
@@ -239,7 +301,17 @@ export default function Navbar() {
                       className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
                     >
                       <User className="h-4 w-4 mr-2" /> 
-                      My Profile
+                      View Profile
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/wallet" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button 
+                      variant="outline" 
+                      className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
+                    >
+                      <Settings className="h-4 w-4 mr-2" /> 
+                      Account Settings
                     </Button>
                   </Link>
                   
@@ -268,7 +340,7 @@ export default function Navbar() {
                     }}
                   >
                     <LogOut className="h-4 w-4 mr-2" /> 
-                    Sign Out
+                    Logout
                   </Button>
                 </div>
               </>
