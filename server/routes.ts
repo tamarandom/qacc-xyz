@@ -1006,7 +1006,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Also check the old cache system for backward compatibility
-      if (isTokenHoldersCacheValid(id)) {
+      if (tokenHoldersCache[id] && tokenHoldersCache[id].lastUpdated && isTokenHoldersCacheValid(id)) {
         console.log(`Using legacy cached token holders for project ${id} from ${tokenHoldersCache[id].lastUpdated}`);
         
         // Also update the centralized cache for future requests
