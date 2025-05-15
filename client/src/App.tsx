@@ -24,8 +24,7 @@ import { HelmetProvider } from "react-helmet-async";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
-      <Route path="/projects" component={Home} />
+      <Route path="/" component={Home} />
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
       <ProtectedRoute path="/user-score" component={UserScorePage} />
