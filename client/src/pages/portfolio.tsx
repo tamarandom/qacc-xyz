@@ -315,6 +315,161 @@ export default function PortfolioPage() {
     });
   };
   
+  // If user is not logged in, show a guest view of the portfolio
+  if (!user) {
+    return (
+      <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-black)] text-white">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-4 text-white">Portfolio</h1>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] max-w-2xl">
+                Track your holdings, token unlocks, and manage your q/acc portfolio.
+              </p>
+              
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" className="py-2 px-4 text-sm text-white bg-transparent border border-[#2A323C] font-['IBM_Plex_Mono'] hover:bg-[#161B22]">
+                  Link Staking
+                </Button>
+                <Button variant="outline" className="py-2 px-4 text-sm text-white bg-transparent border border-[#2A323C] font-['IBM_Plex_Mono'] hover:bg-[#161B22]">
+                  Perps & Spot Transfer
+                </Button>
+                <Button variant="outline" className="py-2 px-4 text-sm text-white bg-transparent border border-[#2A323C] font-['IBM_Plex_Mono'] hover:bg-[#161B22]">
+                  EVM & Core Transfer
+                </Button>
+                <Button variant="outline" className="py-2 px-4 text-sm text-white bg-transparent border border-[#2A323C] font-['IBM_Plex_Mono'] hover:bg-[#161B22]">
+                  Send
+                </Button>
+                <Button variant="outline" className="py-2 px-4 text-sm text-white bg-transparent border border-[#2A323C] font-['IBM_Plex_Mono'] hover:bg-[#161B22]">
+                  Withdraw
+                </Button>
+                <Button className="py-2 px-4 text-sm bg-[#0D806F] text-white font-['IBM_Plex_Mono'] hover:bg-[#0A6C5D] border-none">
+                  Deposit
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Portfolio Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="md:col-span-2 bg-[#101419] border border-[#2A323C] rounded-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h3 className="text-xl font-['Tusker_Grotesk'] font-bold">Account Value</h3>
+                  <p className="text-3xl font-bold mt-2">$0</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select className="bg-[#161B22] border border-[#2A323C] rounded text-sm py-1 px-3 text-white font-['IBM_Plex_Mono']">
+                    <option>14 Day</option>
+                    <option>30 Day</option>
+                    <option>90 Day</option>
+                  </select>
+                </div>
+              </div>
+              
+              {/* Empty chart area */}
+              <div className="h-32 flex items-center justify-center border-t border-[#2A323C] pt-4">
+                <svg width="100%" height="60" viewBox="0 0 400 60" className="text-[#2A323C]">
+                  <line x1="0" y1="30" x2="400" y2="30" stroke="currentColor" strokeWidth="1" />
+                </svg>
+              </div>
+            </div>
+            
+            <div className="bg-[#101419] border border-[#2A323C] rounded-lg p-6">
+              <h3 className="text-white font-['IBM_Plex_Mono'] font-medium mb-4">USDT Balance</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">Total Balance</span>
+                  <span className="text-white font-['IBM_Plex_Mono'] text-sm">$0.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">Available Balance</span>
+                  <span className="text-white font-['IBM_Plex_Mono'] text-sm">$0.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Tab-like navigation row */}
+          <div className="flex items-center gap-3 mb-8 overflow-x-auto pb-3 border-b border-[#2A323C]">
+            <div className="py-2 px-3 bg-[#161B22] text-white border border-[#2A323C] rounded font-['IBM_Plex_Mono'] text-sm">
+              Balances
+            </div>
+            <div className="py-2 px-3 text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">
+              Positions
+            </div>
+            <div className="py-2 px-3 text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">
+              Open Orders
+            </div>
+            <div className="py-2 px-3 text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">
+              Trade History
+            </div>
+            <div className="py-2 px-3 text-[#91A0A1] font-['IBM_Plex_Mono'] text-sm">
+              Funding History
+            </div>
+          </div>
+          
+          {/* Tokens Table */}
+          <div className="bg-[#101419] border border-[#2A323C] rounded-lg overflow-hidden mb-8">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="text-left border-b border-[#2A323C]">
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Coin</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Total Balance</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Available Balance</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">USDT Value</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">PNL</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Send</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Transfer</th>
+                    <th className="p-4 text-sm font-medium text-[#91A0A1] font-['IBM_Plex_Mono']">Contract</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colSpan={8} className="px-4 py-6 text-center">
+                      <div className="text-center px-4 py-8">
+                        <p className="text-[#91A0A1] font-['IBM_Plex_Mono'] mb-4">No balances yet</p>
+                        
+                        <div className="space-y-4 max-w-md mx-auto">
+                          <Link href="/auth" className="block">
+                            <Button className="w-full py-4 bg-[color:var(--color-peach)] hover:bg-[color:var(--color-peach-darker)] text-black font-['IBM_Plex_Mono']">
+                              Sign In to Access Portfolio
+                            </Button>
+                          </Link>
+                          
+                          <Link href="/" className="block">
+                            <Button variant="outline" className="w-full py-4 border-[#2A323C] hover:bg-[#161B22] text-white font-['IBM_Plex_Mono']">
+                              Browse Projects Instead
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          {/* Footer row */}
+          <div className="flex justify-between items-center text-sm text-[#91A0A1] font-['IBM_Plex_Mono']">
+            <div className="flex items-center space-x-3">
+              <span>q/acc Portfolio</span>
+              <span>•</span>
+              <span>Version 1.0</span>
+            </div>
+            <div>
+              <Button variant="ghost" size="sm" className="text-[#91A0A1] hover:text-white hover:bg-[#161B22]">
+                Feedback
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-black)] text-white">
       <div className="max-w-4xl mx-auto space-y-8">
