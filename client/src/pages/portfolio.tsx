@@ -155,29 +155,243 @@ export default function PortfolioPage() {
     );
   }
 
-  // The rest of the authenticated user portfolio rendering code would go here...
-  // This has been intentionally removed since we're focusing on the guest view
-
+  // Calculate total portfolio stats from holdings
+  const totalSpent = tokenHoldings?.reduce((total, holding) => total + Number(holding.investmentAmount), 0) || 0;
+  const projectsCount = new Set(tokenHoldings?.map(h => h.projectId)).size || 0;
+  
+  // Calculate total points from transactions
+  const totalPoints = transactions?.reduce((total, tx) => total + tx.pointsAmount, 0) || 0;
+  
+  // Organize token holdings by project 
+  const holdingsByProject = tokenHoldings?.reduce((acc, holding) => {
+    const projectId = holding.projectId;
+    if (!acc[projectId]) {
+      acc[projectId] = [];
+    }
+    acc[projectId].push(holding);
+    return acc;
+  }, {} as Record<number, typeof tokenHoldings>) || {};
+  
+  // Handle token claiming
+  const handleClaimTokens = async (holdingId: number) => {
+    try {
+      // API call to claim tokens would go here
+      // const res = await fetch(`/api/wallet/claim/${holdingId}`, { method: 'POST' });
+      
+      // For now, just show a success message
+      toast({
+        title: "Tokens claimed successfully!",
+        description: "Your tokens have been transferred to your wallet.",
+        variant: "default",
+      });
+      
+      // Update the cache - in a real app this would happen via the API response
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/holdings'] });
+    } catch (error) {
+      toast({
+        title: "Failed to claim tokens",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  // Handle claiming all available tokens
+  const handleClaimAllTokens = async () => {
+    try {
+      // API call to claim all tokens would go here
+      // const res = await fetch('/api/wallet/claim-all', { method: 'POST' });
+      
+      // For now, just show a success message
+      toast({
+        title: "All available tokens claimed!",
+        description: "Your tokens have been transferred to your wallet.",
+        variant: "default",
+      });
+      
+      // Update the cache
+      queryClient.invalidateQueries({ queryKey: ['/api/wallet/holdings'] });
+    } catch (error) {
+      toast({
+        title: "Failed to claim tokens",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+  
   return (
-    <div className="container mx-auto py-10 px-4 md:px-6">
+    <div className="container mx-auto py-10 px-4 md:px-6 bg-[color:var(--color-black)] text-white">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-['Tusker_Grotesk'] font-bold mb-4">Your Portfolio</h1>
+        <div className="mb-10">
+          <h1 className="text-4xl md:text-6xl font-['Tusker_Grotesk'] font-bold mb-4 text-white">YOUR PORTFOLIO</h1>
+          <p className="text-[color:var(--color-gray)] font-['IBM_Plex_Mono'] max-w-2xl">
+            Track your holdings and token unlocks
+          </p>
         </div>
         
         {isLoading ? (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Skeleton className="h-24 w-full rounded-lg" />
               <Skeleton className="h-24 w-full rounded-lg" />
               <Skeleton className="h-24 w-full rounded-lg" />
             </div>
             <Skeleton className="h-96 w-full rounded-lg" />
-          </div>
+          </>
         ) : (
-          <div>
-            <p>Authenticated user portfolio content...</p>
-          </div>
+          <>
+            {/* Portfolio Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+                <h3 className="text-sm font-['IBM_Plex_Mono'] text-gray-400 mb-2">TOTAL SPENT</h3>
+                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">${totalSpent.toLocaleString()}</p>
+              </div>
+              
+              <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+                <h3 className="text-sm font-['IBM_Plex_Mono'] text-gray-400 mb-2">PROJECTS FUNDED</h3>
+                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{projectsCount}</p>
+              </div>
+              
+              <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+                <h3 className="text-sm font-['IBM_Plex_Mono'] text-gray-400 mb-2">Q/ACC POINTS</h3>
+                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{totalPoints}</p>
+              </div>
+            </div>
+            
+            {/* Holdings Section */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-['Tusker_Grotesk'] font-bold text-white">YOUR HOLDINGS</h2>
+                <Button 
+                  onClick={handleClaimAllTokens}
+                  disabled={!tokenHoldings || tokenHoldings.length === 0} 
+                  className="bg-[#FBBA80] hover:bg-[#E89E61] text-black font-['IBM_Plex_Mono'] text-sm py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Claim All Tokens
+                </Button>
+              </div>
+              
+              {tokenHoldings && tokenHoldings.length > 0 ? (
+                <div className="space-y-6">
+                  {Object.entries(holdingsByProject).map(([projectIdStr, holdings]) => {
+                    const projectId = parseInt(projectIdStr);
+                    const project = projects?.find(p => p.id === projectId);
+                    
+                    if (!project) return null;
+                    
+                    const totalTokenAmount = holdings.reduce((total, h) => total + parseFloat(h.tokenAmount.toString()), 0);
+                    const totalValue = totalTokenAmount * (project.price || 0);
+                    const totalSpentOnProject = holdings.reduce((total, h) => total + parseFloat(h.purchaseAmount.toString()), 0);
+                    
+                    return (
+                      <div key={projectId} className="bg-[#333333] border border-[#444444] rounded-lg p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-3">
+                            <ProjectAvatar 
+                              name={project.name} 
+                              tokenSymbol={project.tokenSymbol} 
+                              bgColor="bg-[#444444]"
+                              textColor="text-white"
+                              size="md"
+                            />
+                            <div>
+                              <h3 className="text-lg font-['Tusker_Grotesk'] font-bold text-white">{project.name}</h3>
+                              <p className="text-sm font-['IBM_Plex_Mono'] text-gray-400">{totalTokenAmount.toLocaleString()} {project.tokenSymbol}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-['IBM_Plex_Mono'] font-bold text-white">${totalValue.toLocaleString()}</p>
+                            <p className="text-xs text-gray-400 font-['IBM_Plex_Mono']">Spent: ${totalSpentOnProject.toLocaleString()}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left mt-4">
+                            <thead>
+                              <tr className="border-b border-[#444444] text-xs font-['IBM_Plex_Mono'] text-gray-400">
+                                <th className="py-2 pr-6">Purchase Date</th>
+                                <th className="py-2 pr-6">Amount</th>
+                                <th className="py-2 pr-6">Spent</th>
+                                <th className="py-2 pr-6">Unlock Date</th>
+                                <th className="py-2 pr-0 text-right">Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {holdings.map((holding) => {
+                                const isUnlocked = new Date() > new Date(holding.unlockDate || "");
+                                return (
+                                  <tr key={holding.id} className="text-sm border-b border-[#444444] last:border-0">
+                                    <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
+                                      {formatDate(new Date(holding.purchaseDate))}
+                                    </td>
+                                    <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
+                                      {parseFloat(holding.tokenAmount.toString()).toLocaleString()} {project.tokenSymbol}
+                                    </td>
+                                    <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
+                                      ${parseFloat(holding.purchaseAmount.toString()).toLocaleString()}
+                                    </td>
+                                    <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
+                                      {holding.unlockDate ? formatDate(new Date(holding.unlockDate)) : 'N/A'}
+                                    </td>
+                                    <td className="py-2 pr-0 text-right">
+                                      {!holding.claimed && isUnlocked ? (
+                                        <Button 
+                                          onClick={() => handleClaimTokens(holding.id)}
+                                          variant="default"
+                                          size="sm"
+                                          className="bg-[#FBBA80] hover:bg-[#E89E61] text-black font-['IBM_Plex_Mono'] text-xs"
+                                        >
+                                          <LockOpen className="mr-1 h-3 w-3" />
+                                          Claim
+                                        </Button>
+                                      ) : holding.claimed ? (
+                                        <Button 
+                                          disabled
+                                          variant="outline"
+                                          size="sm"
+                                          className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                        >
+                                          <Check className="mr-1 h-3 w-3" />
+                                          Claimed
+                                        </Button>
+                                      ) : (
+                                        <Button 
+                                          disabled
+                                          variant="outline"
+                                          size="sm"
+                                          className="font-['IBM_Plex_Mono'] text-xs opacity-50"
+                                        >
+                                          <Calendar className="mr-1 h-3 w-3" />
+                                          Locked
+                                        </Button>
+                                      )}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-[#333333] border border-[#444444] rounded-lg p-10 text-center">
+                  <p className="text-gray-400 font-['IBM_Plex_Mono'] mb-6">You haven't backed any projects yet</p>
+                  
+                  <div className="space-y-4 max-w-md mx-auto">
+                    <Link href="/" className="block">
+                      <Button className="w-full py-4 bg-[#FBBA80] hover:bg-[#E89E61] text-black font-['IBM_Plex_Mono']">
+                        Browse Projects
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>
