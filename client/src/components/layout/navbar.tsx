@@ -18,11 +18,14 @@ import {
 export default function Navbar() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { user, logout } = useAuth();
   const { toggleTheme } = useTheme(); // Keep for compatibility
   
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await logout();
+    setIsLoggingOut(false);
   };
   
   const handleRedirectToAuth = () => {
@@ -169,9 +172,19 @@ export default function Navbar() {
                       <DropdownMenuItem 
                         className="p-4 cursor-pointer hover:bg-[#1c2430] transition-colors flex items-center text-white"
                         onClick={handleLogout}
+                        disabled={isLoggingOut}
                       >
-                        <LogOut className="mr-2 h-5 w-5" />
-                        <span className="font-['IBM_Plex_Mono'] text-base">Logout</span>
+                        {isLoggingOut ? (
+                          <>
+                            <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-t-transparent border-white"></div>
+                            <span className="font-['IBM_Plex_Mono'] text-base">Logging out...</span>
+                          </>
+                        ) : (
+                          <>
+                            <LogOut className="mr-2 h-5 w-5" />
+                            <span className="font-['IBM_Plex_Mono'] text-base">Logout</span>
+                          </>
+                        )}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -334,13 +347,23 @@ export default function Navbar() {
                   <Button 
                     variant="outline" 
                     className="w-full font-['IBM_Plex_Mono'] text-sm flex items-center justify-center bg-[color:var(--card-background)] text-[color:var(--text-primary)] border-[color:var(--border-color)] hover:bg-[color:var(--border-color)]"
-                    onClick={() => {
-                      handleLogout();
+                    onClick={async () => {
+                      await handleLogout();
                       setIsMobileMenuOpen(false);
                     }}
+                    disabled={isLoggingOut}
                   >
-                    <LogOut className="h-4 w-4 mr-2" /> 
-                    Logout
+                    {isLoggingOut ? (
+                      <>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-t-transparent border-current"></div>
+                        Logging out...
+                      </>
+                    ) : (
+                      <>
+                        <LogOut className="h-4 w-4 mr-2" /> 
+                        Logout
+                      </>
+                    )}
                   </Button>
                 </div>
               </>

@@ -38,9 +38,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const logout = () => {
-    // Redirect to the server logout endpoint
-    window.location.href = "/api/logout";
+  const logout = async () => {
+    setIsAuthLoading(true);
+    try {
+      // Send POST request to logout endpoint
+      await apiRequest("POST", "/api/logout");
+      
+      // Clear user data from query cache
+      queryClient.setQueryData(["/api/auth/user"], null);
+      
+      // Reload page to reset app state
+      window.location.href = "/";
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        title: "Logout failed",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAuthLoading(false);
+    }
   };
   
   // Login with username and password
