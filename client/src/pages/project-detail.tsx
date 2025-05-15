@@ -353,7 +353,7 @@ export default function ProjectDetail() {
             <div>
               <Card className="dark:bg-[color:var(--color-black)] border-0 shadow-none">
                 <CardHeader className="pb-2 pl-0 pr-0">
-                  <CardTitle className="text-xs sm:text-sm dark:text-white font-medium text-right">TOP 10 HOLDERS</CardTitle>
+                  <CardTitle className="text-xs sm:text-sm text-white font-medium text-right">TOP 10 HOLDERS</CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0 px-0">
                   <TokenHolders projectId={parseInt(id || "0")} />
