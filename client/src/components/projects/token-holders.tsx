@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   Table,
@@ -13,6 +12,7 @@ import { Loader2 } from "lucide-react";
 interface TokenHolder {
   address: string;
   percentage: number;
+  balance?: string | null;
   label?: string;
 }
 
@@ -104,7 +104,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
                     href={getAddressUrl(holder.address)} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-[color:var(--color-peach)] hover:text-[color:var(--color-peach-dark)] font-mono"
+                    className="text-[#FBBA80] hover:text-[#E89E61] font-mono"
                   >
                     {formatAddress(holder.address)}
                   </a>
@@ -115,7 +115,7 @@ export function TokenHolders({ projectId }: { projectId: number }) {
                   )}
                 </div>
               </TableCell>
-              <TableCell className="text-right pt-2 pb-1 pl-0 pr-0 text-gray-900 dark:text-white font-semibold">
+              <TableCell className="text-right pt-2 pb-1 pl-0 pr-0 text-inherit font-semibold">
                 {holder.percentage.toFixed(2)}%
               </TableCell>
             </TableRow>
