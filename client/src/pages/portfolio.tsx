@@ -255,7 +255,7 @@ export default function PortfolioPage() {
               
               <div className="bg-[#333333] border border-[#444444] rounded-lg p-6">
                 <h3 className="text-sm font-['IBM_Plex_Mono'] text-gray-400 mb-2">Q/ACC POINTS</h3>
-                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{totalPoints}</p>
+                <p className="text-3xl font-['IBM_Plex_Mono'] font-semibold text-white">{Math.round(totalPoints).toLocaleString()}</p>
               </div>
             </div>
             
