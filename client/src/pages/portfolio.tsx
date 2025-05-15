@@ -156,11 +156,11 @@ export default function PortfolioPage() {
   }
 
   // Calculate total portfolio stats from holdings
-  const totalSpent = tokenHoldings?.reduce((total, holding) => total + Number(holding.investmentAmount), 0) || 0;
+  const totalSpent = tokenHoldings?.reduce((total, holding) => total + Number(holding.investmentAmount || 0), 0) || 0;
   const projectsCount = new Set(tokenHoldings?.map(h => h.projectId)).size || 0;
   
   // Calculate total points from transactions
-  const totalPoints = transactions?.reduce((total, tx) => total + tx.pointsAmount, 0) || 0;
+  const totalPoints = transactions?.reduce((total, tx) => total + (tx.amount || 0), 0) || 0;
   
   // Organize token holdings by project 
   const holdingsByProject = tokenHoldings?.reduce((acc, holding) => {
@@ -280,9 +280,9 @@ export default function PortfolioPage() {
                     
                     if (!project) return null;
                     
-                    const totalTokenAmount = holdings.reduce((total, h) => total + parseFloat(h.tokenAmount.toString()), 0);
+                    const totalTokenAmount = holdings.reduce((total, h) => total + parseFloat(String(h.tokenAmount || 0)), 0);
                     const totalValue = totalTokenAmount * (project.price || 0);
-                    const totalSpentOnProject = holdings.reduce((total, h) => total + parseFloat(h.purchaseAmount.toString()), 0);
+                    const totalSpentOnProject = holdings.reduce((total, h) => total + parseFloat(String(h.investmentAmount || 0)), 0);
                     
                     return (
                       <div key={projectId} className="bg-[#333333] border border-[#444444] rounded-lg p-6">
@@ -326,16 +326,16 @@ export default function PortfolioPage() {
                                       {formatDate(new Date(holding.purchaseDate))}
                                     </td>
                                     <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
-                                      {parseFloat(holding.tokenAmount.toString()).toLocaleString()} {project.tokenSymbol}
+                                      {parseFloat(String(holding.tokenAmount || 0)).toLocaleString()} {project.tokenSymbol}
                                     </td>
                                     <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
-                                      ${parseFloat(holding.purchaseAmount.toString()).toLocaleString()}
+                                      ${parseFloat(String(holding.investmentAmount || 0)).toLocaleString()}
                                     </td>
                                     <td className="py-2 pr-6 font-['IBM_Plex_Mono']">
                                       {holding.unlockDate ? formatDate(new Date(holding.unlockDate)) : 'N/A'}
                                     </td>
                                     <td className="py-2 pr-0 text-right">
-                                      {!holding.claimed && isUnlocked ? (
+                                      {isUnlocked && !holding.isLocked ? (
                                         <Button 
                                           onClick={() => handleClaimTokens(holding.id)}
                                           variant="default"
@@ -345,7 +345,7 @@ export default function PortfolioPage() {
                                           <LockOpen className="mr-1 h-3 w-3" />
                                           Claim
                                         </Button>
-                                      ) : holding.claimed ? (
+                                      ) : isUnlocked ? (
                                         <Button 
                                           disabled
                                           variant="outline"
