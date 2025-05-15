@@ -28,7 +28,7 @@ function Router() {
       <Route path="/projects/:id" component={ProjectDetail} />
       <Route path="/points" component={PointsPage} />
       <ProtectedRoute path="/user-score" component={UserScorePage} />
-      <ProtectedRoute path="/portfolio" component={PortfolioPage} />
+      <Route path="/portfolio" component={PortfolioPage} />
       <ProtectedRoute path="/wallet" component={WalletPage} />
       <ProtectedRoute path="/active-rounds" component={ActiveRoundsPage} />
       <AdminRoute path="/admin" component={AdminPage} />
