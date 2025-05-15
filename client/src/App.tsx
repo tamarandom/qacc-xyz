@@ -13,7 +13,7 @@ import PortfolioPage from "@/pages/portfolio";
 import WalletPage from "@/pages/wallet-page";
 import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
-import ActiveRoundsPage from "@/pages/active-rounds";
+
 import { ThemeProvider } from "@/contexts/theme-context";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -30,7 +30,7 @@ function Router() {
       <ProtectedRoute path="/user-score" component={UserScorePage} />
       <Route path="/portfolio" component={PortfolioPage} />
       <ProtectedRoute path="/wallet" component={WalletPage} />
-      <ProtectedRoute path="/active-rounds" component={ActiveRoundsPage} />
+
       <AdminRoute path="/admin" component={AdminPage} />
       <Route path="/auth" component={AuthPage} />
       {/* Fallback to 404 */}
