@@ -82,7 +82,7 @@ export default function Navbar() {
                 <div className="flex items-center space-x-3">
                   {/* Display user points for logged in users */}
                   <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium">
-                    {user.points || 0} Pt
+                    {Number.isFinite(user.points) ? Math.round(user.points).toLocaleString() : 0} Pt
                   </div>
                   
                   {user.role === 'admin' && (
@@ -290,7 +290,7 @@ export default function Navbar() {
                 
                 {/* Points display for mobile logged-in users */}
                 <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium text-center mb-3">
-                  {user.points || 0} Pt
+                  {Number.isFinite(user.points) ? Math.round(user.points).toLocaleString() : 0} Pt
                 </div>
                 
                 <div className="mt-3 space-y-3">
