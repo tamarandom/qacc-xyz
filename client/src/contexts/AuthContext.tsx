@@ -38,11 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const login = () => {
-    // Redirect to login page (using Replit Auth)
-    window.location.href = "/api/login";
-  };
-
   const logout = () => {
     // Redirect to the server logout endpoint
     window.location.href = "/api/logout";
@@ -121,7 +116,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading: isUserLoading || isAuthLoading,
         isAuthenticated: !!user,
         error,
-        login,
         logout,
         loginWithCredentials,
         registerWithCredentials,
