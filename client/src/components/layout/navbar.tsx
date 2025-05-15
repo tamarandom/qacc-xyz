@@ -269,7 +269,7 @@ export default function Navbar() {
           <div className="border-t border-[color:var(--border-color)] pt-4 pb-3 px-4">
             {user ? (
               <>
-                <div className="flex items-center">
+                <div className="flex items-center mb-3">
                   <div className="flex-shrink-0">
                     <div className="h-10 w-10 rounded-full bg-[color:var(--color-peach)] flex items-center justify-center text-[color:var(--color-black)]">
                       <span className="font-['IBM_Plex_Mono'] font-medium">
@@ -286,6 +286,11 @@ export default function Navbar() {
                       <div className="text-xs text-blue-500">Project Owner</div>
                     )}
                   </div>
+                </div>
+                
+                {/* Points display for mobile logged-in users */}
+                <div className="bg-[#2a323c] rounded-full px-4 py-2 font-['IBM_Plex_Mono'] text-md font-medium text-center mb-3">
+                  {user.points || 0} Pt
                 </div>
                 
                 <div className="mt-3 space-y-3">
